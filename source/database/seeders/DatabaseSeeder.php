@@ -3,6 +3,10 @@
 namespace Database\Seeders;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+
+use Database\Seeders\development\DevelopmentSeeder;
+use Database\Seeders\production\ProductionSeeder;
+use Database\Seeders\staging\StagingSeeder;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -14,11 +18,15 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-        // \App\Models\User::factory(10)->create();
-
-        // \App\Models\User::factory()->create([
-        //     'name' => 'Test User',
-        //     'email' => 'test@example.com',
-        // ]);
+        switch (config('app.env')) {
+            case 'production':
+                $this->call([ProductionSeeder::class]);
+                break;
+            case 'staging':
+                $this->call([StagingSeeder::class]);
+                break;
+            default:
+                $this->call([DevelopmentSeeder::class]);
+        }
     }
 }

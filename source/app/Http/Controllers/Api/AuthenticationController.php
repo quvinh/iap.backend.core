@@ -9,7 +9,6 @@ use App\Helpers\Enums\ErrorCodes;
 use App\Helpers\Enums\UserRoles;
 use App\Helpers\Responses\ApiResponse;
 use App\Helpers\Utils\RequestHelper;
-use app\Http\Controllers\Api\ApiController;
 use App\Http\Controllers\Traits\ResponseHandlerTrait;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Requests\Auth\SignupRequest;
@@ -25,7 +24,8 @@ class AuthenticationController extends ApiController
     private IAuthService $authService;
     private IUserService $userService;
 
-    public function __construct(IAuthService $authService, IUserService $userService){
+    public function __construct(IAuthService $authService, IUserService $userService)
+    {
         $this->userService = $userService;
         $this->authService = $authService;
     }
@@ -39,12 +39,12 @@ class AuthenticationController extends ApiController
     {
         $root = 'auth';
         if ($role == UserRoles::ANONYMOUS) {
-            Route::match(['get'], $root . '/handshake', [AuthenticationController::class, 'handshake']);
-            // Route::post($root . '/login', [AuthenticationController::class, 'login']);
+            Route::get($root . '/handshake', [AuthenticationController::class, 'handshake']);
+            Route::post($root . '/login', [AuthenticationController::class, 'login']);
             Route::post($root . '/check', [AuthenticationController::class, 'checkCredentials']);
-        }else {
+        } else {
             // Route::get($root.'/profile', [AuthenticationController::class, 'profile']);
-            Route::post($root.'/refresh', [AuthenticationController::class, 'refresh'])->withoutMiddleware(['auth.channel']);
+            Route::post($root . '/refresh', [AuthenticationController::class, 'refresh'])->withoutMiddleware(['auth.channel']);
         }
     }
 
@@ -55,7 +55,8 @@ class AuthenticationController extends ApiController
      * @return Response send an 'alias name' to client
      * @throws AuthorizationIsInvalid
      */
-    public function handshake(Request $request): Response{
+    public function handshake(Request $request): Response
+    {
         # 1. load payload
         $header = $request->header('Authorization');
         $parts = explode(' ', $header);
@@ -72,14 +73,42 @@ class AuthenticationController extends ApiController
     /**
      * Return the user information corresponding with the given token
      */
-    public function profile(Request $request): Response {
+    public function profile(Request $request): Response
+    {
         $sub = auth()->user();
-        if (! isset($sub) || ! $sub->getAuthIdentifier()) {
+        if (!isset($sub) || !$sub->getAuthIdentifier()) {
             throw new AuthorizationIsInvalid(ErrorCodes::ERR_INVALID_AUTHORIZATION);
         }
         # 3. return result
         $response = ApiResponse::v1();
         return $response->send($sub);
+    }
+
+    /**
+     * @param LoginRequest $request
+     * @return Response
+     * @throws AuthorizationIsInvalid
+     */
+    public function login(LoginRequest $request): Response
+    {
+        # 1. get payload
+        $request->validate();
+        $payload = $request->input();
+        $claims = RequestHelper::getClaims();
+        $meta = RequestHelper::getMetaInfo();
+        $hook = RequestHelper::findHanshakeHook($claims->getByClaimName('cnidh')->getValue());
+        if (is_null($hook)) throw new AuthorizationIsInvalid();
+        $identifier = $meta->identifier;
+        $currentConnectionHash = Hash::make($hook['value'] . $identifier);
+        $handshake = $this->authService->handshake($currentConnectionHash, $meta);
+
+        if (is_null($handshake)) throw new AuthorizationIsInvalid();
+        # 2. login
+        if (!$token = auth()->claims($handshake->getJWTCustomClaims())->attempt($payload)) {
+            throw new AuthorizationIsInvalid(ErrorCodes::ERR_INVALID_CREDENTIALS);
+        }
+
+        return $this->createNewToken($token);
     }
 
     /**
@@ -89,7 +118,8 @@ class AuthenticationController extends ApiController
      *
      * @return Response
      */
-    protected function createNewToken(string $token): Response{
+    protected function createNewToken(string $token): Response
+    {
         $ret = [
             'access_token' => $token,
             'token_type' => 'bearer',
@@ -105,7 +135,8 @@ class AuthenticationController extends ApiController
      *
      * @return Response
      */
-    public function refresh(): Response {
+    public function refresh(): Response
+    {
         $user = auth()->user();
         return $this->createNewToken(auth()->refresh());
     }
@@ -114,7 +145,8 @@ class AuthenticationController extends ApiController
      * Log the user out (invalidate the token)
      * @return mixed
      */
-    public function logout(){
+    public function logout()
+    {
         auth()->logout();
         # return result
         $response = ApiResponse::v1();
@@ -125,27 +157,28 @@ class AuthenticationController extends ApiController
      * @throws AuthorizationIsInvalid
      * @throws RecordIsNotFoundException
      */
-    public function checkCredentials(Request $request){
+    public function checkCredentials(Request $request)
+    {
         $payload = $request->input();
         # 2. Signup
-        $identifier_type = $payload['identifier_type']?? 'email';
+        $identifier_type = $payload['identifier_type'] ?? 'email';
         $password = $payload['password'];
         if ($identifier_type == 'email') {
             $user = $this->userService->findByEmail($payload['email']);
-        }else{
+        } else {
             $user = $this->userService->findByPhone($payload['phone']);
         }
         if (is_null($user)) throw new \Exception('Invalid credentials');
         $oldPassword = $user->old_password;
-        try{
-            $requestedPassword = base64_encode(hash("ripemd160", $password. $user->old_salt));
+        try {
+            $requestedPassword = base64_encode(hash("ripemd160", $password . $user->old_salt));
             if ($oldPassword !== $requestedPassword) throw new \Exception('Invalid credentials');
             $user->password = Hash::make(md5($password));
             $user->old_password = null;
             $user->old_salt = null;
             $user->save();
             $this->getResponseHandler()->send(true);
-        }catch (\Exception $ex){
+        } catch (\Exception $ex) {
             throw new AuthorizationIsInvalid(previous: $ex);
         }
     }

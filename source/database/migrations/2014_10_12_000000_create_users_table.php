@@ -22,7 +22,7 @@ return new class extends Migration
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->string('photo')->nullable();
-            $table->string('phone')->nullable();
+            $table->string('phone', 20)->nullable();
             $table->date('birthday')->nullable();
             $table->string('address')->nullable();
             $table->unsignedBigInteger('role_id')->default(UserRoles::MEMBER);

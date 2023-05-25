@@ -6,6 +6,7 @@ use App\Observers\ObserverRegistration;
 use App\Repositories\RepositoryRegistration;
 use App\Services\ServiceRegistration;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Facades\Schema;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -28,6 +29,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
+        Schema::defaultStringLength(200);
         switch (config('app.env')) {
             case 'production':
                 $this->bootProductionEnvironment();

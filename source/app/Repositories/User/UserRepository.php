@@ -10,7 +10,8 @@ use App\Repositories\BaseRepository;
 use App\Exceptions\DB\RecordIsNotFoundException as DBRecordIsNotFoundException;
 use function Spatie\SslCertificate\starts_with;
 
-class UserRepository extends BaseRepository implements IUserRepository {
+class UserRepository extends BaseRepository implements IUserRepository
+{
     /**
      * get corresponding model class name
      * @return string
@@ -27,36 +28,18 @@ class UserRepository extends BaseRepository implements IUserRepository {
      */
     public function findByEmail($email): User
     {
-        $email = strtolower(''.$email);
+        $email = strtolower('' . $email);
         return User::query()->where('email', $email)->first();
     }
 
     /**
-     * Find user by his/her code
-     * @param $code
-     * @return User|null
+     * Find user by his/her username
+     * @param $username
+     * @return User
      */
-    public function findByCode($code): User|null
+    public function findByUsername($username): User | null
     {
-        $code = strtolower(''.$code);
-        return User::query()->where('code', $code)->first();
-    }
-
-    /**
-     * Find user by his/her phone
-     * @param $phone
-     * @return User|null
-     */
-    public function findByPhone($phone): User|null
-    {
-        $phone = strtolower(''.$phone);
-        // Only allow VIETNAMESE PHONE
-
-        // if (starts_with($phone, '+84')) $phone = substr($phone, 3);
-
-        // if (! starts_with($phone, '0')) $phone = '0'.$phone;
-
-        return User::query()->where('phone', $phone)->first();
+        return User::query()->where('username', $username)->first();
     }
 
     /**

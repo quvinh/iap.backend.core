@@ -9,6 +9,7 @@ use PHPOpenSourceSaver\JWTAuth\Contracts\JWTSubject;
 
 /**
  * @property string $name
+ * @property string $username
  * @property string $email
  * @property string $password
  * @property string $group_id
@@ -21,7 +22,8 @@ class AuthorizationSubject implements Authenticatable, JWTSubject
     public function __construct(array $credentials = []){
         $this->id = $credentials['id']?? 0;
         $this->name = '';
-        $this->email = $credentials['email']?? '';
+        // $this->email = $credentials['email']?? '';
+        $this->username = $credentials['username']?? '';
         $this->password = $credentials['password']?? '';
 
         $this->user = null;
@@ -30,6 +32,7 @@ class AuthorizationSubject implements Authenticatable, JWTSubject
     public function representFor(User $user){
         $this->id = $user->getKey();
         $this->name = $user->name;
+        $this->username = $user->username;
         $this->email = $user->email;
         $this->password = $user->getAuthPassword();
         $this->user = $user;

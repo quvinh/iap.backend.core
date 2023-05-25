@@ -1,0 +1,44 @@
+{
+    "client": "Thunder Client",
+    "collectionName": "v1",
+    "dateExported": "2023-05-25T14:36:35.243Z",
+    "version": "1.1",
+    "folders": [
+        {
+            "_id": "477def31-1bb3-40e9-bb96-9abfa8ce0748",
+            "name": "Authentication",
+            "containerId": "",
+            "created": "2023-05-25T14:23:12.923Z",
+            "sortNum": 10000
+        }
+    ],
+    "requests": [
+        {
+            "_id": "a93eb167-377a-4cb9-bc4f-a322f0e7679c",
+            "colId": "d09e2ae4-c85d-4d45-b283-a844529d544b",
+            "containerId": "477def31-1bb3-40e9-bb96-9abfa8ce0748",
+            "name": "handshake",
+            "url": "{{iap.api.base_url}}/auth/handshake",
+            "method": "GET",
+            "sortNum": 10000,
+            "created": "2023-05-25T14:26:47.776Z",
+            "modified": "2023-05-25T14:34:02.212Z",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "X-IDENTIFIER",
+                    "value": "{{app.identifier}}"
+                },
+                {
+                    "name": "Authorization",
+                    "value": "IAP {{token.handshake}}"
+                }
+            ],
+            "params": [],
+            "tests": []
+        }
+    ]
+}

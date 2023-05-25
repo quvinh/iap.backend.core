@@ -42,11 +42,11 @@ class ApiUserProvider implements UserProvider
     public function retrieveByCredentials(array $credentials)
     {
         $anonymous = AuthorizationSubject::getAnonymousUser();
-        $email = $credentials['email'] ?? '';
-        if ($email == '') {
+        $username = $credentials['username'] ?? '';
+        if ($username == '') {
             return AuthorizationSubject::getAnonymousUser();
         }
-        $user = $this->userRepos->findByEmail($email);
+        $user = $this->userRepos->findByUsername($username);
         if (is_null($user)) return null;
         $password = $credentials['password'] ?? '';
         $uHashedPassword = $user->getAuthPassword();

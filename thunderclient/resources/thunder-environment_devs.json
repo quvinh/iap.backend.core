@@ -1,0 +1,36 @@
+{
+    "client": "Thunder Client",
+    "environmentName": "devs",
+    "dateExported": "2023-05-25T14:34:42.623Z",
+    "version": "1.0",
+    "variables": [
+        {
+            "name": "iap.api.base_url",
+            "value": "http://127.0.0.1:8000/api"
+        },
+        {
+            "name": "iap.base_url",
+            "value": "http://127.0.0.1:8000"
+        },
+        {
+            "name": "lang",
+            "value": "vi"
+        },
+        {
+            "name": "token.handshake",
+            "value": "$2y$10$9PNd26xGrS7L5OTwziVe.ec8b455mH5qMuuJHTAcP3swwmr9ctTEa"
+        },
+        {
+            "name": "token.login",
+            "value": ""
+        },
+        {
+            "name": "token.admin",
+            "value": ""
+        },
+        {
+            "name": "app.identifier",
+            "value": "demo"
+        }
+    ]
+}
