@@ -12,6 +12,7 @@ use App\Helpers\Utils\RequestHelper;
 use App\Http\Controllers\Traits\ResponseHandlerTrait;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Requests\Auth\SignupRequest;
+use App\Models\Role;
 use App\Services\Auth\IAuthService;
 use App\Services\User\IUserService;
 use Illuminate\Http\Response;
@@ -41,9 +42,9 @@ class AuthenticationController extends ApiController
         if ($role == UserRoles::ANONYMOUS) {
             Route::get($root . '/handshake', [AuthenticationController::class, 'handshake']);
             Route::post($root . '/login', [AuthenticationController::class, 'login']);
-            Route::post($root . '/check', [AuthenticationController::class, 'checkCredentials']);
         } else {
             // Route::get($root.'/profile', [AuthenticationController::class, 'profile']);
+            Route::get($root . '/logout', [AuthenticationController::class, 'logout']);
             Route::post($root . '/refresh', [AuthenticationController::class, 'refresh'])->withoutMiddleware(['auth.channel']);
         }
     }
@@ -123,8 +124,17 @@ class AuthenticationController extends ApiController
         $ret = [
             'access_token' => $token,
             'token_type' => 'bearer',
-            'expires_in' => auth()->factory()->getTTL() * 60
+            'expires_in' => auth()->factory()->getTTL() * 60,
         ];
+
+        $getAuthIdentifier = auth()->user()->getAuthIdentifier();
+        if ($getAuthIdentifier) {
+            $role = Role::find(auth()->user()->role_id ?? null);
+            $ret = array_merge($ret, [
+                'role' => $role->name,
+                'permissions' => $role->getIdOfPermissions()
+            ]);
+        }
         # 3. return result
         $response = ApiResponse::v1();
         return $response->send($ret);
@@ -157,29 +167,29 @@ class AuthenticationController extends ApiController
      * @throws AuthorizationIsInvalid
      * @throws RecordIsNotFoundException
      */
-    public function checkCredentials(Request $request)
-    {
-        $payload = $request->input();
-        # 2. Signup
-        $identifier_type = $payload['identifier_type'] ?? 'email';
-        $password = $payload['password'];
-        if ($identifier_type == 'email') {
-            $user = $this->userService->findByEmail($payload['email']);
-        } else {
-            $user = $this->userService->findByPhone($payload['phone']);
-        }
-        if (is_null($user)) throw new \Exception('Invalid credentials');
-        $oldPassword = $user->old_password;
-        try {
-            $requestedPassword = base64_encode(hash("ripemd160", $password . $user->old_salt));
-            if ($oldPassword !== $requestedPassword) throw new \Exception('Invalid credentials');
-            $user->password = Hash::make(md5($password));
-            $user->old_password = null;
-            $user->old_salt = null;
-            $user->save();
-            $this->getResponseHandler()->send(true);
-        } catch (\Exception $ex) {
-            throw new AuthorizationIsInvalid(previous: $ex);
-        }
-    }
+    // public function checkCredentials(Request $request)
+    // {
+    //     $payload = $request->input();
+    //     # 2. Signup
+    //     $identifier_type = $payload['identifier_type'] ?? 'email';
+    //     $password = $payload['password'];
+    //     if ($identifier_type == 'email') {
+    //         $user = $this->userService->findByEmail($payload['email']);
+    //     } else {
+    //         $user = $this->userService->findByPhone($payload['phone']);
+    //     }
+    //     if (is_null($user)) throw new \Exception('Invalid credentials');
+    //     $oldPassword = $user->old_password;
+    //     try {
+    //         $requestedPassword = base64_encode(hash("ripemd160", $password . $user->old_salt));
+    //         if ($oldPassword !== $requestedPassword) throw new \Exception('Invalid credentials');
+    //         $user->password = Hash::make(md5($password));
+    //         $user->old_password = null;
+    //         $user->old_salt = null;
+    //         $user->save();
+    //         $this->getResponseHandler()->send(true);
+    //     } catch (\Exception $ex) {
+    //         throw new AuthorizationIsInvalid(previous: $ex);
+    //     }
+    // }
 }
