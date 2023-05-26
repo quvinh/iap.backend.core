@@ -1,7 +1,7 @@
 {
     "client": "Thunder Client",
     "environmentName": "devs",
-    "dateExported": "2023-05-25T14:34:42.623Z",
+    "dateExported": "2023-05-26T16:14:46.336Z",
     "version": "1.0",
     "variables": [
         {
@@ -22,11 +22,11 @@
         },
         {
             "name": "token.login",
-            "value": ""
+            "value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vMTI3LjAuMC4xOjgwMDAvYXBpL2F1dGgvaGFuZHNoYWtlIiwiaWF0IjoxNjg1MTE3NTg0LCJuYmYiOjE2ODUxMTc1ODQsImp0aSI6IkQ1ajJ3ZTFkNlhWTTBwVFoiLCJzdWIiOiIwIiwicHJ2IjoiYzUyNjQ2OWI5MzQ1YTE2MWExZTcxMzBmOGY4ZmQ1MzZjMTUyYjllYyIsInR5cGUiOiJpb3MiLCJjbmlkIjoiZGVtbyIsImNuaWRoIjoiJDJ5JDEwJDlQTmQyNnhHclM3TDVPVHd6aVZlLmVjOGI0NTVtSDVxTXV1SkhUQWNQM3N3d21yOWN0VEVhIiwic2lnbiI6ImE5ZTk0YmVjMzJkMDJhYThmZTg0NWZhODUyM2ZkMGQ1OWM5YWE4YTZhY2Q5MzcwYjcxMDFmZTQxZDE0OTllYmQifQ.ccxsk3Z7yav3iO39wdL9FHDwjP16cj3CTiXBvCrHZHU"
         },
         {
             "name": "token.admin",
-            "value": ""
+            "value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vMTI3LjAuMC4xOjgwMDAvYXBpL2F1dGgvbG9naW4iLCJpYXQiOjE2ODUxMTc1OTUsIm5iZiI6MTY4NTExNzU5NSwianRpIjoibFh5VGtQemhDb2txQ0oyTCIsInN1YiI6IjIiLCJwcnYiOiJjNTI2NDY5YjkzNDVhMTYxYTFlNzEzMGY4ZjhmZDUzNmMxNTJiOWVjIiwidHlwZSI6ImlvcyIsImNuaWQiOiJkZW1vIiwiY25pZGgiOiIkMnkkMTAkZmVLTm9makVPOHltcVdSeWdwVFBwLjB5S2s4ZGJ5LndrWG1iQnUzbVVLS0xRUDBMS09LcHkiLCJzaWduIjoiYTllOTRiZWMzMmQwMmFhOGZlODQ1ZmE4NTIzZmQwZDU5YzlhYThhNmFjZDkzNzBiNzEwMWZlNDFkMTQ5OWViZCJ9.PwlURcUhDAmwWCwFR2_Gp5oorrhqEeHYbYwTcANb2BY"
         },
         {
             "name": "app.identifier",
