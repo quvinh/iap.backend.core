@@ -43,7 +43,7 @@ class AuthenticationController extends ApiController
             Route::get($root . '/handshake', [AuthenticationController::class, 'handshake']);
             Route::post($root . '/login', [AuthenticationController::class, 'login']);
         } else {
-            // Route::get($root.'/profile', [AuthenticationController::class, 'profile']);
+            Route::get($root.'/profile', [AuthenticationController::class, 'profile']);
             Route::get($root . '/logout', [AuthenticationController::class, 'logout']);
             Route::post($root . '/refresh', [AuthenticationController::class, 'refresh'])->withoutMiddleware(['auth.channel']);
         }

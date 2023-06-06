@@ -2,13 +2,19 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\DataResources\User\UserResource;
 use App\Helpers\Common\MetaInfo;
 use App\Helpers\Enums\UserRoles;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\Traits\DefaultRestActions;
+use App\Http\Requests\User\UserCreateRequest;
+use App\Http\Requests\User\UserSearchRequest;
+use App\Http\Requests\User\UserSingleRequest;
+use App\Http\Requests\User\UserUpdateRequest;
 use App\Services\IService;
 use App\Services\User\IUserService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Route;
 
 class UserController extends ApiController
@@ -30,14 +36,12 @@ class UserController extends ApiController
     public static function registerRoutes(string $role = null): void
     {
         $root = 'users';
-        // if ($role == UserRoles::USER) {
-        //     Route::get($root.'/{id}', [CartController::class, 'getSingleObject']);
-        //     Route::post($root, [CartController::class, 'create']);
-        //     Route::put($root, [CartController::class, 'update']);
-        //     Route::delete($root.'/{id}', [CartController::class, 'delete']);
-        // }
         if ($role == UserRoles::ADMINISTRATOR) {
             Route::post($root . '/search', [UserController::class, 'search']);
+            Route::get($root . '/{id}', [UserController::class, 'getSingleObject']);
+            Route::post($root, [UserController::class, 'create']);
+            Route::put($root . '/{id}', [UserController::class, 'update']);
+            Route::delete($root . '/{id}', [UserController::class, 'delete']);
         }
     }
 
@@ -63,7 +67,7 @@ class UserController extends ApiController
 
     public function getDataResourceClass(): string
     {
-        return CartResource::class;
+        return UserResource::class;
     }
 
     public function getDataResourceExtraFields(string $actionName): array
@@ -80,28 +84,29 @@ class UserController extends ApiController
     {
         switch ($actionName) {
             case 'search':
-                // $searchRequest = CartSearchRequest::createFrom($request);
-                // $searchRequest->addField('user_id');
-                // $inputs = array_merge($searchRequest->input(), ['user_id' => auth()->user()->getAuthIdentifier()]);
-                // $searchRequest->replace($inputs);
-                // $searchRequest->validate();
-                // return $searchRequest;
+                $vRequest = UserSearchRequest::createFrom($request);
+                $vRequest->validate();
+                return $vRequest;
             case 'create':
-            case 'update':
-                // $faqRequest = CartRequest::createFrom($request);
-                // $inputs = $faqRequest->input();
+                $vRequest = UserCreateRequest::createFrom($request);
+                // $inputs = $vRequest->input();
                 // $inputs = array_merge($inputs, [
-                //         'id' => array_merge($inputs['id'], ['required']),
-                //         'user_id' => auth()->user()->getAuthIdentifier()]
-                // );
-                // $faqRequest->addField('user_id');
-                // $faqRequest->replace($inputs);
-                // $faqRequest->validate();
-                // return $faqRequest;
+                //     'password' => Hash::make(md5('password')) // default password
+                // ]);
+                // $vRequest->addField('password');
+                // $vRequest->replace($inputs);
+                $vRequest->validate();
+                return $vRequest;
+            case 'update':
+                $vRequest = UserUpdateRequest::createFrom($request);
+                $vRequest->validate();
+                return $vRequest;
             case 'getSingleObject':
+                return $request;
             case 'delete':
-                $inputs = array_merge($request->input(), ['id' => auth()->user()->getAuthIdentifier()]);
-                $request->replace($inputs);
+                // $inputs = array_merge($request->input(), ['id' => auth()->user()->getAuthIdentifier()]);
+                // $request->replace($inputs);
+                // return $request;
                 return $request;
             default:
                 return $request;

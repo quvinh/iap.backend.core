@@ -46,7 +46,7 @@ class DefaultIdSlugRequest extends BaseRequest
     public function rules(): array
     {
         return [
-            'id' => ['required']
+            'id' => ['required', 'integer']
         ];
     }
 }

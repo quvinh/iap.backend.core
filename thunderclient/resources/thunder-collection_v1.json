@@ -1,7 +1,7 @@
 {
     "client": "Thunder Client",
     "collectionName": "v1",
-    "dateExported": "2023-05-26T16:14:23.501Z",
+    "dateExported": "2023-06-06T16:50:12.773Z",
     "version": "1.1",
     "folders": [
         {
@@ -88,7 +88,7 @@
             "method": "POST",
             "sortNum": 20000,
             "created": "2023-05-26T15:55:53.548Z",
-            "modified": "2023-05-26T15:57:26.867Z",
+            "modified": "2023-06-06T16:41:29.855Z",
             "headers": [
                 {
                     "name": "Accept",
@@ -102,8 +102,66 @@
             "params": [],
             "body": {
                 "type": "json",
-                "raw": "{\n    \"pagination\":{\"page\": 1, \"per_page\": 5}\n}",
+                "raw": "{\n    \"pagination\":{\"page\": 1, \"per_page\": 25}\n}",
                 "form": []
+            },
+            "auth": {
+                "type": "bearer",
+                "bearer": "{{token.admin}}"
+            },
+            "tests": []
+        },
+        {
+            "_id": "a16b2641-7fef-4713-ba72-31efb864fc48",
+            "colId": "d09e2ae4-c85d-4d45-b283-a844529d544b",
+            "containerId": "360adb16-1911-4fcf-ac2f-4b72c9afb848",
+            "name": "getSingleObject",
+            "url": "{{iap.api.base_url}}/users/7",
+            "method": "GET",
+            "sortNum": 25000,
+            "created": "2023-06-06T16:09:38.723Z",
+            "modified": "2023-06-06T16:21:42.229Z",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "X-IDENTIFIER",
+                    "value": "{{app.identifier}}"
+                }
+            ],
+            "params": [],
+            "auth": {
+                "type": "bearer",
+                "bearer": "{{token.admin}}"
+            },
+            "tests": []
+        },
+        {
+            "_id": "a261ee49-1961-4b2e-8f04-0d63f8494ac8",
+            "colId": "d09e2ae4-c85d-4d45-b283-a844529d544b",
+            "containerId": "477def31-1bb3-40e9-bb96-9abfa8ce0748",
+            "name": "profile",
+            "url": "{{iap.api.base_url}}/auth/profile",
+            "method": "GET",
+            "sortNum": 25000,
+            "created": "2023-06-06T16:48:38.503Z",
+            "modified": "2023-06-06T16:49:26.867Z",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "X-IDENTIFIER",
+                    "value": "{{app.identifier}}"
+                }
+            ],
+            "params": [],
+            "auth": {
+                "type": "bearer",
+                "bearer": "{{token.admin}}"
             },
             "tests": []
         },
@@ -135,6 +193,38 @@
             "tests": []
         },
         {
+            "_id": "80d69b23-2b9d-4022-8cd3-fab7fadf1496",
+            "colId": "d09e2ae4-c85d-4d45-b283-a844529d544b",
+            "containerId": "360adb16-1911-4fcf-ac2f-4b72c9afb848",
+            "name": "create",
+            "url": "{{iap.api.base_url}}/users",
+            "method": "POST",
+            "sortNum": 30000,
+            "created": "2023-06-06T16:05:04.655Z",
+            "modified": "2023-06-06T16:23:52.798Z",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "X-IDENTIFIER",
+                    "value": "{{app.identifier}}"
+                }
+            ],
+            "params": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n    \"name\":\"Em. So Đẹp\",\n    \"username\": \"sodep\",\n    \"email\":\"demo@test.localhost\"\n}",
+                "form": []
+            },
+            "auth": {
+                "type": "bearer",
+                "bearer": "{{token.admin}}"
+            },
+            "tests": []
+        },
+        {
             "_id": "1307ce22-25b5-4eb7-ab0d-950b137d7cf1",
             "colId": "d09e2ae4-c85d-4d45-b283-a844529d544b",
             "containerId": "477def31-1bb3-40e9-bb96-9abfa8ce0748",
@@ -144,6 +234,65 @@
             "sortNum": 40000,
             "created": "2023-05-26T13:52:51.911Z",
             "modified": "2023-05-26T13:56:32.625Z",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "X-IDENTIFIER",
+                    "value": "{{app.identifier}}"
+                }
+            ],
+            "params": [],
+            "auth": {
+                "type": "bearer",
+                "bearer": "{{token.admin}}"
+            },
+            "tests": []
+        },
+        {
+            "_id": "1d1def35-20b1-4cf3-af6e-af9d474d51b5",
+            "colId": "d09e2ae4-c85d-4d45-b283-a844529d544b",
+            "containerId": "360adb16-1911-4fcf-ac2f-4b72c9afb848",
+            "name": "update",
+            "url": "{{iap.api.base_url}}/users/16",
+            "method": "PUT",
+            "sortNum": 40000,
+            "created": "2023-06-06T16:38:26.720Z",
+            "modified": "2023-06-06T16:40:54.709Z",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "X-IDENTIFIER",
+                    "value": "{{app.identifier}}"
+                }
+            ],
+            "params": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n    \"name\":\"Em. So Đẹp\",\n    \"username\": \"sodep\",\n    \"email\":\"demo@test.localhost\",\n    \"birthday\": \"2000-06-26\"\n}",
+                "form": []
+            },
+            "auth": {
+                "type": "bearer",
+                "bearer": "{{token.admin}}"
+            },
+            "tests": []
+        },
+        {
+            "_id": "7d63f227-6f3e-42e8-a6e9-84daf2a70e36",
+            "colId": "d09e2ae4-c85d-4d45-b283-a844529d544b",
+            "containerId": "360adb16-1911-4fcf-ac2f-4b72c9afb848",
+            "name": "delete",
+            "url": "{{iap.api.base_url}}/users/16",
+            "method": "DELETE",
+            "sortNum": 50000,
+            "created": "2023-06-06T16:43:08.630Z",
+            "modified": "2023-06-06T16:43:39.508Z",
             "headers": [
                 {
                     "name": "Accept",

@@ -119,14 +119,14 @@ class UserService extends \App\Services\BaseService implements IUserService
             #1 Register new user
             $user = new User();
             $user->name = $param['name'];
-            $user->email = $param['username'] ?? null;
+            $user->username = $param['username'] ?? null;
             $user->email = $param['email'] ?? null;
             $user->email_verified_at = Carbon::now();
             $user->phone = $param['phone'] ?? null;
-            $user->birthday = $param['birthday'] ? Carbon::parse($param['birthday']) : null;
+            $user->birthday = isset($param['birthday']) ? Carbon::parse($param['birthday']) : null;
             $user->phone = $param['address'] ?? null;
             $user->role_id = UserRoles::MODERATOR;
-            $user->password = Hash::make(md5($param['password']));
+            $user->password = Hash::make(md5('password')); // password default
             $user->save();
             DB::commit();
             #2 return User
@@ -203,17 +203,12 @@ class UserService extends \App\Services\BaseService implements IUserService
         }
     }
 
-    public function findByEmail($email): User|null
+    public function findByUsername($username): User|null
     {
-        return $this->userRepos->findByEmail($email);
+        return $this->userRepos->findByUsername($username);
     }
 
-    public function findByPhone($phone): User|null
-    {
-        return $this->userRepos->findByPhone($phone);
-    }
-
-    public function changePassword(int $id, array $param, MetaInfo $commandMetaInfo = null): User | null
+    public function changePassword(int $id, array $param, MetaInfo $commandMetaInfo = null): User | null //need FIX
     {
         try {
             $record = $this->userRepos->getSingleObject($id);
