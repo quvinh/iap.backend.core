@@ -4,6 +4,8 @@ namespace App\Services;
 
 use App\Services\Auth\AuthService;
 use App\Services\Auth\IAuthService;
+use App\Services\Role\IRoleService;
+use App\Services\Role\RoleService;
 use App\Services\User\IUserService;
 use App\Services\User\UserService;
 
@@ -17,5 +19,6 @@ class ServiceRegistration
         $app->singleton(IAuthService::class, AuthService::class);
 
         $app->singleton(IUserService::class, UserService::class);
+        $app->singleton(IRoleService::class, RoleService::class);
     }
 }

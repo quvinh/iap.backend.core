@@ -1,24 +1,18 @@
 <?php
 
-namespace App\DataResources\User;
+namespace App\DataResources\Role;
 
 use App\DataResources\BaseDataResource;
-use App\Models\User;
+use App\Models\Role;
 
-class UserResource extends BaseDataResource
+class RoleResource extends BaseDataResource
 {
     /**
      * @var array|string[]
      */
     protected array $fields = [
         'id',
-        'username',
-        'email',
         'name',
-        'photo',
-        'address',
-        'birthday',
-        'phone',
     ];
 
     /**
@@ -26,12 +20,12 @@ class UserResource extends BaseDataResource
      */
     public function modelClass(): string
     {
-        return User::class;
+        return Role::class;
     }
 
     /**
      * Load data for output
-     * @param User $obj
+     * @param Role $obj
      * @return void
      */
     public function load(mixed $obj): void

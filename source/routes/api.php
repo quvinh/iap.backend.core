@@ -2,6 +2,7 @@
 
 use App\Helpers\Enums\UserRoles;
 use App\Http\Controllers\Api\AuthenticationController;
+use App\Http\Controllers\Api\RoleController;
 use App\Http\Controllers\Api\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -21,6 +22,7 @@ function registerResourceRoutes(string $group = UserRoles::ADMINISTRATOR): void
 {
     AuthenticationController::registerRoutes($group);
     UserController::registerRoutes($group);
+    RoleController::registerRoutes($group);
 }
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
