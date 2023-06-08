@@ -42,11 +42,11 @@ abstract class BaseModel extends Model
         if ($isCreate) {
             $this->created_at = $meta->time;
             $this->created_by = $meta->name;
-            $this->created_signature = $meta->signature;
+            // $this->created_signature = $meta->signature;
         } else {
             $this->updated_at = $meta->time;
             $this->updated_by = $meta->name;
-            $this->updated_signature = $meta->signature;
+            // $this->updated_signature = $meta->signature;
         }
     }
 

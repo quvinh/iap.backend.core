@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services\Role;
+namespace App\Services\Permission;
 
 use App\DataResources\PaginationInfo;
 use App\DataResources\SortInfo;
@@ -12,7 +12,9 @@ use App\Exceptions\DB\RecordIsNotFoundException;
 use App\Helpers\Common\MetaInfo;
 use App\Helpers\Utils\StorageHelper;
 use App\Helpers\Utils\StringHelper;
-use App\Models\Role;
+use App\Models\Permission;
+use App\Models\PermissionGroup;
+use App\Repositories\Permission\IPermissionRepository;
 use App\Repositories\Role\IRoleRepository;
 use Carbon\Carbon;
 use Exception;
@@ -21,13 +23,15 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Throwable;
 
-class RoleService extends \App\Services\BaseService implements IRoleService
+class PermissionService extends \App\Services\BaseService implements IPermissionService
 {
+    private ?IPermissionRepository $permissionRepos = null;
     private ?IRoleRepository $roleRepos = null;
 
-    public function __construct(IRoleRepository $repos)
+    public function __construct(IPermissionRepository $repos, IRoleRepository $roleRepos)
     {
-        $this->roleRepos = $repos;
+        $this->permissionRepos = $repos;
+        $this->roleRepos = $roleRepos;
     }
 
     /**
@@ -35,14 +39,14 @@ class RoleService extends \App\Services\BaseService implements IRoleService
      *
      * @param int $id
      * @param array<string> $withs
-     * @return Role
+     * @return Permission
      * @throws RecordIsNotFoundException
      */
-    public function getSingleObject(int $id, array $withs = []): Role
+    public function getSingleObject(int $id, array $withs = []): Permission
     {
         try {
-            $query = $this->roleRepos->queryOnAField(['id', $id]);
-            $query = $this->roleRepos->with($withs, $query);
+            $query = $this->permissionRepos->queryOnAField(['id', $id]);
+            $query = $this->permissionRepos->with($withs, $query);
             $record = $query->first();
             if (!is_null($record)) return $record;
             throw new RecordIsNotFoundException();
@@ -60,27 +64,27 @@ class RoleService extends \App\Services\BaseService implements IRoleService
      * @param array<string> $rawConditions
      * @param PaginationInfo|null $paging
      * @param array<string> $withs
-     * @return Collection<int,Role>
+     * @return Collection<int,Permission>
      * @throws ActionFailException
      * @throws Throwable
      */
     public function search(array $rawConditions, PaginationInfo &$paging = null, array $withs = []): Collection
     {
         try {
-            $query = $this->roleRepos->search();
+            $query = $this->permissionRepos->search();
             if (isset($rawConditions['name'])) {
                 $param = StringHelper::escapeLikeQueryParameter($rawConditions['name']);
-                $query = $this->roleRepos->queryOnAField([DB::raw("upper(name)"), 'LIKE BINARY', DB::raw("upper(concat('%', ? , '%'))")], positionalBindings: ['name' => $param]);
+                $query = $this->permissionRepos->queryOnAField([DB::raw("upper(name)"), 'LIKE BINARY', DB::raw("upper(concat('%', ? , '%'))")], positionalBindings: ['name' => $param]);
             }
 
             if (isset($rawConditions['updated_date'])) {
-                $query = $this->roleRepos->queryOnDateRangeField($query, 'updated_at', $rawConditions['updated_date']);
+                $query = $this->permissionRepos->queryOnDateRangeField($query, 'updated_at', $rawConditions['updated_date']);
             }
             if (isset($rawConditions['created_date'])) {
-                $query = $this->roleRepos->queryOnDateRangeField($query, 'updated_at', $rawConditions['created_date']);
+                $query = $this->permissionRepos->queryOnDateRangeField($query, 'updated_at', $rawConditions['created_date']);
             }
 
-            $query = $this->roleRepos->with($withs, $query);
+            $query = $this->permissionRepos->with($withs, $query);
 
 
             if (!is_null($paging)) {
@@ -89,7 +93,7 @@ class RoleService extends \App\Services\BaseService implements IRoleService
 
             if (isset($rawConditions['sort'])) {
                 $sort = SortInfo::parse($rawConditions['sort']);
-                return $this->roleRepos->sort($query, $sort)->get();
+                return $this->permissionRepos->sort($query, $sort)->get();
             }
             return $query->get();
         } catch (Exception $e) {
@@ -105,20 +109,29 @@ class RoleService extends \App\Services\BaseService implements IRoleService
      *
      * @param array $param
      * @param MetaInfo|null $commandMetaInfo
-     * @return Role
+     * @return Permission
      * @throws CannotSaveToDBException
      */
-    public function create(array $param, MetaInfo $commandMetaInfo = null): Role
+    public function create(array $param, MetaInfo $commandMetaInfo = null): Permission
     {
         DB::beginTransaction();
         try {
-            #1 Register new role
-            $role = new Role();
-            $role->name = $param['name'];
-            $role->save();
+            #1 Register new Permission
+            $permission = new Permission();
+            $permission->name = $param['name'];
+            if ($permission->save()) {
+                $role = $this->roleRepos->getSingleObject($param['role_id'])->first();
+                if (empty($role)) throw new RecordIsNotFoundException();
+                $permissionGroup = new PermissionGroup();
+                $permissionGroup->role_id = $param['role_id'];
+                $permissionGroup->permission_id = $permission->id;
+                if (!$permissionGroup->save()) throw new CannotSaveToDBException(message: "Cannot create record: permission group");
+            } else {
+                throw new CannotSaveToDBException(message: "Cannot create record: permission");
+            }
             DB::commit();
-            #2 return Role
-            return $role;
+            #2 return Permission
+            return $permission;
         } catch (\Exception $e) {
             DB::rollback();
             throw new CannotSaveToDBException(
@@ -132,15 +145,15 @@ class RoleService extends \App\Services\BaseService implements IRoleService
      * @param int $id
      * @param array $param
      * @param MetaInfo|null $commandMetaInfo
-     * @return Role
+     * @return Permission
      * @throws CannotUpdateDBException
      */
-    public function update(int $id, array $param, MetaInfo $commandMetaInfo = null): Role
+    public function update(int $id, array $param, MetaInfo $commandMetaInfo = null): Permission
     {
         DB::beginTransaction();
         try {
             #1: Can edit? -> Yes: move to #2 No: return Exception with error
-            $record = $this->roleRepos->getSingleObject($id)->first();
+            $record = $this->permissionRepos->getSingleObject($id)->first();
             if (empty($record)) {
                 throw new RecordIsNotFoundException();
             }
@@ -148,7 +161,7 @@ class RoleService extends \App\Services\BaseService implements IRoleService
             $param = array_merge($param, [
                 'id' => $record->id
             ]);
-            $record = $this->roleRepos->update($param, $commandMetaInfo);
+            $record = $this->permissionRepos->update($param, $commandMetaInfo);
             // update picture if needed
             // code here
             DB::commit();
@@ -175,11 +188,15 @@ class RoleService extends \App\Services\BaseService implements IRoleService
     {
         DB::beginTransaction();
         try {
-            $record = $this->roleRepos->getSingleObject($id)->first();
+            $record = $this->permissionRepos->getSingleObject($id)->first();
             if (empty($record)) {
                 throw new RecordIsNotFoundException();
             }
-            $result =  $this->roleRepos->delete(id: $id, soft: $softDelete, meta: $commandMetaInfo);
+            $permissionGroup = new PermissionGroup();
+            if (!$permissionGroup->where('permission_id', $record->id)->delete()) {
+                throw new CannotDeleteDBException(message: "Cannot delete record: permission");
+            }
+            $result =  $this->permissionRepos->delete(id: $id, soft: $softDelete, meta: $commandMetaInfo);
             DB::commit();
             return $result;
         } catch (\Exception $ex) {

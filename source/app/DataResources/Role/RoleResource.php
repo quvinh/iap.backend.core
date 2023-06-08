@@ -32,5 +32,8 @@ class RoleResource extends BaseDataResource
     public function load(mixed $obj): void
     {
         parent::copy($obj, $this->fields);
+        // if (in_array('permissions', $this->fields)) {
+        //     $this->permissions = BaseDataResource::generateResources($obj->permissions, RoleResource::class);
+        // }
     }
 }

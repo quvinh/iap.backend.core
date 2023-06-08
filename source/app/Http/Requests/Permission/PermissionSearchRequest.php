@@ -1,24 +1,12 @@
 <?php
 
-namespace App\Http\Requests\Role;
+namespace App\Http\Requests\Permission;
 
 use App\Http\Requests\DefaultSearchRequest;
 use Illuminate\Foundation\Http\FormRequest;
 
-class RoleSearchRequest extends DefaultSearchRequest
+class PermissionSearchRequest extends DefaultSearchRequest
 {
-    /**
-     * Available relations to retrieve
-     * @var string[]
-     */
-    protected array $relations = [
-        'permissions'
-    ];
-
-    protected array $fields = [
-        'withs'
-    ];
-
     /**
      * Overwrite this function to prepare or convert data before validating
      * @return void

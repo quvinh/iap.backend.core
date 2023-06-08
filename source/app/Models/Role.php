@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Role extends BaseModel
@@ -14,7 +15,7 @@ class Role extends BaseModel
         'name'
     ];
 
-    public function permissionGroup()
+    public function permissionGroup(): HasMany
     {
         return $this->hasMany(PermissionGroup::class, 'role_id', 'id');
     }
@@ -29,6 +30,7 @@ class Role extends BaseModel
         }, $this->permissionGroup->toArray());
         return implode(', ', $permissions);
     }
+
     public function getIdOfPermissions()
     {
         $permissions = array_map(function ($item) {

@@ -1,12 +1,12 @@
 <?php
 
-namespace App\DataResources\Permision;
+namespace App\DataResources\Permission;
 
 use App\DataResources\BaseDataResource;
 use App\Models\Faq;
-use App\Models\Permision;
+use App\Models\Permission;
 
-class PermisionResource extends BaseDataResource
+class PermissionResource extends BaseDataResource
 {
     /**
      * @var array|string[]
@@ -21,7 +21,7 @@ class PermisionResource extends BaseDataResource
      */
     public function modelClass(): string
     {
-        return Permision::class;
+        return Permission::class;
     }
 
     /**
