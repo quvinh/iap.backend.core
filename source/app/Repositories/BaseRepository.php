@@ -13,6 +13,7 @@ use App\Helpers\Utils\DateHelper;
 use Illuminate\Database\Eloquent\Builder;
 use App\Exceptions\DB\RecordIsNotFoundException;
 use App\Exceptions\DB\RecordIsNotFoundException as DBRecordIsNotFoundException;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Query\Builder as QueryBuilder;
 use Illuminate\Support\Facades\DB;
 
@@ -79,9 +80,9 @@ abstract class BaseRepository implements IRepository
      * Find a single object base on its id
      * @param mixed $id
      * @param string $idColumnName
-     * @return mixed
+     * @return Builder
      */
-    function getSingleObject(mixed $id, string $idColumnName = 'id', array $withs = []): mixed
+    function getSingleObject(mixed $id, string $idColumnName = 'id', array $withs = []): Builder | null
     {
         if ($id == null)
             return null;
@@ -90,7 +91,7 @@ abstract class BaseRepository implements IRepository
         $query = (new $model_class())->query();
         $query = $query->where($idColumnName, $id);
         if (isset($withs)) $query = $query->with($withs);
-        return $query->first();
+        return $query;
     }
 
     /**
@@ -98,10 +99,10 @@ abstract class BaseRepository implements IRepository
      * @param array<string, mixed> $form
      * @param MetaInfo|null $meta
      * @param string $idColumnName
-     * @return mixed
+     * @return Model
      * @throws CannotSaveToDBException
      */
-    public function create(array $form, MetaInfo $meta = null, string $idColumnName = 'id'): mixed
+    public function create(array $form, MetaInfo $meta = null, string $idColumnName = 'id'): Model
     {
         if (in_array($idColumnName, array_keys($form)))
             unset($form[$idColumnName]);
@@ -129,11 +130,11 @@ abstract class BaseRepository implements IRepository
      * @throws IdIsNotProvidedException
      * @throws DBRecordIsNotFoundException
      */
-    function update(array $form, MetaInfo $meta = null, string $idColumnName = 'id'): mixed
+    function update(array $form, MetaInfo $meta = null, string $idColumnName = 'id'): Model
     {
         if (!in_array('id', array_keys($form))) throw new IdIsNotProvidedException();
 
-        $entity = $this->getSingleObject($form[$idColumnName], $idColumnName);
+        $entity = $this->getSingleObject($form[$idColumnName], $idColumnName)->first();
         if (isset($entity)) {
             $entity->fill($form);
             $entity->setMetaInfo($meta, false);
@@ -160,8 +161,8 @@ abstract class BaseRepository implements IRepository
         if ($obj === null)
             throw new DBRecordIsNotFoundException();
         $classUses = class_uses($obj);
-        $classUses = is_array($classUses)? $classUses : [];
-        if ($soft && in_array('Illuminate\Database\Eloquent\SoftDeletes', $classUses)){
+        $classUses = is_array($classUses) ? $classUses : [];
+        if ($soft && in_array('Illuminate\Database\Eloquent\SoftDeletes', $classUses)) {
             $obj->setMetaInfo($meta, false);
             return $obj->delete();
         } else {
@@ -183,7 +184,7 @@ abstract class BaseRepository implements IRepository
 
         $model = new $model_class();
         $classUses = class_uses($model);
-        $classUses = is_array($classUses)? $classUses : [];
+        $classUses = is_array($classUses) ? $classUses : [];
         if (!in_array('Illuminate\Database\Eloquent\SoftDeletes', $classUses)) {
             return false;
         }
@@ -264,7 +265,8 @@ abstract class BaseRepository implements IRepository
      * @return Builder
      * @throws InvalidDatetimeInputException
      */
-    public function queryOnDateRangeField(Builder $query, string $fieldName, array $rawConditions = []): Builder{
+    public function queryOnDateRangeField(Builder $query, string $fieldName, array $rawConditions = []): Builder
+    {
         try {
             if (isset($rawConditions['from'])) {
                 $from = DateHelper::parse($rawConditions['from']);

@@ -152,7 +152,7 @@ class UserService extends \App\Services\BaseService implements IUserService
         DB::beginTransaction();
         try {
             #1: Can edit? -> Yes: move to #2 No: return Exception with error
-            $record = $this->userRepos->getSingleObject($id);
+            $record = $this->userRepos->getSingleObject($id)->first();
             if (empty($record)) {
                 throw new RecordIsNotFoundException();
             }
@@ -187,7 +187,7 @@ class UserService extends \App\Services\BaseService implements IUserService
     {
         DB::beginTransaction();
         try {
-            $record = $this->userRepos->getSingleObject($id);
+            $record = $this->userRepos->getSingleObject($id)->first();
             if (empty($record)) {
                 throw new RecordIsNotFoundException();
             }

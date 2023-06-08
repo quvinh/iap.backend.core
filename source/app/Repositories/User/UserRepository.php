@@ -43,26 +43,6 @@ class UserRepository extends BaseRepository implements IUserRepository
     }
 
     /**
-     * update
-     */
-    public function update(array $form, ?MetaInfo $meta = null, string $idColumnName = 'id'): mixed
-    {
-        if (!in_array('id', array_keys($form))) throw new IdIsNotProvidedException();
-
-        $entity = $this->getSingleObject($form[$idColumnName], $idColumnName);
-        if (isset($entity)) {
-            $entity->fill($form);
-            // $entity->setMetaInfo($meta, false);
-            if ($entity->save() !== false) {
-                return $entity;
-            } else {
-                throw new CannotSaveToDBException();
-            }
-        }
-        throw new DBRecordIsNotFoundException();
-    }
-
-    /**
      * change password
      */
     public function changePassword(array $form, ?MetaInfo $meta = null, string $idColumnName = 'id'): mixed

@@ -8,6 +8,7 @@ use App\Exceptions\Request\InvalidDatetimeInputException;
 use App\Helpers\Common\MetaInfo;
 use App\Helpers\Filters\BasicFilter;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Query\Builder as QueryBuilder;
 
 interface IRepository
@@ -32,7 +33,7 @@ interface IRepository
      * @param string $idColumnName
      * @return mixed
      */
-    function getSingleObject(mixed $id, string $idColumnName = 'id', array $withs = []): mixed;
+    function getSingleObject(mixed $id, string $idColumnName = 'id', array $withs = []): Builder | null;
 
     /**
      * Try to create the object using the given info
@@ -40,7 +41,7 @@ interface IRepository
      * @param MetaInfo|null $meta
      * @return mixed
      */
-    function create(array $form, MetaInfo $meta = null, string $idColumnName = 'id'): mixed;
+    function create(array $form, MetaInfo $meta = null, string $idColumnName = 'id'): Model;
 
     /**
      * Try to save the object using the given info
@@ -49,7 +50,7 @@ interface IRepository
      * @param string $idColumnName
      * @return mixed
      */
-    function update(array $form, MetaInfo $meta = null, string $idColumnName = 'id'): mixed;
+    function update(array $form, MetaInfo $meta = null, string $idColumnName = 'id'): Model;
 
     /**
      * Try to delete a model based on its id

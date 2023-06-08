@@ -20,7 +20,7 @@ class ApiUserProvider implements UserProvider
     {
         $ret = AuthorizationSubject::getAnonymousUser();
         if (!in_array($identifier, [null, 0])) {
-            if ($user = $this->userRepos->getSingleObject($identifier)) {
+            if ($user = $this->userRepos->getSingleObject($identifier)->first()) {
                 $ret->representFor($user);
                 return $user;
             }
