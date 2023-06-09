@@ -161,8 +161,17 @@ class UserService extends \App\Services\BaseService implements IUserService
                 'id' => $record->id
             ]);
             $record = $this->userRepos->update($param, $commandMetaInfo);
-            // update picture if needed
-            // code here
+            // update photo if needed
+            if (isset($param['photo_raw'])) {
+                $rem = $record->photo ?? '';
+                $photo = StorageHelper::storageImage(
+                    self::DEFAULT_FOLDER_TO_UPLOAD_IMAGES, 
+                    $param['photo_raw'], 
+                    StorageHelper::TMP_DISK_NAME, 
+                    $rem);
+                $record->photo = $photo ?? null;
+                $record->save();
+            }
             DB::commit();
             return $record;
         } catch (\Exception $e) {

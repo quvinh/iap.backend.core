@@ -92,10 +92,13 @@ class AuthenticationController extends ApiController
     /**
      * Update profile
      */
-    public function updateProfile(UserUpdateRequest $request): Response
+    public function updateProfile(Request $request): Response
     {
         $id = auth()->user()->getAuthIdentifier();
-        $this->userService->update($id, $request->all());
+        $request->merge(['id' => $id]);
+        $vRequest = UserUpdateRequest::createFrom($request);
+        $vRequest->validate();
+        $this->userService->update($id, $vRequest->all());
         # Return result
         $response = ApiResponse::v1();
         return $response->send(['status' => true]);

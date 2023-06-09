@@ -23,12 +23,12 @@ class StorageHelper
         try {
             $originDisk = Storage::disk($fromDiskName);
             $destinationDisk = Storage::disk($toDiskName);
-            if (! $originDisk->exists($filePath)) throw new \Exception('invalid file path');
-            $newFilePath = $targetFolder? implode('/', [$targetFolder, $filePath]): $targetFolder; // TODO: change file name!
+            if (!$originDisk->exists($filePath)) throw new \Exception('invalid file path');
+            $newFilePath = $targetFolder ? implode('/', [$targetFolder, $filePath]) : $targetFolder; // TODO: change file name!
             $destinationDisk->writeStream($newFilePath, $originDisk->readStream($filePath));
             $originDisk->delete($filePath);
             return $newFilePath;
-        }catch (\Exception $ex){
+        } catch (\Exception $ex) {
             return false;
         }
     }
@@ -46,7 +46,7 @@ class StorageHelper
             $originDisk = Storage::disk($fromDiskName);
             $originDisk->delete($filePath);
             return true;
-        }catch (\Exception $ex){
+        } catch (\Exception $ex) {
             return false;
         }
     }
@@ -64,11 +64,11 @@ class StorageHelper
         try {
             $originDisk = Storage::disk($fromDiskName);
             $destinationDisk = Storage::disk($toDiskName);
-            if (! $originDisk->exists($filePath)) throw new \Exception('invalid file path');
-            $newFilePath = $targetFolder? implode('/', [$targetFolder, $filePath]): $filePath; // TODO: change file name!
+            if (!$originDisk->exists($filePath)) throw new \Exception('invalid file path');
+            $newFilePath = $targetFolder ? implode('/', [$targetFolder, $filePath]) : $filePath; // TODO: change file name!
             $ret = $destinationDisk->writeStream($newFilePath, $originDisk->readStream($filePath));
             return $newFilePath;
-        }catch (\Exception $ex){
+        } catch (\Exception $ex) {
             return false;
         }
     }
@@ -78,14 +78,15 @@ class StorageHelper
      * @param array $filePaths
      * @return bool
      */
-    public static function cacheFromCloud(array $filePaths, bool $ignoreError = true, bool $force = false){
+    public static function cacheFromCloud(array $filePaths, bool $ignoreError = true, bool $force = false)
+    {
         foreach ($filePaths as $item) {
             try {
                 $disk = Storage::disk(StorageHelper::CACHE_DISK_NAME);
-                if (! $disk->exists($item) || $force) {
+                if (!$disk->exists($item) || $force) {
                     StorageHelper::copyFile($item, StorageHelper::CLOUD_DISK_NAME, StorageHelper::CACHE_DISK_NAME);
                 }
-            }catch (\Exception $ex){
+            } catch (\Exception $ex) {
                 if (!$ignoreError) return false;
             }
         }
@@ -99,38 +100,52 @@ class StorageHelper
      */
     public static function getCachedImagePathIfPossible(string $tail, bool $force = false): string
     {
-         $disk = Storage::disk(StorageHelper::CACHE_DISK_NAME);
+        $disk = Storage::disk(StorageHelper::CACHE_DISK_NAME);
         $filePath = null;
-         if (! $disk->exists($tail) || $force){
-             if ($cachePath = StorageHelper::copyFile($tail, StorageHelper::CLOUD_DISK_NAME, StorageHelper::CACHE_DISK_NAME)){
-                 $filePath = $disk->path($cachePath);
-             }
-         }else{
-             $filePath = $disk->path($tail);
-         }
-        return $filePath?? resource_path().'/images/default/default-thumbnail.jpg';
+        if (!$disk->exists($tail) || $force) {
+            if ($cachePath = StorageHelper::copyFile($tail, StorageHelper::CLOUD_DISK_NAME, StorageHelper::CACHE_DISK_NAME)) {
+                $filePath = $disk->path($cachePath);
+            }
+        } else {
+            $filePath = $disk->path($tail);
+        }
+        return $filePath ?? resource_path() . '/images/default/default-thumbnail.jpg';
     }
 
     /**
-     * save imageBase64
+     * storage image
+     * png, jpg, jpeg
      */
-    public static function saveImgBase64(string $param, string $folder, string $diskName)
-    {
-        list($extension, $content) = explode(';', $param);
-        $tmpExtension = explode('/', $extension);
-        preg_match('/.([0-9]+) /', microtime(), $m);
-        $fileName = sprintf(uuid_create().'%s%s.%s', date('YmdHis'), $m[1], $tmpExtension[1]);
-        $content = explode(',', $content)[1];
-        $storage = Storage::disk($diskName);
+    public static function storageImage(
+        string $folder,
+        string $data,
+        string $diskName = self::CLOUD_DISK_NAME,
+        string $rem = ''
+    ) {
+        try {
+            // TODO: Fix: Save image to cache folder, add its path to a queue to upload slowly
+            list($extension, $content) = explode(';', $data);
+            $tmpExtension = explode('/', $extension);
+            // Check mimetype
+            if (!in_array($tmpExtension[1], array('png', 'jpg', 'jpeg'))) throw new \Exception('invalid image');
+            // preg_match('/.([0-9]+) /', microtime(), $m);
+            // $fileName = sprintf(uuid_create() . '%s%s.%s', date('YmdHis'), $m[1], $tmpExtension[1]);
+            $fileName = sprintf(uuid_create() . '.%s', $tmpExtension[1]);
+            $content = explode(',', $content)[1];
+            $storage = Storage::disk($diskName);
 
-        $checkDirectory = $storage->exists($folder);
-
-        if (!$checkDirectory) {
-            $storage->makeDirectory($folder);
+            $checkDirectory = $storage->exists($folder);
+            if (!$checkDirectory) {
+                $storage->makeDirectory($folder);
+            }
+            $storage->put($folder . '/' . $fileName, base64_decode($content), 'public');
+            // TODO: Should add to a queue table to clear later
+            if ($rem != '' && Storage::disk($diskName)->exists($rem)) {
+                Storage::disk($diskName)->delete($rem);
+            }
+            return $folder . '/' . $fileName;
+        } catch (\Exception $e) {
+            return false;
         }
-
-        $storage->put($folder . '/' . $fileName, base64_decode($content), 'public');
-
-        return $folder . '/' . $fileName;
     }
 }

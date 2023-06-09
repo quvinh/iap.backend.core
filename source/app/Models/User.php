@@ -8,7 +8,18 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Tymon\JWTAuth\Contracts\JWTSubject;
+use App\Helpers\Common\MetaInfo as CommonMetaInfo;
 
+/**
+ * @property string $name
+ * @property string $username
+ * @property string $email
+ * @property string $photo
+ * @property string $phone
+ * @property Carbon $birthday
+ * @property string $address
+ * @property int $role_id
+ * */
 class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable;
@@ -54,5 +65,19 @@ class User extends Authenticatable
     public function role()
     {
         return $this->hasOne(Role::class, 'id', 'role_id');
+    }
+
+    /**
+     * Meta info
+     */
+    public function setMetaInfo(CommonMetaInfo $meta = null, bool $isCreate = true): void
+    {
+        if (is_null($meta))
+            $meta = new CommonMetaInfo('');
+        if ($isCreate) {
+            $this->created_at = $meta->time;
+        } else {
+            $this->updated_at = $meta->time;
+        }
     }
 }

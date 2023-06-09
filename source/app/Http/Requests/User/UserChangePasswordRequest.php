@@ -25,7 +25,6 @@ class UserChangePasswordRequest extends BaseRequest
     public function rules(): array
     {
         return [
-            'id' => ['required', 'integer'],
             'old_password' => ['required', 'string'],
             'new_password' => ['required', 'string', 'confirmed', 'min:6']
         ];

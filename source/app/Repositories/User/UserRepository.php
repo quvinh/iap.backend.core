@@ -45,11 +45,11 @@ class UserRepository extends BaseRepository implements IUserRepository
     /**
      * change password
      */
-    public function changePassword(array $form, ?MetaInfo $meta = null, string $idColumnName = 'id'): mixed
+    public function changePassword(array $form, ?MetaInfo $meta = null, string $idColumnName = 'id'): User | null
     {
         if (!in_array('id', array_keys($form))) throw new IdIsNotProvidedException();
 
-        $entity = $this->getSingleObject($form[$idColumnName], $idColumnName);
+        $entity = $this->getSingleObject($form[$idColumnName], $idColumnName)->first();
         if (isset($entity)) {
             $isExcecuted = User::whereId($form[$idColumnName])->update(['password' => $form['password']]);
             if ($isExcecuted !== false) {
