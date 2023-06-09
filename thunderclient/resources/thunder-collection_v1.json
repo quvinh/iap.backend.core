@@ -1,7 +1,7 @@
 {
     "client": "Thunder Client",
     "collectionName": "v1",
-    "dateExported": "2023-06-08T10:15:15.824Z",
+    "dateExported": "2023-06-09T07:46:34.194Z",
     "version": "1.1",
     "folders": [
         {
@@ -31,6 +31,13 @@
             "containerId": "",
             "created": "2023-06-08T08:24:01.734Z",
             "sortNum": 40000
+        },
+        {
+            "_id": "ed62cbfe-952c-43ac-be67-434275a3b9c2",
+            "name": "Media",
+            "containerId": "",
+            "created": "2023-06-09T07:28:12.115Z",
+            "sortNum": 50000
         }
     ],
     "requests": [
@@ -134,7 +141,7 @@
             "method": "POST",
             "sortNum": 20000,
             "created": "2023-06-08T07:41:51.462Z",
-            "modified": "2023-06-08T10:05:10.286Z",
+            "modified": "2023-06-09T02:10:30.167Z",
             "headers": [
                 {
                     "name": "Accept",
@@ -148,7 +155,7 @@
             "params": [],
             "body": {
                 "type": "json",
-                "raw": "{\n    \"pagination\":{\"page\": 1, \"per_page\": 25},\n    \"withs\":[\"permissionGroup\"]\n}",
+                "raw": "{\n    \"pagination\":{\"page\": 1, \"per_page\": 25},\n    \"withs\":[\"permissions\"]\n}",
                 "form": []
             },
             "auth": {
@@ -298,6 +305,70 @@
             "tests": []
         },
         {
+            "_id": "c9abf42d-25dc-4611-80d5-12b583b872c2",
+            "colId": "98512d40-4792-4325-9d38-53b071cf699a",
+            "containerId": "bb7ac9a4-5a24-4eb1-8f45-d6ffc2ace8b8",
+            "name": "updateProfile",
+            "url": "{{iap.api.base_url}}/auth/profile",
+            "method": "PUT",
+            "sortNum": 27500,
+            "created": "2023-06-09T02:32:11.276Z",
+            "modified": "2023-06-09T04:55:11.675Z",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "X-IDENTIFIER",
+                    "value": "{{app.identifier}}"
+                }
+            ],
+            "params": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"name\": \"Em. So đẹp1\",\n  \"username\": \"admin.So.dep\",\n  \"email\": \"admin@dev.test\"\n}",
+                "form": []
+            },
+            "auth": {
+                "type": "bearer",
+                "bearer": "{{token.admin}}"
+            },
+            "tests": []
+        },
+        {
+            "_id": "8e158cb2-2990-4ebd-b56d-ac3b1c71a241",
+            "colId": "98512d40-4792-4325-9d38-53b071cf699a",
+            "containerId": "bb7ac9a4-5a24-4eb1-8f45-d6ffc2ace8b8",
+            "name": "changePassword",
+            "url": "{{iap.api.base_url}}/auth/change-password",
+            "method": "PUT",
+            "sortNum": 28750,
+            "created": "2023-06-09T04:55:44.143Z",
+            "modified": "2023-06-09T04:59:28.547Z",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "X-IDENTIFIER",
+                    "value": "{{app.identifier}}"
+                }
+            ],
+            "params": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"old_password\": \"5f4dcc3b5aa765d61d8327deb882cf99\",\n  \"new_password\": \"5f4dcc3b5aa765d61d8327deb882cf99\",\n  \"new_password_confirmation\": \"5f4dcc3b5aa765d61d8327deb882cf99\"\n}",
+                "form": []
+            },
+            "auth": {
+                "type": "bearer",
+                "bearer": "{{token.admin}}"
+            },
+            "tests": []
+        },
+        {
             "_id": "bc65828d-835c-4fa5-9854-fb7cb520d30f",
             "colId": "98512d40-4792-4325-9d38-53b071cf699a",
             "containerId": "bb7ac9a4-5a24-4eb1-8f45-d6ffc2ace8b8",
@@ -333,7 +404,7 @@
             "method": "POST",
             "sortNum": 30000,
             "created": "2023-06-08T07:41:51.467Z",
-            "modified": "2023-06-08T07:41:51.467Z",
+            "modified": "2023-06-09T04:32:32.166Z",
             "headers": [
                 {
                     "name": "Accept",
@@ -347,7 +418,7 @@
             "params": [],
             "body": {
                 "type": "json",
-                "raw": "{\n    \"name\":\"Em. So Đẹp\",\n    \"username\": \"sodep\",\n    \"email\":\"demo@test.localhost\"\n}",
+                "raw": "{\n    \"name\":\"Em. So Đẹp2\",\n    \"username\": \"sodep2\",\n    \"email\":\"demo@test.localhost2\"\n}",
                 "form": []
             },
             "auth": {
@@ -452,11 +523,11 @@
             "colId": "98512d40-4792-4325-9d38-53b071cf699a",
             "containerId": "28c138ae-593f-4afd-8b0a-c77201e95280",
             "name": "update",
-            "url": "{{iap.api.base_url}}/users/16",
+            "url": "{{iap.api.base_url}}/users/2",
             "method": "PUT",
             "sortNum": 40000,
             "created": "2023-06-08T07:41:51.470Z",
-            "modified": "2023-06-08T07:41:51.470Z",
+            "modified": "2023-06-09T07:11:02.807Z",
             "headers": [
                 {
                     "name": "Accept",
@@ -470,14 +541,15 @@
             "params": [],
             "body": {
                 "type": "json",
-                "raw": "{\n    \"name\":\"Em. So Đẹp\",\n    \"username\": \"sodep\",\n    \"email\":\"demo@test.localhost\",\n    \"birthday\": \"2000-06-26\"\n}",
+                "raw": "{\n    \"name\":\"Em. So Đẹp\",\n    \"username\": \"sodep1\",\n    \"email\":\"demo@test.localhost1\",\n    \"birthday\": \"2000-06-26\",\n    \"photo_raw\": \"{{image.iap.test}}\"\n}",
                 "form": []
             },
             "auth": {
                 "type": "bearer",
                 "bearer": "{{token.admin}}"
             },
-            "tests": []
+            "tests": [],
+            "docs": "# image-data:base64 <for_test>\n{{image.iap.test}}"
         },
         {
             "_id": "3a021d44-6370-4fe4-9d9b-d5e8bcc1fa45",
@@ -607,6 +679,65 @@
             "sortNum": 50000,
             "created": "2023-06-08T08:24:01.739Z",
             "modified": "2023-06-08T09:38:16.708Z",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "X-IDENTIFIER",
+                    "value": "{{app.identifier}}"
+                }
+            ],
+            "params": [],
+            "auth": {
+                "type": "bearer",
+                "bearer": "{{token.admin}}"
+            },
+            "tests": []
+        },
+        {
+            "_id": "d9c19f2a-9e22-4859-87d6-a0ac57996ebf",
+            "colId": "98512d40-4792-4325-9d38-53b071cf699a",
+            "containerId": "ed62cbfe-952c-43ac-be67-434275a3b9c2",
+            "name": "storeImage",
+            "url": "{{iap.api.base_url}}/media/store",
+            "method": "POST",
+            "sortNum": 70000,
+            "created": "2023-06-09T07:28:57.179Z",
+            "modified": "2023-06-09T07:45:26.532Z",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "X-IDENTIFIER",
+                    "value": "{{app.identifier}}"
+                }
+            ],
+            "params": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"image_raw\": \"{{image.iap.test}}\"\n}",
+                "form": []
+            },
+            "auth": {
+                "type": "bearer",
+                "bearer": "{{token.admin}}"
+            },
+            "tests": []
+        },
+        {
+            "_id": "3d2d1236-c141-4843-8312-92bcfe37e00b",
+            "colId": "98512d40-4792-4325-9d38-53b071cf699a",
+            "containerId": "ed62cbfe-952c-43ac-be67-434275a3b9c2",
+            "name": "getImage",
+            "url": "{{iap.api.base_url}}/media/images/c1df65d7-b431-48fa-826d-2395256210c2",
+            "method": "GET",
+            "sortNum": 80000,
+            "created": "2023-06-09T07:32:01.576Z",
+            "modified": "2023-06-09T07:33:00.754Z",
             "headers": [
                 {
                     "name": "Accept",

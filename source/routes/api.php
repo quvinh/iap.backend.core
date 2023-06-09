@@ -2,6 +2,7 @@
 
 use App\Helpers\Enums\UserRoles;
 use App\Http\Controllers\Api\AuthenticationController;
+use App\Http\Controllers\Api\MediaStorageController;
 use App\Http\Controllers\Api\PermissionController;
 use App\Http\Controllers\Api\RoleController;
 use App\Http\Controllers\Api\UserController;
@@ -21,6 +22,8 @@ use Illuminate\Support\Facades\Route;
 
 function registerResourceRoutes(string $group = UserRoles::ADMINISTRATOR): void
 {
+    MediaStorageController::registerRoutes($group);
+
     AuthenticationController::registerRoutes($group);
     UserController::registerRoutes($group);
     RoleController::registerRoutes($group);
