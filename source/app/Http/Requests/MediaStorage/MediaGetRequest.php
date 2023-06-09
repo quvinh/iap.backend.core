@@ -42,8 +42,7 @@ class MediaGetRequest extends BaseRequest
     public function rules(): array
     {
         return [
-            'disk' => ['required', 'string'],
-            'id' => ['required', 'string']
+            'url' => ['required', 'string']
         ];
     }
 }

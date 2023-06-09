@@ -29,7 +29,7 @@ class MediaStorageController extends ApiController
         $root = 'media';
         if ($role != UserRoles::ANONYMOUS) {
             Route::match(['post'], $root . '/store', [MediaStorageController::class, 'storeImage']);
-            Route::match(['get'], $root . '/images/{id}', [MediaStorageController::class, 'getImage'])->withoutMiddleware(['auth.channel']);
+            Route::match(['get'], $root . '/images', [MediaStorageController::class, 'getImage'])->withoutMiddleware(['auth.channel']);
         }
     }
 
@@ -58,9 +58,10 @@ class MediaStorageController extends ApiController
      */
     public function getImage(MediaGetRequest $request): StreamedResponse|string|null
     {
-        $id = $request->get('id');
+        $url = $request->url;
         $disk = Storage::disk(StorageHelper::TMP_DISK_NAME);
-        if ($disk->exists($id)) return $disk->response($id);
-        abort(HttpStatuses::HTTP_NOT_FOUND);
+        if ($disk->exists($url)) return $disk->response($url);
+        // abort(HttpStatuses::HTTP_NOT_FOUND);
+        throw new ActionFailException(code: ErrorCodes::ERR_FILE_NOT_FOUND);
     }
 }

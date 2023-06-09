@@ -1,11 +1,11 @@
 <?php
 
-namespace App\DataResources\Role;
+namespace App\DataResources\Company;
 
 use App\DataResources\BaseDataResource;
-use App\Models\Role;
+use App\Models\Company;
 
-class RoleResource extends BaseDataResource
+class CompanyResource extends BaseDataResource
 {
     /**
      * @var array|string[]
@@ -13,6 +13,17 @@ class RoleResource extends BaseDataResource
     protected array $fields = [
         'id',
         'name',
+        'tax_code',
+        'tax_password',
+        'email',
+        'phone',
+        'address',
+        'logo',
+        'manager_name',
+        'manager_role',
+        'manager_phone',
+        'manager_email',
+        'status'
     ];
 
     /**
@@ -20,12 +31,12 @@ class RoleResource extends BaseDataResource
      */
     public function modelClass(): string
     {
-        return Role::class;
+        return Company::class;
     }
 
     /**
      * Load data for output
-     * @param Role $obj
+     * @param Company $obj
      * @return void
      */
     public function load(mixed $obj): void

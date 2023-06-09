@@ -3,7 +3,6 @@
 namespace App\DataResources\Permission;
 
 use App\DataResources\BaseDataResource;
-use App\Models\Faq;
 use App\Models\Permission;
 
 class PermissionResource extends BaseDataResource
@@ -26,7 +25,7 @@ class PermissionResource extends BaseDataResource
 
     /**
      * Load data for output
-     * @param Faq $obj
+     * @param Permission $obj
      * @return void
      */
     public function load(mixed $obj): void

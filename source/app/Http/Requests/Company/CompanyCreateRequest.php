@@ -1,12 +1,11 @@
 <?php
 
-namespace App\Http\Requests\User;
+namespace App\Http\Requests\Company;
 
 use App\Http\Requests\BaseRequest;
-use App\Rules\IsBase64Image;
 use Illuminate\Foundation\Http\FormRequest;
 
-class UserUpdateRequest extends BaseRequest
+class CompanyCreateRequest extends BaseRequest
 {
     /**
      * Available relations to retrieve
@@ -32,14 +31,17 @@ class UserUpdateRequest extends BaseRequest
     public function rules(): array
     {
         return [
-            'name' => ['required', 'string', 'max:100'],
-            'username' => ['required', 'string', 'max:100', 'unique:users,username,' . $this->id],
-            'email' => ['required', 'string', 'email', 'unique:users,email,' . $this->id],
+            'name' => ['required', 'string'],
+            'tax_code' => ['required', 'max:100', 'string', 'unique:companies,tax_code'],
+            'tax_password' => ['nullable', 'string'],
+            'email' => ['nullable', 'string', 'email'],
             'phone' => ['nullable', 'string', 'min:10', 'max:20'],
-            'photo' => ['nullable', 'string'],
-            'birthday' => ['nullable', 'date_format:Y-m-d'],
+            'logo' => ['nullable', 'string'],
             'address' => ['nullable', 'string'],
-            'photo_raw' => ['nullable', new IsBase64Image(['size' => config('upload.images.max_size')])]
+            'manager_name' => ['nullable', 'string'],
+            'manager_role' => ['nullable', 'string'],
+            'manager_phone' => ['nullable', 'string'],
+            'email' => ['nullable', 'string'],
         ];
     }
 }

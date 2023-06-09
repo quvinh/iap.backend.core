@@ -3,6 +3,7 @@
 namespace App\DataResources\User;
 
 use App\DataResources\BaseDataResource;
+use App\Models\Company;
 use App\Models\User;
 
 class UserResource extends BaseDataResource
@@ -37,5 +38,8 @@ class UserResource extends BaseDataResource
     public function load(mixed $obj): void
     {
         parent::copy($obj, $this->fields);
+        if (in_array('companies', $this->fields)) {
+            $this->companies = BaseDataResource::generateResources($obj->permissions, Company::class);
+        }
     }
 }

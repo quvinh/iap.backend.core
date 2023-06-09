@@ -4,9 +4,6 @@ namespace App\DataResources\Role;
 
 use App\DataResources\BaseDataResource;
 use App\DataResources\Permission\PermissionResource;
-use App\DataResources\PermissionGroup\PermissionGroupResource;
-use App\Models\Faq;
-use App\Models\PermissionGroup;
 use App\Models\Role;
 
 class RoleResource extends BaseDataResource

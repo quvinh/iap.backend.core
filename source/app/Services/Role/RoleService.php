@@ -77,7 +77,7 @@ class RoleService extends \App\Services\BaseService implements IRoleService
                 $query = $this->roleRepos->queryOnDateRangeField($query, 'updated_at', $rawConditions['updated_date']);
             }
             if (isset($rawConditions['created_date'])) {
-                $query = $this->roleRepos->queryOnDateRangeField($query, 'updated_at', $rawConditions['created_date']);
+                $query = $this->roleRepos->queryOnDateRangeField($query, 'created_at', $rawConditions['created_date']);
             }
 
             $query = $this->roleRepos->with($withs, $query);
@@ -112,13 +112,11 @@ class RoleService extends \App\Services\BaseService implements IRoleService
     {
         DB::beginTransaction();
         try {
-            #1 Register new role
-            $role = new Role();
-            $role->name = $param['name'];
-            $role->save();
+            #1 Create
+            $record = $this->roleRepos->create($param, $commandMetaInfo);
             DB::commit();
-            #2 return Role
-            return $role;
+            #2 Return
+            return $record;
         } catch (\Exception $e) {
             DB::rollback();
             throw new CannotSaveToDBException(

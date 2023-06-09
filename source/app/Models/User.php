@@ -9,6 +9,8 @@ use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 use App\Helpers\Common\MetaInfo as CommonMetaInfo;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 /**
  * @property string $name
@@ -62,9 +64,24 @@ class User extends Authenticatable
     /**
      * Get role
      */
-    public function role()
+    public function role(): HasOne
     {
         return $this->hasOne(Role::class, 'id', 'role_id');
+    }
+
+    /**
+     * Get companies management
+     */
+    public function companies(): HasManyThrough
+    {
+        return $this->hasManyThrough(
+            Company::class,
+            UserCompany::class,
+            'user_id',
+            'id',
+            'id',
+            'company_id'
+        );
     }
 
     /**
