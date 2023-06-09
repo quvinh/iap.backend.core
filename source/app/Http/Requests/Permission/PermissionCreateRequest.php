@@ -32,7 +32,7 @@ class PermissionCreateRequest extends BaseRequest
     {
         return [
             'role_id' => ['required', 'integer', 'exists:roles,id'],
-            'name' => ['required', 'string', 'max:100', 'unique:roles,name']
+            'name' => ['required', 'string', 'max:100', 'unique:permissions,name']
         ];
     }
 }

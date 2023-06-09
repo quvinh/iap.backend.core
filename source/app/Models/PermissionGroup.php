@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class PermissionGroup extends Model
 {
@@ -16,8 +17,13 @@ class PermissionGroup extends Model
 
     public $timestamps = false;
 
-    public function permissions()
+    public function permission(): HasOne
     {
         return $this->hasOne(Permission::class, 'id', 'permission_id');
+    }
+
+    public function role(): HasOne
+    {
+        return $this->hasOne(Role::class, 'id', 'role_id');
     }
 }

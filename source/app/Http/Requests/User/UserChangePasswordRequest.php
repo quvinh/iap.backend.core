@@ -1,18 +1,12 @@
 <?php
 
-namespace App\Http\Requests\Permission;
+namespace App\Http\Requests\User;
 
 use App\Http\Requests\BaseRequest;
 use Illuminate\Foundation\Http\FormRequest;
 
-class PermissionUpdateRequest extends BaseRequest
+class UserChangePasswordRequest extends BaseRequest
 {
-    /**
-     * Available relations to retrieve
-     * @var string[]
-     */
-    protected array $relations = [];
-
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -31,8 +25,9 @@ class PermissionUpdateRequest extends BaseRequest
     public function rules(): array
     {
         return [
-            'role_id' => ['required', 'integer', 'exists:roles,id'],
-            'name' => ['required', 'string', 'max:100', 'unique:permissions,name,' . $this->id]
+            'id' => ['required', 'integer'],
+            'old_password' => ['required', 'string'],
+            'new_password' => ['required', 'string', 'confirmed', 'min:6']
         ];
     }
 }

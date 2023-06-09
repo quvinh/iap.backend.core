@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Role extends BaseModel
@@ -15,9 +16,16 @@ class Role extends BaseModel
         'name'
     ];
 
-    public function permissionGroup(): HasMany
+    public function permissions(): HasManyThrough
     {
-        return $this->hasMany(PermissionGroup::class, 'role_id', 'id');
+        return $this->hasManyThrough(
+            Permission::class,
+            PermissionGroup::class,
+            'role_id',
+            'id',
+            'id',
+            'permission_id'
+        );
     }
 
     public function getNamePermissions()

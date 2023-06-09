@@ -208,10 +208,10 @@ class UserService extends \App\Services\BaseService implements IUserService
         return $this->userRepos->findByUsername($username);
     }
 
-    public function changePassword(int $id, array $param, MetaInfo $commandMetaInfo = null): User | null //need FIX
+    public function changePassword(int $id, array $param, MetaInfo $commandMetaInfo = null): User | null
     {
         try {
-            $record = $this->userRepos->getSingleObject($id);
+            $record = $this->userRepos->getSingleObject($id)->first();
             if (empty($record)) {
                 throw new RecordIsNotFoundException();
             }

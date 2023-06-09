@@ -12,6 +12,8 @@ use App\Helpers\Utils\RequestHelper;
 use App\Http\Controllers\Traits\ResponseHandlerTrait;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Requests\Auth\SignupRequest;
+use App\Http\Requests\User\UserChangePasswordRequest;
+use App\Http\Requests\User\UserUpdateRequest;
 use App\Models\Role;
 use App\Services\Auth\IAuthService;
 use App\Services\User\IUserService;
@@ -43,7 +45,9 @@ class AuthenticationController extends ApiController
             Route::get($root . '/handshake', [AuthenticationController::class, 'handshake']);
             Route::post($root . '/login', [AuthenticationController::class, 'login']);
         } else {
-            Route::get($root.'/profile', [AuthenticationController::class, 'profile']);
+            Route::get($root . '/profile', [AuthenticationController::class, 'profile']);
+            Route::put($root . '/profile', [AuthenticationController::class, 'updateProfile']);
+            Route::put($root . '/change-password', [AuthenticationController::class, 'changePassword']);
             Route::get($root . '/logout', [AuthenticationController::class, 'logout']);
             Route::post($root . '/refresh', [AuthenticationController::class, 'refresh'])->withoutMiddleware(['auth.channel']);
         }
@@ -83,6 +87,30 @@ class AuthenticationController extends ApiController
         # 3. return result
         $response = ApiResponse::v1();
         return $response->send($sub);
+    }
+
+    /**
+     * Update profile
+     */
+    public function updateProfile(UserUpdateRequest $request): Response
+    {
+        $id = auth()->user()->getAuthIdentifier();
+        $this->userService->update($id, $request->all());
+        # Return result
+        $response = ApiResponse::v1();
+        return $response->send(['status' => true]);
+    }
+
+    /**
+     * Change password for profile
+     */
+    public function changePassword(UserChangePasswordRequest $request): Response
+    {
+        $id = auth()->user()->getAuthIdentifier();
+        $this->userService->changePassword($id, $request->all());
+        # Return result
+        $response = ApiResponse::v1();
+        return $response->send(['status' => true]);
     }
 
     /**

@@ -3,7 +3,10 @@
 namespace App\DataResources\Role;
 
 use App\DataResources\BaseDataResource;
+use App\DataResources\Permission\PermissionResource;
+use App\DataResources\PermissionGroup\PermissionGroupResource;
 use App\Models\Faq;
+use App\Models\PermissionGroup;
 use App\Models\Role;
 
 class RoleResource extends BaseDataResource
@@ -26,14 +29,14 @@ class RoleResource extends BaseDataResource
 
     /**
      * Load data for output
-     * @param Faq $obj
+     * @param Role $obj
      * @return void
      */
     public function load(mixed $obj): void
     {
         parent::copy($obj, $this->fields);
-        // if (in_array('permissions', $this->fields)) {
-        //     $this->permissions = BaseDataResource::generateResources($obj->permissions, RoleResource::class);
-        // }
+        if (in_array('permissions', $this->fields)) {
+            $this->permissions = BaseDataResource::generateResources($obj->permissions, PermissionResource::class);
+        }
     }
 }
