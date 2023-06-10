@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services\Company;
+namespace App\Services\CompanyDetail;
 
 use App\DataResources\PaginationInfo;
 use App\DataResources\SortInfo;
@@ -12,8 +12,8 @@ use App\Exceptions\DB\RecordIsNotFoundException;
 use App\Helpers\Common\MetaInfo;
 use App\Helpers\Utils\StorageHelper;
 use App\Helpers\Utils\StringHelper;
-use App\Models\Company;
-use App\Repositories\Company\ICompanyRepository;
+use App\Models\CompanyDetail;
+use App\Repositories\CompanyDetail\ICompanyDetailRepository;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Support\Collection;
@@ -21,13 +21,13 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Throwable;
 
-class CompanyService extends \App\Services\BaseService implements ICompanyService
+class CompanyDetailService extends \App\Services\BaseService implements ICompanyDetailService
 {
-    private ?ICompanyRepository $companyRepos = null;
+    private ?ICompanyDetailRepository $companyDetailRepos = null;
 
-    public function __construct(ICompanyRepository $repos)
+    public function __construct(ICompanyDetailRepository $repos)
     {
-        $this->companyRepos = $repos;
+        $this->companyDetailRepos = $repos;
     }
 
     /**
@@ -35,14 +35,14 @@ class CompanyService extends \App\Services\BaseService implements ICompanyServic
      *
      * @param int $id
      * @param array<string> $withs
-     * @return Company
+     * @return CompanyDetail
      * @throws RecordIsNotFoundException
      */
-    public function getSingleObject(int $id, array $withs = []): Company
+    public function getSingleObject(int $id, array $withs = []): CompanyDetail
     {
         try {
-            $query = $this->companyRepos->queryOnAField(['id', $id]);
-            $query = $this->companyRepos->with($withs, $query);
+            $query = $this->companyDetailRepos->queryOnAField(['id', $id]);
+            $query = $this->companyDetailRepos->with($withs, $query);
             $record = $query->first();
             if (!is_null($record)) return $record;
             throw new RecordIsNotFoundException();
@@ -60,27 +60,27 @@ class CompanyService extends \App\Services\BaseService implements ICompanyServic
      * @param array<string> $rawConditions
      * @param PaginationInfo|null $paging
      * @param array<string> $withs
-     * @return Collection<int,Company>
+     * @return Collection<int,CompanyDetail>
      * @throws ActionFailException
      * @throws Throwable
      */
     public function search(array $rawConditions, PaginationInfo &$paging = null, array $withs = []): Collection
     {
         try {
-            $query = $this->companyRepos->search();
+            $query = $this->companyDetailRepos->search();
             if (isset($rawConditions['name'])) {
                 $param = StringHelper::escapeLikeQueryParameter($rawConditions['name']);
-                $query = $this->companyRepos->queryOnAField([DB::raw("upper(name)"), 'LIKE BINARY', DB::raw("upper(concat('%', ? , '%'))")], positionalBindings: ['name' => $param]);
+                $query = $this->companyDetailRepos->queryOnAField([DB::raw("upper(name)"), 'LIKE BINARY', DB::raw("upper(concat('%', ? , '%'))")], positionalBindings: ['name' => $param]);
             }
 
             if (isset($rawConditions['updated_date'])) {
-                $query = $this->companyRepos->queryOnDateRangeField($query, 'updated_at', $rawConditions['updated_date']);
+                $query = $this->companyDetailRepos->queryOnDateRangeField($query, 'updated_at', $rawConditions['updated_date']);
             }
             if (isset($rawConditions['created_date'])) {
-                $query = $this->companyRepos->queryOnDateRangeField($query, 'created_at', $rawConditions['created_date']);
+                $query = $this->companyDetailRepos->queryOnDateRangeField($query, 'created_at', $rawConditions['created_date']);
             }
 
-            $query = $this->companyRepos->with($withs, $query);
+            $query = $this->companyDetailRepos->with($withs, $query);
 
 
             if (!is_null($paging)) {
@@ -89,7 +89,7 @@ class CompanyService extends \App\Services\BaseService implements ICompanyServic
 
             if (isset($rawConditions['sort'])) {
                 $sort = SortInfo::parse($rawConditions['sort']);
-                return $this->companyRepos->sort($query, $sort)->get();
+                return $this->companyDetailRepos->sort($query, $sort)->get();
             }
             return $query->get();
         } catch (Exception $e) {
@@ -105,15 +105,15 @@ class CompanyService extends \App\Services\BaseService implements ICompanyServic
      *
      * @param array $param
      * @param MetaInfo|null $commandMetaInfo
-     * @return Company
+     * @return CompanyDetail
      * @throws CannotSaveToDBException
      */
-    public function create(array $param, MetaInfo $commandMetaInfo = null): Company
+    public function create(array $param, MetaInfo $commandMetaInfo = null): CompanyDetail
     {
         DB::beginTransaction();
         try {
             #1 Create
-            $record = $this->companyRepos->create($param, $commandMetaInfo);
+            $record = $this->companyDetailRepos->create($param, $commandMetaInfo);
             DB::commit();
             #2 Return
             return $record;
@@ -130,15 +130,15 @@ class CompanyService extends \App\Services\BaseService implements ICompanyServic
      * @param int $id
      * @param array $param
      * @param MetaInfo|null $commandMetaInfo
-     * @return Company
+     * @return CompanyDetail
      * @throws CannotUpdateDBException
      */
-    public function update(int $id, array $param, MetaInfo $commandMetaInfo = null): Company
+    public function update(int $id, array $param, MetaInfo $commandMetaInfo = null): CompanyDetail
     {
         DB::beginTransaction();
         try {
             #1: Can edit? -> Yes: move to #2 No: return Exception with error
-            $record = $this->companyRepos->getSingleObject($id)->first();
+            $record = $this->companyDetailRepos->getSingleObject($id)->first();
             if (empty($record)) {
                 throw new RecordIsNotFoundException();
             }
@@ -146,7 +146,7 @@ class CompanyService extends \App\Services\BaseService implements ICompanyServic
             $param = array_merge($param, [
                 'id' => $record->id
             ]);
-            $record = $this->companyRepos->update($param, $commandMetaInfo);
+            $record = $this->companyDetailRepos->update($param, $commandMetaInfo);
             // update picture if needed
             // code here
             DB::commit();
@@ -173,11 +173,11 @@ class CompanyService extends \App\Services\BaseService implements ICompanyServic
     {
         DB::beginTransaction();
         try {
-            $record = $this->companyRepos->getSingleObject($id)->first();
+            $record = $this->companyDetailRepos->getSingleObject($id)->first();
             if (empty($record)) {
                 throw new RecordIsNotFoundException();
             }
-            $result =  $this->companyRepos->delete(id: $id, soft: $softDelete, meta: $commandMetaInfo);
+            $result =  $this->companyDetailRepos->delete(id: $id, soft: $softDelete, meta: $commandMetaInfo);
             DB::commit();
             return $result;
         } catch (\Exception $ex) {

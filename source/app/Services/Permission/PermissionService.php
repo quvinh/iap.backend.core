@@ -132,7 +132,7 @@ class PermissionService extends \App\Services\BaseService implements IPermission
             #2 Return
             return $record;
         } catch (\Exception $e) {
-            DB::rollback();
+            DB::rollBack();
             throw new CannotSaveToDBException(
                 message: 'create: ' . json_encode(['param' => $param]),
                 previous: $e
@@ -166,7 +166,7 @@ class PermissionService extends \App\Services\BaseService implements IPermission
             DB::commit();
             return $record;
         } catch (\Exception $e) {
-            DB::rollback();
+            DB::rollBack();
             throw new CannotUpdateDBException(
                 message: 'update: ' . $e->getMessage(),
                 previous: $e
@@ -199,7 +199,7 @@ class PermissionService extends \App\Services\BaseService implements IPermission
             DB::commit();
             return $result;
         } catch (\Exception $ex) {
-            DB::rollback();
+            DB::rollBack();
             throw new CannotDeleteDBException(
                 message: 'update: ' . json_encode(['id' => $id, 'softDelete' => $softDelete]),
                 previous: $ex

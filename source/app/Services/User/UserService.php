@@ -150,7 +150,7 @@ class UserService extends \App\Services\BaseService implements IUserService
             #3 Return User
             return $user;
         } catch (\Exception $e) {
-            DB::rollback();
+            DB::rollBack();
             throw new CannotSaveToDBException(
                 message: 'create: ' . json_encode(['param' => $param]),
                 previous: $e
@@ -190,11 +190,25 @@ class UserService extends \App\Services\BaseService implements IUserService
                 $record->photo = $photo ?? null;
                 $record->save();
             }
-            throw new CannotUpdateDBException();
+            #3 Update user companies
+            if (isset($param['company_id'])) {
+                UserCompany::where('user_id', $record->id)->delete();
+                foreach ($param['company_id'] as $company_id) {
+                    $company = $this->companyRepos->getSingleObject($company_id)->first();
+                    if(empty($company)) {
+                        throw new CannotSaveToDBException(message: "company with id:$company_id not exists");
+                    } else {
+                        $userCompany = new UserCompany();
+                        $userCompany->user_id = $record->id;
+                        $userCompany->company_id = $company_id;
+                        $userCompany->save();
+                    }
+                }
+            }
             DB::commit();
             return $record;
         } catch (\Exception $e) {
-            DB::rollback();
+            DB::rollBack();
             throw new CannotUpdateDBException(
                 message: 'update: ' . $e->getMessage(),
                 previous: $e
@@ -223,7 +237,7 @@ class UserService extends \App\Services\BaseService implements IUserService
             DB::commit();
             return $result;
         } catch (\Exception $ex) {
-            DB::rollback();
+            DB::rollBack();
             throw new CannotDeleteDBException(
                 message: 'update: ' . json_encode(['id' => $id, 'softDelete' => $softDelete]),
                 previous: $ex

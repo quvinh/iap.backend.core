@@ -19,10 +19,15 @@ class DevelopmentSeeder extends Seeder
         DB::table('permission_groups')->truncate();
         DB::table('permissions')->truncate();
         DB::table('roles')->truncate();
+        DB::table('user_companies')->truncate();
         DB::table('users')->truncate();
+        DB::table('company_details')->truncate();
+        DB::table('companies')->truncate();
+        DB::table('company_types')->truncate();
         
         $this->call([
-            UserSeeder::class
+            UserSeeder::class,
+            CompanyTypeSeeder::class
         ]);
         
         DB::statement('SET FOREIGN_KEY_CHECKS=1');

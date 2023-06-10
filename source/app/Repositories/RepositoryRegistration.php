@@ -4,6 +4,10 @@ namespace App\Repositories;
 
 use App\Repositories\Company\CompanyRepository;
 use App\Repositories\Company\ICompanyRepository;
+use App\Repositories\CompanyDetail\CompanyDetailRepository;
+use App\Repositories\CompanyDetail\ICompanyDetailRepository;
+use App\Repositories\CompanyType\CompanyTypeRepository;
+use App\Repositories\CompanyType\ICompanyTypeRepository;
 use App\Repositories\Permission\IPermissionRepository;
 use App\Repositories\Permission\PermissionRepository;
 use App\Repositories\Role\IRoleRepository;
@@ -23,5 +27,7 @@ class RepositoryRegistration
         $app->singleton(IRoleRepository::class, RoleRepository::class);
         $app->singleton(IPermissionRepository::class, PermissionRepository::class);
         $app->singleton(ICompanyRepository::class, CompanyRepository::class);
+        $app->singleton(ICompanyDetailRepository::class, CompanyDetailRepository::class);
+        $app->singleton(ICompanyTypeRepository::class, CompanyTypeRepository::class);
     }
 }
