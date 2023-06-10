@@ -14,7 +14,9 @@ use App\Helpers\Enums\UserRoles;
 use App\Helpers\Utils\StorageHelper;
 use App\Helpers\Utils\StringHelper;
 use App\Models\User;
+use App\Models\UserCompany;
 use App\Models\UserDetail;
+use App\Repositories\Company\ICompanyRepository;
 use App\Repositories\User\IUserDetailRepository;
 use App\Repositories\User\IUserRepository;
 use Carbon\Carbon;
@@ -27,11 +29,13 @@ use Throwable;
 class UserService extends \App\Services\BaseService implements IUserService
 {
     private ?IUserRepository $userRepos = null;
+    private ?ICompanyRepository $companyRepos = null;
     private const DEFAULT_FOLDER_TO_UPLOAD_IMAGES = "images/users";
 
-    public function __construct(IUserRepository $repos)
+    public function __construct(IUserRepository $repos, ICompanyRepository $companyRepos)
     {
         $this->userRepos = $repos;
+        $this->companyRepos = $companyRepos;
     }
 
     /**
@@ -125,11 +129,25 @@ class UserService extends \App\Services\BaseService implements IUserService
             $user->phone = $param['phone'] ?? null;
             $user->birthday = isset($param['birthday']) ? Carbon::parse($param['birthday']) : null;
             $user->phone = $param['address'] ?? null;
-            $user->role_id = UserRoles::MODERATOR;
+            $user->role_id = $param['role_id'] ?? UserRoles::MODERATOR;
             $user->password = Hash::make(md5('password')); // password default
             $user->save();
+            #2 Check have companies
+            if (isset($param['company_id'])) {
+                foreach ($param['company_id'] as $company_id) {
+                    $company = $this->companyRepos->getSingleObject($company_id)->first();
+                    if(empty($company)) {
+                        throw new CannotSaveToDBException(message: "company with id:$company_id not exists");
+                    } else {
+                        $userCompany = new UserCompany();
+                        $userCompany->user_id = $user->id;
+                        $userCompany->company_id = $company_id;
+                        $userCompany->save();
+                    }
+                }
+            }
             DB::commit();
-            #2 return User
+            #3 Return User
             return $user;
         } catch (\Exception $e) {
             DB::rollback();
@@ -172,6 +190,7 @@ class UserService extends \App\Services\BaseService implements IUserService
                 $record->photo = $photo ?? null;
                 $record->save();
             }
+            throw new CannotUpdateDBException();
             DB::commit();
             return $record;
         } catch (\Exception $e) {

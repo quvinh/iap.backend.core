@@ -38,6 +38,8 @@ class UserCreateRequest extends BaseRequest
             'photo' => ['nullable', 'string'],
             'birthday' => ['nullable', 'date_format:Y-m-d'],
             'address' => ['nullable', 'string'],
+            'role_id' => ['required', 'integer','exists:roles,id'],
+            'company_id' => ['nullable', 'array']
         ];
     }
 }
