@@ -13,6 +13,7 @@ use App\Helpers\Common\MetaInfo;
 use App\Helpers\Utils\StorageHelper;
 use App\Helpers\Utils\StringHelper;
 use App\Models\Company;
+use App\Models\CompanyDetail;
 use App\Repositories\Company\ICompanyRepository;
 use Carbon\Carbon;
 use Exception;
@@ -114,6 +115,16 @@ class CompanyService extends \App\Services\BaseService implements ICompanyServic
         try {
             #1 Create
             $record = $this->companyRepos->create($param, $commandMetaInfo);
+            if (empty($record)) {
+                throw new CannotSaveToDBException();
+            } else {
+                $detail = new CompanyDetail();
+                $detail->company_id = $record->id;
+                $detail->company_type_id = $param['company_type_id'];
+                $detail->description = isset($param['description']) ? $param['description'] : null;
+                $detail->year = $param['year'];
+                $detail->save();
+            }
             DB::commit();
             #2 Return
             return $record;

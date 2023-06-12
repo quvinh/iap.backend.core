@@ -42,6 +42,9 @@ class CompanyCreateRequest extends BaseRequest
             'manager_role' => ['nullable', 'string'],
             'manager_phone' => ['nullable', 'string'],
             'email' => ['nullable', 'string'],
+            'company_type_id' => ['required', 'integer', 'exists:company_types,id'],
+            'year' => ['required', 'digits:4', 'integer', 'min:2000'],
+            'description' => ['nullable']
         ];
     }
 }
