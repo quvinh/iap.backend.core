@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Company extends BaseModel
@@ -24,4 +26,21 @@ class Company extends BaseModel
         'manager_email',
         'status'
     ];
+
+    public function types(): HasManyThrough
+    {
+        return $this->hasManyThrough(
+            CompanyType::class,
+            CompanyDetail::class,
+            'company_id',
+            'id',
+            'id',
+            'company_type_id'
+        );
+    }
+
+    public function years(): HasMany
+    {
+        return $this->hasMany(CompanyDetail::class, 'company_id', 'id');
+    }
 }

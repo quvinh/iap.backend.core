@@ -67,7 +67,7 @@ class CompanyService extends \App\Services\BaseService implements ICompanyServic
      */
     public function search(array $rawConditions, PaginationInfo &$paging = null, array $withs = []): Collection
     {
-        try {
+        // try {
             $query = $this->companyRepos->search();
             if (isset($rawConditions['name'])) {
                 $param = StringHelper::escapeLikeQueryParameter($rawConditions['name']);
@@ -93,12 +93,12 @@ class CompanyService extends \App\Services\BaseService implements ICompanyServic
                 return $this->companyRepos->sort($query, $sort)->get();
             }
             return $query->get();
-        } catch (Exception $e) {
-            throw new ActionFailException(
-                message: 'search: ' . json_encode(['conditions' => $rawConditions, 'paging' => $paging, 'withs' => $withs]),
-                previous: $e
-            );
-        }
+        // } catch (Exception $e) {
+        //     throw new ActionFailException(
+        //         message: 'search: ' . json_encode(['conditions' => $rawConditions, 'paging' => $paging, 'withs' => $withs]),
+        //         previous: $e
+        //     );
+        // }
     }
 
     /**

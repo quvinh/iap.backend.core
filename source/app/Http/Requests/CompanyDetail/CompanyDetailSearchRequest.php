@@ -1,19 +1,18 @@
 <?php
 
-namespace App\Http\Requests\Company;
+namespace App\Http\Requests\CompanyDetail;
 
 use App\Http\Requests\DefaultSearchRequest;
 use Illuminate\Foundation\Http\FormRequest;
 
-class CompanySearchRequest extends DefaultSearchRequest
+class CompanyDetailSearchRequest extends DefaultSearchRequest
 {
     /**
      * Available relations to retrieve
      * @var string[]
      */
     protected array $relations = [
-        'types',
-        'years'
+        
     ];
 
     protected array $fields = [

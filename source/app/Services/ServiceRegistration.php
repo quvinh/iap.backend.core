@@ -6,6 +6,7 @@ use App\Services\Auth\AuthService;
 use App\Services\Auth\IAuthService;
 use App\Services\Company\CompanyService;
 use App\Services\Company\ICompanyService;
+use App\Services\CompanyDetail\CompanyDetailService;
 use App\Services\CompanyDetail\ICompanyDetailService;
 use App\Services\CompanyType\CompanyTypeService;
 use App\Services\CompanyType\ICompanyTypeService;
@@ -29,7 +30,7 @@ class ServiceRegistration
         $app->singleton(IRoleService::class, RoleService::class);
         $app->singleton(IPermissionService::class, PermissionService::class);
         $app->singleton(ICompanyService::class, CompanyService::class);
-        $app->singleton(ICompanyDetailService::class, CompanyService::class);
+        $app->singleton(ICompanyDetailService::class, CompanyDetailService::class);
         $app->singleton(ICompanyTypeService::class, CompanyTypeService::class);
     }
 }

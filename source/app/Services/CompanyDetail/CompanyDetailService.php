@@ -111,19 +111,19 @@ class CompanyDetailService extends \App\Services\BaseService implements ICompany
     public function create(array $param, MetaInfo $commandMetaInfo = null): CompanyDetail
     {
         DB::beginTransaction();
-        try {
+        // try {
             #1 Create
             $record = $this->companyDetailRepos->create($param, $commandMetaInfo);
             DB::commit();
             #2 Return
             return $record;
-        } catch (\Exception $e) {
-            DB::rollBack();
-            throw new CannotSaveToDBException(
-                message: 'create: ' . json_encode(['param' => $param]),
-                previous: $e
-            );
-        }
+        // } catch (\Exception $e) {
+        //     DB::rollBack();
+        //     throw new CannotSaveToDBException(
+        //         message: 'create: ' . json_encode(['param' => $param]),
+        //         previous: $e
+        //     );
+        // }
     }
 
     /**

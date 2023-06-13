@@ -1,19 +1,21 @@
 <?php
 
-namespace App\DataResources\Role;
+namespace App\DataResources\CompanyDetail;
 
 use App\DataResources\BaseDataResource;
-use App\DataResources\Permission\PermissionResource;
-use App\Models\Role;
+use App\Models\CompanyDetail;
 
-class RoleResource extends BaseDataResource
+class CompanyDetailResource extends BaseDataResource
 {
     /**
      * @var array|string[]
      */
     protected array $fields = [
         'id',
-        'name'
+        'company_id',
+        'company_type_id',
+        'description',
+        'year'
     ];
 
     /**
@@ -21,20 +23,16 @@ class RoleResource extends BaseDataResource
      */
     public function modelClass(): string
     {
-        return Role::class;
+        return CompanyDetail::class;
     }
 
     /**
      * Load data for output
-     * @param Role $obj
+     * @param CompanyDetail $obj
      * @return void
      */
     public function load(mixed $obj): void
     {
-        dd($this->fields);
         parent::copy($obj, $this->fields);
-        if (in_array('permissions', $this->fields)) {
-            $this->permissions = BaseDataResource::generateResources($obj->permissions, PermissionResource::class);
-        }
     }
 }

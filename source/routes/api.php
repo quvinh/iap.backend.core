@@ -3,6 +3,7 @@
 use App\Helpers\Enums\UserRoles;
 use App\Http\Controllers\Api\AuthenticationController;
 use App\Http\Controllers\Api\CompanyController;
+use App\Http\Controllers\Api\CompanyDetailController;
 use App\Http\Controllers\Api\CompanyTypeController;
 use App\Http\Controllers\Api\MediaStorageController;
 use App\Http\Controllers\Api\PermissionController;
@@ -32,6 +33,7 @@ function registerResourceRoutes(string $group = UserRoles::ADMINISTRATOR): void
     PermissionController::registerRoutes($group);
     CompanyController::registerRoutes($group);
     CompanyTypeController::registerRoutes($group);
+    CompanyDetailController::registerRoutes($group);
 }
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {

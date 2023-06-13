@@ -39,7 +39,7 @@ class UserResource extends BaseDataResource
     {
         parent::copy($obj, $this->fields);
         if (in_array('companies', $this->fields)) {
-            $this->companies = BaseDataResource::generateResources($obj->permissions, Company::class);
+            $this->companies = BaseDataResource::generateResources($obj->companies, Company::class);
         }
     }
 }
