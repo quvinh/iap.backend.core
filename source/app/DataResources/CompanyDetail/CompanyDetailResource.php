@@ -3,6 +3,7 @@
 namespace App\DataResources\CompanyDetail;
 
 use App\DataResources\BaseDataResource;
+use App\DataResources\Company\CompanyResource;
 use App\Models\CompanyDetail;
 
 class CompanyDetailResource extends BaseDataResource
@@ -34,5 +35,9 @@ class CompanyDetailResource extends BaseDataResource
     public function load(mixed $obj): void
     {
         parent::copy($obj, $this->fields);
+
+        if (in_array('company', $this->fields)) {
+            $this->company = BaseDataResource::generateResources($obj->company, CompanyResource::class);
+        }
     }
 }

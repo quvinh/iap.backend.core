@@ -12,7 +12,7 @@ class CompanyDetailSearchRequest extends DefaultSearchRequest
      * @var string[]
      */
     protected array $relations = [
-        
+        'company'
     ];
 
     protected array $fields = [
