@@ -25,7 +25,7 @@ class CompanyDetail extends Model
         return $this->hasOne(Company::class, 'id', 'company_id');
     }
 
-    public function companyType(): HasOne
+    public function type(): HasOne
     {
         return $this->hasOne(CompanyType::class, 'id', 'company_type_id');
     }

@@ -10,6 +10,19 @@ use Illuminate\Validation\Rule;
 class UserSearchRequest extends DefaultSearchRequest
 {
     /**
+     * Available relations to retrieve
+     * @var string[]
+     */
+    protected array $relations = [
+        'role',
+        'companies'
+    ];
+
+    protected array $fields = [
+        'withs'
+    ];
+
+    /**
      * Overwrite this function to prepare or convert data before validating
      * @return void
      * @throws InvalidDatetimeInputException

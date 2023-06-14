@@ -73,6 +73,11 @@ class CompanyDetailService extends \App\Services\BaseService implements ICompany
                 $query = $this->companyDetailRepos->queryOnAField([DB::raw("upper(name)"), 'LIKE BINARY', DB::raw("upper(concat('%', ? , '%'))")], positionalBindings: ['name' => $param]);
             }
 
+            if (isset($rawConditions['year'])) {
+                $param = $rawConditions['year'];
+                $query = $this->companyDetailRepos->queryOnAField(['year', '=', "?"], positionalBindings: ['year' => $param]);
+            }
+
             if (isset($rawConditions['updated_date'])) {
                 $query = $this->companyDetailRepos->queryOnDateRangeField($query, 'updated_at', $rawConditions['updated_date']);
             }
