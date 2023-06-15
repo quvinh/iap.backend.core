@@ -75,7 +75,7 @@ class CompanyDetailService extends \App\Services\BaseService implements ICompany
 
             if (isset($rawConditions['year'])) {
                 $param = $rawConditions['year'];
-                $query = $this->companyDetailRepos->queryOnAField(['year', '=', "?"], positionalBindings: ['year' => $param]);
+                $query = $this->companyDetailRepos->queryOnAField(['year', '=', $param], $query);
             }
 
             if (isset($rawConditions['updated_date'])) {

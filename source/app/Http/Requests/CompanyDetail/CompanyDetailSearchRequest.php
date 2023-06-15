@@ -17,6 +17,7 @@ class CompanyDetailSearchRequest extends DefaultSearchRequest
     ];
 
     protected array $fields = [
+        'year', 
         'withs'
     ];
 
