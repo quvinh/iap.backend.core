@@ -10,6 +10,8 @@ use App\Services\CompanyDetail\CompanyDetailService;
 use App\Services\CompanyDetail\ICompanyDetailService;
 use App\Services\CompanyType\CompanyTypeService;
 use App\Services\CompanyType\ICompanyTypeService;
+use App\Services\FirstAriseAccount\FirstAriseAccountService;
+use App\Services\FirstAriseAccount\IFirstAriseAccountService;
 use App\Services\Permission\IPermissionService;
 use App\Services\Permission\PermissionService;
 use App\Services\Role\IRoleService;
@@ -32,5 +34,6 @@ class ServiceRegistration
         $app->singleton(ICompanyService::class, CompanyService::class);
         $app->singleton(ICompanyDetailService::class, CompanyDetailService::class);
         $app->singleton(ICompanyTypeService::class, CompanyTypeService::class);
+        $app->singleton(IFirstAriseAccountService::class, FirstAriseAccountService::class);
     }
 }

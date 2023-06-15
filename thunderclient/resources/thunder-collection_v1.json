@@ -1,7 +1,7 @@
 {
     "client": "Thunder Client",
     "collectionName": "v1",
-    "dateExported": "2023-06-10T08:53:46.378Z",
+    "dateExported": "2023-06-15T08:12:36.810Z",
     "version": "1.1",
     "folders": [
         {
@@ -40,6 +40,13 @@
             "sortNum": 50000
         },
         {
+            "_id": "bb53fe51-fe3f-4556-9ffa-68e0dd8313a2",
+            "name": "CompanyTypes",
+            "containerId": "",
+            "created": "2023-06-10T08:37:49.796Z",
+            "sortNum": 55000
+        },
+        {
             "_id": "988cbcd7-74ab-4a69-ba90-a0eb0b4f7804",
             "name": "Companies",
             "containerId": "",
@@ -47,11 +54,18 @@
             "sortNum": 60000
         },
         {
-            "_id": "bb53fe51-fe3f-4556-9ffa-68e0dd8313a2",
-            "name": "CompanyTypes",
+            "_id": "c9f05c7e-0ab0-465f-bc82-7eeba1387123",
+            "name": "CompanyDetails",
             "containerId": "",
-            "created": "2023-06-10T08:37:49.796Z",
-            "sortNum": 70000
+            "created": "2023-06-13T04:44:52.932Z",
+            "sortNum": 65000
+        },
+        {
+            "_id": "c5063064-c891-4242-9cf8-9fb4e3195b41",
+            "name": "FirstAriseAccounts",
+            "containerId": "",
+            "created": "2023-06-15T08:12:03.762Z",
+            "sortNum": 75000
         }
     ],
     "requests": [
@@ -123,7 +137,7 @@
             "method": "POST",
             "sortNum": 20000,
             "created": "2023-06-10T01:10:31.243Z",
-            "modified": "2023-06-10T01:10:31.243Z",
+            "modified": "2023-06-14T02:04:40.055Z",
             "headers": [
                 {
                     "name": "Accept",
@@ -137,7 +151,7 @@
             "params": [],
             "body": {
                 "type": "json",
-                "raw": "{\n    \"pagination\":{\"page\": 1, \"per_page\": 25}\n}",
+                "raw": "{\n    \"pagination\":{\"page\": 1, \"per_page\": 25},\n    \"withs\":[\"role\",\"companies\"]\n}",
                 "form": []
             },
             "auth": {
@@ -219,7 +233,7 @@
             "method": "POST",
             "sortNum": 20000,
             "created": "2023-06-10T01:10:31.246Z",
-            "modified": "2023-06-10T01:10:31.246Z",
+            "modified": "2023-06-13T04:18:22.132Z",
             "headers": [
                 {
                     "name": "Accept",
@@ -233,7 +247,7 @@
             "params": [],
             "body": {
                 "type": "json",
-                "raw": "{\n    \"pagination\":{\"page\": 1, \"per_page\": 25}\n}",
+                "raw": "{\n    \"pagination\":{\"page\": 1, \"per_page\": 25},\n    \"withs\":[\"types\", \"years\"]\n}",
                 "form": []
             },
             "auth": {
@@ -266,6 +280,70 @@
             "body": {
                 "type": "json",
                 "raw": "{\n    \"pagination\":{\"page\": 1, \"per_page\": 25}\n}",
+                "form": []
+            },
+            "auth": {
+                "type": "bearer",
+                "bearer": "{{token.admin}}"
+            },
+            "tests": []
+        },
+        {
+            "_id": "2e9358c3-72ab-42f6-b069-067c9b99857d",
+            "colId": "6596fb5a-750b-4b72-adb4-c0f737ce52c8",
+            "containerId": "c9f05c7e-0ab0-465f-bc82-7eeba1387123",
+            "name": "search",
+            "url": "{{iap.api.base_url}}/company_details/search",
+            "method": "POST",
+            "sortNum": 20000,
+            "created": "2023-06-13T04:44:52.932Z",
+            "modified": "2023-06-15T04:37:06.221Z",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "X-IDENTIFIER",
+                    "value": "{{app.identifier}}"
+                }
+            ],
+            "params": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n    \"pagination\":{\"page\": 1, \"per_page\": 25},\n    \"withs\": [\"company\", \"type\"],\n    \"year\": \"2023\"\n}",
+                "form": []
+            },
+            "auth": {
+                "type": "bearer",
+                "bearer": "{{token.admin}}"
+            },
+            "tests": []
+        },
+        {
+            "_id": "57b33e38-e827-492d-9700-22c1ffc0166f",
+            "colId": "6596fb5a-750b-4b72-adb4-c0f737ce52c8",
+            "containerId": "c5063064-c891-4242-9cf8-9fb4e3195b41",
+            "name": "search",
+            "url": "{{iap.api.base_url}}/arise_accounts/search",
+            "method": "POST",
+            "sortNum": 20000,
+            "created": "2023-06-15T08:12:03.762Z",
+            "modified": "2023-06-15T08:12:30.621Z",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "X-IDENTIFIER",
+                    "value": "{{app.identifier}}"
+                }
+            ],
+            "params": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n    \"pagination\":{\"page\": 1, \"per_page\": 25},\n    \"withs\": [\"company\", \"type\"],\n    \"year\": \"2023\"\n}",
                 "form": []
             },
             "auth": {
@@ -437,6 +515,60 @@
             "tests": []
         },
         {
+            "_id": "a3bbf370-13c1-400b-9343-a12f7ef0c95c",
+            "colId": "6596fb5a-750b-4b72-adb4-c0f737ce52c8",
+            "containerId": "c9f05c7e-0ab0-465f-bc82-7eeba1387123",
+            "name": "getSingleObject",
+            "url": "{{iap.api.base_url}}/company_details/1",
+            "method": "GET",
+            "sortNum": 25000,
+            "created": "2023-06-13T04:44:52.933Z",
+            "modified": "2023-06-13T04:48:31.227Z",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "X-IDENTIFIER",
+                    "value": "{{app.identifier}}"
+                }
+            ],
+            "params": [],
+            "auth": {
+                "type": "bearer",
+                "bearer": "{{token.admin}}"
+            },
+            "tests": []
+        },
+        {
+            "_id": "8810c13e-c4ed-40f8-ad1c-7505a8159ff9",
+            "colId": "6596fb5a-750b-4b72-adb4-c0f737ce52c8",
+            "containerId": "c5063064-c891-4242-9cf8-9fb4e3195b41",
+            "name": "getSingleObject",
+            "url": "{{iap.api.base_url}}/company_details/1",
+            "method": "GET",
+            "sortNum": 25000,
+            "created": "2023-06-15T08:12:03.763Z",
+            "modified": "2023-06-15T08:12:03.762Z",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "X-IDENTIFIER",
+                    "value": "{{app.identifier}}"
+                }
+            ],
+            "params": [],
+            "auth": {
+                "type": "bearer",
+                "bearer": "{{token.admin}}"
+            },
+            "tests": []
+        },
+        {
             "_id": "5cb680a4-38c0-44c7-b31e-bdd6ca6bb379",
             "colId": "6596fb5a-750b-4b72-adb4-c0f737ce52c8",
             "containerId": "ee9f66dc-65f3-4be0-bb3a-de7e5c49483b",
@@ -536,7 +668,7 @@
             "method": "POST",
             "sortNum": 30000,
             "created": "2023-06-10T01:10:31.255Z",
-            "modified": "2023-06-10T08:19:26.031Z",
+            "modified": "2023-06-14T01:50:57.317Z",
             "headers": [
                 {
                     "name": "Accept",
@@ -550,7 +682,7 @@
             "params": [],
             "body": {
                 "type": "json",
-                "raw": "{\n    \"name\":\"Em. So Đẹp\",\n    \"username\": \"sodep\",\n    \"email\":\"demo@test.localhost\",\n    \"role_id\": 2,\n    \"company_id\": []\n}",
+                "raw": "{\n    \"name\":\"Em. So Đẹp\",\n    \"username\": \"sodep\",\n    \"email\":\"demo@test.localhost\",\n    \"role_id\": 2,\n    \"company_id\": [1]\n}",
                 "form": []
             },
             "auth": {
@@ -632,7 +764,7 @@
             "method": "POST",
             "sortNum": 30000,
             "created": "2023-06-10T01:10:31.258Z",
-            "modified": "2023-06-10T08:19:34.016Z",
+            "modified": "2023-06-12T10:19:51.239Z",
             "headers": [
                 {
                     "name": "Accept",
@@ -646,7 +778,7 @@
             "params": [],
             "body": {
                 "type": "json",
-                "raw": "{\n  \"name\": \"demo.permmission\",\n  \"tax_code\": \"090099120302\"\n}",
+                "raw": "{\n  \"name\": \"demo.permmission\",\n  \"tax_code\": \"090099120302\",\n  \"company_type_id\": 1,\n  \"year\": 2023\n}",
                 "form": []
             },
             "auth": {
@@ -676,6 +808,70 @@
                 }
             ],
             "params": [],
+            "auth": {
+                "type": "bearer",
+                "bearer": "{{token.admin}}"
+            },
+            "tests": []
+        },
+        {
+            "_id": "75b2cb49-e446-4ab7-9eb5-5c744104373b",
+            "colId": "6596fb5a-750b-4b72-adb4-c0f737ce52c8",
+            "containerId": "c9f05c7e-0ab0-465f-bc82-7eeba1387123",
+            "name": "create",
+            "url": "{{iap.api.base_url}}/company_details",
+            "method": "POST",
+            "sortNum": 30000,
+            "created": "2023-06-13T04:44:52.934Z",
+            "modified": "2023-06-13T09:41:49.892Z",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "X-IDENTIFIER",
+                    "value": "{{app.identifier}}"
+                }
+            ],
+            "params": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"company_id\": 1,\n  \"company_type_id\": 1,\n  \"year\": \"2022\",\n  \"description\": \"2022\"\n}",
+                "form": []
+            },
+            "auth": {
+                "type": "bearer",
+                "bearer": "{{token.admin}}"
+            },
+            "tests": []
+        },
+        {
+            "_id": "f92e0eab-c56a-4446-bf6b-dc155ad76f21",
+            "colId": "6596fb5a-750b-4b72-adb4-c0f737ce52c8",
+            "containerId": "c5063064-c891-4242-9cf8-9fb4e3195b41",
+            "name": "create",
+            "url": "{{iap.api.base_url}}/company_details",
+            "method": "POST",
+            "sortNum": 30000,
+            "created": "2023-06-15T08:12:03.764Z",
+            "modified": "2023-06-15T08:12:03.762Z",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "X-IDENTIFIER",
+                    "value": "{{app.identifier}}"
+                }
+            ],
+            "params": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"company_id\": 1,\n  \"company_type_id\": 1,\n  \"year\": \"2022\",\n  \"description\": \"2022\"\n}",
+                "form": []
+            },
             "auth": {
                 "type": "bearer",
                 "bearer": "{{token.admin}}"
@@ -811,11 +1007,11 @@
             "colId": "6596fb5a-750b-4b72-adb4-c0f737ce52c8",
             "containerId": "988cbcd7-74ab-4a69-ba90-a0eb0b4f7804",
             "name": "update",
-            "url": "{{iap.api.base_url}}/permissions/21",
+            "url": "{{iap.api.base_url}}/companies/21",
             "method": "PUT",
             "sortNum": 40000,
             "created": "2023-06-10T01:10:31.263Z",
-            "modified": "2023-06-10T01:10:31.263Z",
+            "modified": "2023-06-12T07:02:06.101Z",
             "headers": [
                 {
                     "name": "Accept",
@@ -859,6 +1055,102 @@
                 }
             ],
             "params": [],
+            "auth": {
+                "type": "bearer",
+                "bearer": "{{token.admin}}"
+            },
+            "tests": []
+        },
+        {
+            "_id": "b2c237e2-8731-4c96-b7a0-3c08dfe367c2",
+            "colId": "6596fb5a-750b-4b72-adb4-c0f737ce52c8",
+            "containerId": "c9f05c7e-0ab0-465f-bc82-7eeba1387123",
+            "name": "update",
+            "url": "{{iap.api.base_url}}/company_details/3",
+            "method": "PUT",
+            "sortNum": 40000,
+            "created": "2023-06-13T04:44:52.935Z",
+            "modified": "2023-06-13T09:49:08.750Z",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "X-IDENTIFIER",
+                    "value": "{{app.identifier}}"
+                }
+            ],
+            "params": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"company_id\": 1,\n  \"company_type_id\": 1,\n  \"year\": \"2022\",\n  \"description\": \"2022\"\n}",
+                "form": []
+            },
+            "auth": {
+                "type": "bearer",
+                "bearer": "{{token.admin}}"
+            },
+            "tests": []
+        },
+        {
+            "_id": "bec9842d-7aae-4222-889b-b2ff749a94b4",
+            "colId": "6596fb5a-750b-4b72-adb4-c0f737ce52c8",
+            "containerId": "c5063064-c891-4242-9cf8-9fb4e3195b41",
+            "name": "update",
+            "url": "{{iap.api.base_url}}/company_details/3",
+            "method": "PUT",
+            "sortNum": 40000,
+            "created": "2023-06-15T08:12:03.765Z",
+            "modified": "2023-06-15T08:12:03.762Z",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "X-IDENTIFIER",
+                    "value": "{{app.identifier}}"
+                }
+            ],
+            "params": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"company_id\": 1,\n  \"company_type_id\": 1,\n  \"year\": \"2022\",\n  \"description\": \"2022\"\n}",
+                "form": []
+            },
+            "auth": {
+                "type": "bearer",
+                "bearer": "{{token.admin}}"
+            },
+            "tests": []
+        },
+        {
+            "_id": "20c06249-d200-4842-8f56-1010ffe57599",
+            "colId": "6596fb5a-750b-4b72-adb4-c0f737ce52c8",
+            "containerId": "988cbcd7-74ab-4a69-ba90-a0eb0b4f7804",
+            "name": "updateDetail",
+            "url": "{{iap.api.base_url}}/companies/detail/1",
+            "method": "PUT",
+            "sortNum": 45000,
+            "created": "2023-06-12T07:24:05.253Z",
+            "modified": "2023-06-12T09:03:11.174Z",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "X-IDENTIFIER",
+                    "value": "{{app.identifier}}"
+                }
+            ],
+            "params": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"company_type_id\":1,\n  \"year\":2022\n}",
+                "form": []
+            },
             "auth": {
                 "type": "bearer",
                 "bearer": "{{token.admin}}"
@@ -983,6 +1275,60 @@
             "sortNum": 50000,
             "created": "2023-06-10T08:37:49.801Z",
             "modified": "2023-06-10T08:53:34.016Z",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "X-IDENTIFIER",
+                    "value": "{{app.identifier}}"
+                }
+            ],
+            "params": [],
+            "auth": {
+                "type": "bearer",
+                "bearer": "{{token.admin}}"
+            },
+            "tests": []
+        },
+        {
+            "_id": "6ac5da4e-6e60-444d-8b6e-0e68288b5672",
+            "colId": "6596fb5a-750b-4b72-adb4-c0f737ce52c8",
+            "containerId": "c9f05c7e-0ab0-465f-bc82-7eeba1387123",
+            "name": "delete",
+            "url": "{{iap.api.base_url}}/company_details/3",
+            "method": "DELETE",
+            "sortNum": 50000,
+            "created": "2023-06-13T04:44:52.936Z",
+            "modified": "2023-06-13T09:49:22.788Z",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "X-IDENTIFIER",
+                    "value": "{{app.identifier}}"
+                }
+            ],
+            "params": [],
+            "auth": {
+                "type": "bearer",
+                "bearer": "{{token.admin}}"
+            },
+            "tests": []
+        },
+        {
+            "_id": "7d9ca3d0-7637-4989-bb5a-59abbb4e29db",
+            "colId": "6596fb5a-750b-4b72-adb4-c0f737ce52c8",
+            "containerId": "c5063064-c891-4242-9cf8-9fb4e3195b41",
+            "name": "delete",
+            "url": "{{iap.api.base_url}}/company_details/3",
+            "method": "DELETE",
+            "sortNum": 50000,
+            "created": "2023-06-15T08:12:03.766Z",
+            "modified": "2023-06-15T08:12:03.762Z",
             "headers": [
                 {
                     "name": "Accept",

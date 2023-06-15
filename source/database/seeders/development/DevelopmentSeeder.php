@@ -24,10 +24,13 @@ class DevelopmentSeeder extends Seeder
         DB::table('company_details')->truncate();
         DB::table('companies')->truncate();
         DB::table('company_types')->truncate();
+        DB::table('company_detail_arise_accounts')->truncate();
+        DB::table('first_arise_accounts')->truncate();
         
         $this->call([
             UserSeeder::class,
-            CompanyTypeSeeder::class
+            CompanyTypeSeeder::class,
+            FirstAriseAccountSeeder::class
         ]);
         
         DB::statement('SET FOREIGN_KEY_CHECKS=1');
