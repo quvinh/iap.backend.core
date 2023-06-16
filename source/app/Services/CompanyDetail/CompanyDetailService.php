@@ -69,11 +69,6 @@ class CompanyDetailService extends \App\Services\BaseService implements ICompany
     {
         try {
             $query = $this->companyDetailRepos->search();
-            if (isset($rawConditions['name'])) {
-                $param = StringHelper::escapeLikeQueryParameter($rawConditions['name']);
-                $query = $this->companyDetailRepos->queryOnAField([DB::raw("upper(name)"), 'LIKE BINARY', DB::raw("upper(concat('%', ? , '%'))")], positionalBindings: ['name' => $param]);
-            }
-
             if (isset($rawConditions['year'])) {
                 $param = $rawConditions['year'];
                 $query = $this->companyDetailRepos->queryOnAField(['year', '=', $param], $query);

@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use App\Helpers\Common\MetaInfo as CommonMetaInfo;
-use Illuminate\Database\Eloquent\Relations\HasManyThrough;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class CompanyDetail extends Model
 {
@@ -21,26 +21,28 @@ class CompanyDetail extends Model
 
     public $timestamps = false;
 
+    /**
+     * @return HasOne
+     */
     public function company(): HasOne
     {
         return $this->hasOne(Company::class, 'id', 'company_id');
     }
 
+    /**
+     * @return HasOne
+     */
     public function type(): HasOne
     {
         return $this->hasOne(CompanyType::class, 'id', 'company_type_id');
     }
 
-    public function accounts(): HasManyThrough
+    /**
+     * @return HasMany
+     */
+    public function accounts(): HasMany
     {
-        return $this->hasManyThrough(
-            FirstAriseAccount::class,
-            CompanyDetailAriseAccount::class,
-            'company_detail_id',
-            'id',
-            'id',
-            'arise_account_id'
-        );
+        return $this->hasMany(CompanyDetailAriseAccount::class, 'company_detail_id', 'id');
     }
 
     /**

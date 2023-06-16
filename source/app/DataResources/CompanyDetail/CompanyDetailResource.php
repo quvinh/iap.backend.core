@@ -4,6 +4,7 @@ namespace App\DataResources\CompanyDetail;
 
 use App\DataResources\BaseDataResource;
 use App\DataResources\Company\CompanyResource;
+use App\DataResources\CompanyDetail\CompanyDetailAriseAccountResource;
 use App\DataResources\CompanyType\CompanyTypeResource;
 use App\DataResources\FirstAriseAccount\FirstAriseAccountResource;
 use App\Models\CompanyDetail;
@@ -40,7 +41,7 @@ class CompanyDetailResource extends BaseDataResource
 
         if (in_array('company', $this->fields)) {
             // $this->company = BaseDataResource::generateResources($obj->company, CompanyResource::class);
-            $this->withField('product');
+            $this->withField('company');
             $this->company = new CompanyResource($obj->company);
         }
 
@@ -50,7 +51,7 @@ class CompanyDetailResource extends BaseDataResource
         }
 
         if (in_array('accounts', $this->fields)) {
-            $this->accounts = BaseDataResource::generateResources($obj->accounts, FirstAriseAccountResource::class);
+            $this->accounts = BaseDataResource::generateResources($obj->accounts, CompanyDetailAriseAccountResource::class, ['arise_account']);
         }
     }
 }

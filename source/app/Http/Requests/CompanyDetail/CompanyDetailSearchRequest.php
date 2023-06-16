@@ -14,7 +14,8 @@ class CompanyDetailSearchRequest extends DefaultSearchRequest
     protected array $relations = [
         'company',
         'type',
-        'accounts'
+        'accounts',
+        'detail_accounts'
     ];
 
     protected array $fields = [

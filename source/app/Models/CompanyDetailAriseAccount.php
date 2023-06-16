@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 /**
  * @property float $value_from
@@ -40,5 +42,13 @@ class CompanyDetailAriseAccount extends Model
         } catch (\Exception) {
             return 0;
         }
+    }
+
+    /**
+     * @return HasOne
+     */
+    public function arise_account(): HasOne
+    {
+        return $this->hasOne(FirstAriseAccount::class, 'id', 'arise_account_id');
     }
 }

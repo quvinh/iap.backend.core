@@ -25,7 +25,8 @@ class CompanyResource extends BaseDataResource
         'manager_role',
         'manager_phone',
         'manager_email',
-        'status'
+        'status',
+        'created_by'
     ];
 
     /**
