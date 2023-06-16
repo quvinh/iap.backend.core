@@ -8,6 +8,7 @@ use App\Helpers\Enums\UserRoles;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\Traits\DefaultRestActions;
 use App\Http\Requests\CompanyDetail\AriseAccountCreateRequest;
+use App\Http\Requests\CompanyDetail\AriseAccountUpdateRequest;
 use App\Http\Requests\CompanyDetail\CompanyDetailCreateRequest;
 use App\Http\Requests\CompanyDetail\CompanyDetailSearchRequest;
 use App\Http\Requests\CompanyDetail\CompanyDetailUpdateRequest;
@@ -39,10 +40,13 @@ class CompanyDetailController extends ApiController
         if ($role == UserRoles::ADMINISTRATOR) {
             Route::post($root . '/search', [CompanyDetailController::class, 'search']);
             Route::get($root . '/{id}', [CompanyDetailController::class, 'getSingleObject']);
-            Route::post($root, [CompanyDetailController::class, 'create']);
-            Route::post($root . '/arise_account', [CompanyDetailController::class, 'ariseAccount']);
+            Route::post($root, [CompanyDetailController::class, 'create']);            
             Route::put($root . '/{id}', [CompanyDetailController::class, 'update']);
             Route::delete($root . '/{id}', [CompanyDetailController::class, 'delete']);
+
+            Route::post($root . '/arise_account', [CompanyDetailController::class, 'createAriseAccount']);
+            Route::put($root . '/arise_account/{id}', [CompanyDetailController::class, 'updateAriseAccount']);
+            Route::delete($root . '/arise_account/{id}', [CompanyDetailController::class, 'deleteAriseAccount']);
         }
     }
 
@@ -105,9 +109,30 @@ class CompanyDetailController extends ApiController
         }
     }
 
-    public function ariseAccount(AriseAccountCreateRequest $request): Response
+    /**
+     * Create
+     */
+    public function createAriseAccount(AriseAccountCreateRequest $request): Response
     {
-        $result = $this->companyDetailService->ariseAccount($request->all());
+        $result = $this->companyDetailService->createAriseAccount($request->all());
+        return $this->getResponseHandler()->send($result);
+    }
+
+    /**
+     * Update
+     */
+    public function updateAriseAccount(AriseAccountUpdateRequest $request, $id): Response
+    {
+        $result = $this->companyDetailService->updateAriseAccount($id, $request->all());
+        return $this->getResponseHandler()->send($result);
+    }
+
+    /**
+     * Delete
+     */
+    public function deleteAriseAccount($id): Response
+    {
+        $result = $this->companyDetailService->deleteAriseAccount($id);
         return $this->getResponseHandler()->send($result);
     }
 }

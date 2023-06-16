@@ -1,7 +1,7 @@
 {
     "client": "Thunder Client",
     "collectionName": "v1",
-    "dateExported": "2023-06-15T08:12:36.810Z",
+    "dateExported": "2023-06-16T08:59:22.810Z",
     "version": "1.1",
     "folders": [
         {
@@ -297,7 +297,7 @@
             "method": "POST",
             "sortNum": 20000,
             "created": "2023-06-13T04:44:52.932Z",
-            "modified": "2023-06-15T04:37:06.221Z",
+            "modified": "2023-06-16T07:54:12.034Z",
             "headers": [
                 {
                     "name": "Accept",
@@ -311,7 +311,7 @@
             "params": [],
             "body": {
                 "type": "json",
-                "raw": "{\n    \"pagination\":{\"page\": 1, \"per_page\": 25},\n    \"withs\": [\"company\", \"type\"],\n    \"year\": \"2023\"\n}",
+                "raw": "{\n    \"pagination\":{\"page\": 1, \"per_page\": 25},\n    \"withs\": [\"company\", \"type\", \"accounts\"],\n    \"year\": \"2022\"\n}",
                 "form": []
             },
             "auth": {
@@ -546,11 +546,11 @@
             "colId": "6596fb5a-750b-4b72-adb4-c0f737ce52c8",
             "containerId": "c5063064-c891-4242-9cf8-9fb4e3195b41",
             "name": "getSingleObject",
-            "url": "{{iap.api.base_url}}/company_details/1",
+            "url": "{{iap.api.base_url}}/arise_accounts/1",
             "method": "GET",
             "sortNum": 25000,
             "created": "2023-06-15T08:12:03.763Z",
-            "modified": "2023-06-15T08:12:03.762Z",
+            "modified": "2023-06-16T01:28:07.052Z",
             "headers": [
                 {
                     "name": "Accept",
@@ -764,7 +764,7 @@
             "method": "POST",
             "sortNum": 30000,
             "created": "2023-06-10T01:10:31.258Z",
-            "modified": "2023-06-12T10:19:51.239Z",
+            "modified": "2023-06-16T01:41:36.674Z",
             "headers": [
                 {
                     "name": "Accept",
@@ -778,7 +778,7 @@
             "params": [],
             "body": {
                 "type": "json",
-                "raw": "{\n  \"name\": \"demo.permmission\",\n  \"tax_code\": \"090099120302\",\n  \"company_type_id\": 1,\n  \"year\": 2023\n}",
+                "raw": "{\n  \"name\": \"demo.company\",\n  \"tax_code\": \"090099120302\",\n  \"company_type_id\": 1,\n  \"year\": 2023\n}",
                 "form": []
             },
             "auth": {
@@ -823,7 +823,39 @@
             "method": "POST",
             "sortNum": 30000,
             "created": "2023-06-13T04:44:52.934Z",
-            "modified": "2023-06-13T09:41:49.892Z",
+            "modified": "2023-06-16T03:44:20.786Z",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "X-IDENTIFIER",
+                    "value": "{{app.identifier}}"
+                }
+            ],
+            "params": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"company_id\": 1,\n  \"company_type_id\": 1,\n  \"year\": \"2021\",\n  \"description\": \"2021\"\n}",
+                "form": []
+            },
+            "auth": {
+                "type": "bearer",
+                "bearer": "{{token.admin}}"
+            },
+            "tests": []
+        },
+        {
+            "_id": "f92e0eab-c56a-4446-bf6b-dc155ad76f21",
+            "colId": "6596fb5a-750b-4b72-adb4-c0f737ce52c8",
+            "containerId": "c5063064-c891-4242-9cf8-9fb4e3195b41",
+            "name": "create",
+            "url": "{{iap.api.base_url}}/arise_accounts",
+            "method": "POST",
+            "sortNum": 30000,
+            "created": "2023-06-15T08:12:03.764Z",
+            "modified": "2023-06-16T01:31:01.687Z",
             "headers": [
                 {
                     "name": "Accept",
@@ -847,15 +879,15 @@
             "tests": []
         },
         {
-            "_id": "f92e0eab-c56a-4446-bf6b-dc155ad76f21",
+            "_id": "1b1ddac5-5fcb-4604-9faa-ecb69c4fad23",
             "colId": "6596fb5a-750b-4b72-adb4-c0f737ce52c8",
-            "containerId": "c5063064-c891-4242-9cf8-9fb4e3195b41",
-            "name": "create",
-            "url": "{{iap.api.base_url}}/company_details",
+            "containerId": "c9f05c7e-0ab0-465f-bc82-7eeba1387123",
+            "name": "createAriseAccount",
+            "url": "{{iap.api.base_url}}/company_details/arise_account",
             "method": "POST",
-            "sortNum": 30000,
-            "created": "2023-06-15T08:12:03.764Z",
-            "modified": "2023-06-15T08:12:03.762Z",
+            "sortNum": 35000,
+            "created": "2023-06-16T04:38:21.710Z",
+            "modified": "2023-06-16T05:02:00.594Z",
             "headers": [
                 {
                     "name": "Accept",
@@ -869,7 +901,7 @@
             "params": [],
             "body": {
                 "type": "json",
-                "raw": "{\n  \"company_id\": 1,\n  \"company_type_id\": 1,\n  \"year\": \"2022\",\n  \"description\": \"2022\"\n}",
+                "raw": "{\n  \"company_detail_id\":1,\n  \"arise_account_id\":1,\n  \"value_from\":19,\n  \"value_to\":20.5\n}",
                 "form": []
             },
             "auth": {
@@ -1098,11 +1130,11 @@
             "colId": "6596fb5a-750b-4b72-adb4-c0f737ce52c8",
             "containerId": "c5063064-c891-4242-9cf8-9fb4e3195b41",
             "name": "update",
-            "url": "{{iap.api.base_url}}/company_details/3",
+            "url": "{{iap.api.base_url}}/arise_accounts/3",
             "method": "PUT",
             "sortNum": 40000,
             "created": "2023-06-15T08:12:03.765Z",
-            "modified": "2023-06-15T08:12:03.762Z",
+            "modified": "2023-06-16T01:31:09.455Z",
             "headers": [
                 {
                     "name": "Accept",
@@ -1149,6 +1181,38 @@
             "body": {
                 "type": "json",
                 "raw": "{\n  \"company_type_id\":1,\n  \"year\":2022\n}",
+                "form": []
+            },
+            "auth": {
+                "type": "bearer",
+                "bearer": "{{token.admin}}"
+            },
+            "tests": []
+        },
+        {
+            "_id": "52fd9ce2-3a6b-4c62-b921-41dc6f9eef5a",
+            "colId": "6596fb5a-750b-4b72-adb4-c0f737ce52c8",
+            "containerId": "c9f05c7e-0ab0-465f-bc82-7eeba1387123",
+            "name": "updateAriseAccount",
+            "url": "{{iap.api.base_url}}/company_details/arise_account/1",
+            "method": "PUT",
+            "sortNum": 45000,
+            "created": "2023-06-16T08:35:01.788Z",
+            "modified": "2023-06-16T08:57:13.141Z",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "X-IDENTIFIER",
+                    "value": "{{app.identifier}}"
+                }
+            ],
+            "params": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"value_from\":12,\n  \"value_to\":12\n}",
                 "form": []
             },
             "auth": {
@@ -1324,11 +1388,38 @@
             "colId": "6596fb5a-750b-4b72-adb4-c0f737ce52c8",
             "containerId": "c5063064-c891-4242-9cf8-9fb4e3195b41",
             "name": "delete",
-            "url": "{{iap.api.base_url}}/company_details/3",
+            "url": "{{iap.api.base_url}}/arise_accounts/3",
             "method": "DELETE",
             "sortNum": 50000,
             "created": "2023-06-15T08:12:03.766Z",
-            "modified": "2023-06-15T08:12:03.762Z",
+            "modified": "2023-06-16T01:31:14.128Z",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "X-IDENTIFIER",
+                    "value": "{{app.identifier}}"
+                }
+            ],
+            "params": [],
+            "auth": {
+                "type": "bearer",
+                "bearer": "{{token.admin}}"
+            },
+            "tests": []
+        },
+        {
+            "_id": "329788da-d272-42a9-a720-a9c59a6c6d4d",
+            "colId": "6596fb5a-750b-4b72-adb4-c0f737ce52c8",
+            "containerId": "c9f05c7e-0ab0-465f-bc82-7eeba1387123",
+            "name": "deleteAriseAccount",
+            "url": "{{iap.api.base_url}}/company_details/arise_account/1",
+            "method": "DELETE",
+            "sortNum": 60000,
+            "created": "2023-06-16T08:58:29.786Z",
+            "modified": "2023-06-16T08:58:55.882Z",
             "headers": [
                 {
                     "name": "Accept",

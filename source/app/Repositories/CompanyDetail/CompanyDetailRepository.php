@@ -3,6 +3,7 @@
 namespace App\Repositories\CompanyDetail;
 
 use App\Exceptions\DB\CannotSaveToDBException;
+use App\Exceptions\DB\CannotUpdateDBException;
 use App\Exceptions\DB\IdIsNotProvidedException;
 use App\Helpers\Common\MetaInfo;
 use App\Models\CompanyDetail;
@@ -28,18 +29,50 @@ class CompanyDetailRepository extends BaseRepository implements ICompanyDetailRe
      * Create company_detail_arise_accout
      * @param array $param
      */
-    public function ariseAccount(array $param): Model
+    public function createAriseAccount(array $param): Model
     {
         $entity = new CompanyDetailAriseAccount();
         $entity->setCompanyDetailAriseAccount($param['value_from'], $param['value_to']);
         $entity->company_detail_id = $param['company_detail_id'];
         $entity->arise_account_id = $param['arise_account_id'];
         $chk = $entity->save();
-        
+
         if ($chk) {
             return $entity;
         } else {
             throw new CannotSaveToDBException();
         }
+    }
+
+    /**
+     * Update company_detail_arise_accout
+     * @param array $param
+     */
+    public function updateAriseAccount(array $param): Model
+    {
+        if (!in_array('id', array_keys($param))) throw new IdIsNotProvidedException();
+        $entity = (new CompanyDetailAriseAccount())->query()->where('id', $param['id'])->first();
+        if ($entity === null)
+            throw new DBRecordIsNotFoundException();
+        $entity->setCompanyDetailAriseAccount($param['value_from'], $param['value_to']);
+        $chk = $entity->save();
+
+        if ($chk) {
+            return $entity;
+        } else {
+            throw new CannotUpdateDBException();
+        }
+    }
+
+    /**
+     * Delete company_detail_arise_accout
+     * @param mixed $id
+     */
+    public function deleteAriseAccount(mixed $id): bool
+    {
+        $entity = (new CompanyDetailAriseAccount())->query()->where('id', $id)->first();
+        if ($entity === null)
+            throw new DBRecordIsNotFoundException();
+        return $entity->delete();
     }
 }

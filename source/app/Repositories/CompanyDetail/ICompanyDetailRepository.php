@@ -9,5 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 
 interface ICompanyDetailRepository extends IRepository
 {
-    public function ariseAccount(array $param): Model;
+    public function createAriseAccount(array $param): Model;
+    public function updateAriseAccount(array $param): Model;
+    public function deleteAriseAccount(mixed $id): bool;
 }

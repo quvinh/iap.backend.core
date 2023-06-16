@@ -194,16 +194,58 @@ class CompanyDetailService extends \App\Services\BaseService implements ICompany
      * Create company_detail_arise_accout
      * @param array $param
      */
-    public function ariseAccount(array $param): Model
+    public function createAriseAccount(array $param): Model
     {
         DB::beginTransaction();
         try {
-            $record = $this->companyDetailRepos->ariseAccount($param);
+            $record = $this->companyDetailRepos->createAriseAccount($param);
             DB::commit();
             return $record;
         } catch (\Exception $e) {
             throw new CannotSaveToDBException(
                 message: 'create: ' . json_encode(['param' => $param]),
+                previous: $e
+            );
+        }
+    }
+
+    /**
+     * Update company_detail_arise_accout
+     * @param array $param
+     * @param mixed $id
+     */
+    public function updateAriseAccount(mixed $id, array $param): Model
+    {
+        DB::beginTransaction();
+        try {
+            $param = array_merge($param, [
+                'id' => $id
+            ]);
+            $record = $this->companyDetailRepos->updateAriseAccount($param);
+            DB::commit();
+            return $record;
+        } catch (\Exception $e) {
+            throw new CannotUpdateDBException(
+                message: 'update: ' . json_encode(['param' => $param]),
+                previous: $e
+            );
+        }
+    }
+
+    /**
+     * Delete company_detail_arise_accout
+     * @param mixed $id
+     */
+    public function deleteAriseAccount(mixed $id): bool
+    {
+        DB::beginTransaction();
+        try {
+            $record = $this->companyDetailRepos->deleteAriseAccount($id);
+            DB::commit();
+            return $record;
+        } catch (\Exception $e) {
+            throw new CannotDeleteDBException(
+                message: 'delete: ' . json_encode(['id' => $id]),
                 previous: $e
             );
         }
