@@ -30,7 +30,8 @@ class DevelopmentSeeder extends Seeder
         $this->call([
             UserSeeder::class,
             CompanyTypeSeeder::class,
-            FirstAriseAccountSeeder::class
+            FirstAriseAccountSeeder::class,
+            CompanySeeder::class
         ]);
         
         DB::statement('SET FOREIGN_KEY_CHECKS=1');

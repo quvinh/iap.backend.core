@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use App\Helpers\Common\MetaInfo as CommonMetaInfo;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 
 class CompanyDetail extends Model
 {
@@ -28,6 +29,18 @@ class CompanyDetail extends Model
     public function type(): HasOne
     {
         return $this->hasOne(CompanyType::class, 'id', 'company_type_id');
+    }
+
+    public function accounts(): HasManyThrough
+    {
+        return $this->hasManyThrough(
+            FirstAriseAccount::class,
+            CompanyDetailAriseAccount::class,
+            'company_detail_id',
+            'id',
+            'id',
+            'arise_account_id'
+        );
     }
 
     /**

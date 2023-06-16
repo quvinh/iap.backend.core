@@ -16,6 +16,7 @@ use App\Models\CompanyDetail;
 use App\Repositories\CompanyDetail\ICompanyDetailRepository;
 use Carbon\Carbon;
 use Exception;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -116,19 +117,19 @@ class CompanyDetailService extends \App\Services\BaseService implements ICompany
     public function create(array $param, MetaInfo $commandMetaInfo = null): CompanyDetail
     {
         DB::beginTransaction();
-        // try {
+        try {
             #1 Create
             $record = $this->companyDetailRepos->create($param, $commandMetaInfo);
             DB::commit();
             #2 Return
             return $record;
-        // } catch (\Exception $e) {
-        //     DB::rollBack();
-        //     throw new CannotSaveToDBException(
-        //         message: 'create: ' . json_encode(['param' => $param]),
-        //         previous: $e
-        //     );
-        // }
+        } catch (\Exception $e) {
+            DB::rollBack();
+            throw new CannotSaveToDBException(
+                message: 'create: ' . json_encode(['param' => $param]),
+                previous: $e
+            );
+        }
     }
 
     /**
@@ -190,6 +191,25 @@ class CompanyDetailService extends \App\Services\BaseService implements ICompany
             throw new CannotDeleteDBException(
                 message: 'update: ' . json_encode(['id' => $id, 'softDelete' => $softDelete]),
                 previous: $ex
+            );
+        }
+    }
+
+    /**
+     * Create company_detail_arise_accout
+     * @param array $param
+     */
+    public function ariseAccount(array $param): Model
+    {
+        DB::beginTransaction();
+        try {
+            $record = $this->companyDetailRepos->ariseAccount($param);
+            DB::commit();
+            return $record;
+        } catch (\Exception $e) {
+            throw new CannotSaveToDBException(
+                message: 'create: ' . json_encode(['param' => $param]),
+                previous: $e
             );
         }
     }

@@ -5,6 +5,7 @@ namespace App\DataResources\CompanyDetail;
 use App\DataResources\BaseDataResource;
 use App\DataResources\Company\CompanyResource;
 use App\DataResources\CompanyType\CompanyTypeResource;
+use App\DataResources\FirstAriseAccount\FirstAriseAccountResource;
 use App\Models\CompanyDetail;
 
 class CompanyDetailResource extends BaseDataResource
@@ -46,6 +47,10 @@ class CompanyDetailResource extends BaseDataResource
         if (in_array('type', $this->fields)) {
             $this->withField('type');
             $this->type = new CompanyTypeResource($obj->type);
+        }
+
+        if (in_array('accounts', $this->fields)) {
+            $this->accounts = BaseDataResource::generateResources($obj->accounts, FirstAriseAccountResource::class);
         }
     }
 }

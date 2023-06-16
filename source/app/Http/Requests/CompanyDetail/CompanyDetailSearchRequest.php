@@ -13,7 +13,8 @@ class CompanyDetailSearchRequest extends DefaultSearchRequest
      */
     protected array $relations = [
         'company',
-        'type'
+        'type',
+        'accounts'
     ];
 
     protected array $fields = [

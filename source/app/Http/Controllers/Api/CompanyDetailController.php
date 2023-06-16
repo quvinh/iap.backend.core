@@ -7,12 +7,14 @@ use App\Helpers\Common\MetaInfo;
 use App\Helpers\Enums\UserRoles;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\Traits\DefaultRestActions;
+use App\Http\Requests\CompanyDetail\AriseAccountCreateRequest;
 use App\Http\Requests\CompanyDetail\CompanyDetailCreateRequest;
 use App\Http\Requests\CompanyDetail\CompanyDetailSearchRequest;
 use App\Http\Requests\CompanyDetail\CompanyDetailUpdateRequest;
 use App\Services\CompanyDetail\ICompanyDetailService;
 use App\Services\IService;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Route;
 
 class CompanyDetailController extends ApiController
@@ -38,6 +40,7 @@ class CompanyDetailController extends ApiController
             Route::post($root . '/search', [CompanyDetailController::class, 'search']);
             Route::get($root . '/{id}', [CompanyDetailController::class, 'getSingleObject']);
             Route::post($root, [CompanyDetailController::class, 'create']);
+            Route::post($root . '/arise_account', [CompanyDetailController::class, 'ariseAccount']);
             Route::put($root . '/{id}', [CompanyDetailController::class, 'update']);
             Route::delete($root . '/{id}', [CompanyDetailController::class, 'delete']);
         }
@@ -100,5 +103,11 @@ class CompanyDetailController extends ApiController
             default:
                 return $request;
         }
+    }
+
+    public function ariseAccount(AriseAccountCreateRequest $request): Response
+    {
+        $result = $this->companyDetailService->ariseAccount($request->all());
+        return $this->getResponseHandler()->send($result);
     }
 }
