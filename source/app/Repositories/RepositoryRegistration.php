@@ -6,6 +6,10 @@ use App\Repositories\Company\CompanyRepository;
 use App\Repositories\Company\ICompanyRepository;
 use App\Repositories\CompanyDetail\CompanyDetailRepository;
 use App\Repositories\CompanyDetail\ICompanyDetailRepository;
+use App\Repositories\CategoryPurchase\CategoryPurchaseRepository;
+use App\Repositories\CategoryPurchase\ICategoryPurchaseRepository;
+use App\Repositories\CategorySold\CategorySoldRepository;
+use App\Repositories\CategorySold\ICategorySoldRepository;
 use App\Repositories\CompanyType\CompanyTypeRepository;
 use App\Repositories\CompanyType\ICompanyTypeRepository;
 use App\Repositories\FirstAriseAccount\FirstAriseAccountRepository;
@@ -32,5 +36,7 @@ class RepositoryRegistration
         $app->singleton(ICompanyDetailRepository::class, CompanyDetailRepository::class);
         $app->singleton(ICompanyTypeRepository::class, CompanyTypeRepository::class);
         $app->singleton(IFirstAriseAccountRepository::class, FirstAriseAccountRepository::class);
+        $app->singleton(ICategoryPurchaseRepository::class, CategoryPurchaseRepository::class);
+        $app->singleton(ICategorySoldRepository::class, CategorySoldRepository::class);
     }
 }

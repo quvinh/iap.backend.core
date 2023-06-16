@@ -4,6 +4,10 @@ namespace App\Services;
 
 use App\Services\Auth\AuthService;
 use App\Services\Auth\IAuthService;
+use App\Services\CategoryPurchase\CategoryPurchaseService;
+use App\Services\CategoryPurchase\ICategoryPurchaseService;
+use App\Services\CategorySold\CategorySoldService;
+use App\Services\CategorySold\ICategorySoldService;
 use App\Services\Company\CompanyService;
 use App\Services\Company\ICompanyService;
 use App\Services\CompanyDetail\CompanyDetailService;
@@ -35,5 +39,7 @@ class ServiceRegistration
         $app->singleton(ICompanyDetailService::class, CompanyDetailService::class);
         $app->singleton(ICompanyTypeService::class, CompanyTypeService::class);
         $app->singleton(IFirstAriseAccountService::class, FirstAriseAccountService::class);
+        $app->singleton(ICategoryPurchaseService::class, CategoryPurchaseService::class);
+        $app->singleton(ICategorySoldService::class, CategorySoldService::class);
     }
 }
