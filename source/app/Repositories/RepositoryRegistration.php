@@ -14,6 +14,8 @@ use App\Repositories\CompanyType\CompanyTypeRepository;
 use App\Repositories\CompanyType\ICompanyTypeRepository;
 use App\Repositories\FirstAriseAccount\FirstAriseAccountRepository;
 use App\Repositories\FirstAriseAccount\IFirstAriseAccountRepository;
+use App\Repositories\Formula\FormulaRepository;
+use App\Repositories\Formula\IFormulaRepository;
 use App\Repositories\Permission\IPermissionRepository;
 use App\Repositories\Permission\PermissionRepository;
 use App\Repositories\Role\IRoleRepository;
@@ -38,5 +40,6 @@ class RepositoryRegistration
         $app->singleton(IFirstAriseAccountRepository::class, FirstAriseAccountRepository::class);
         $app->singleton(ICategoryPurchaseRepository::class, CategoryPurchaseRepository::class);
         $app->singleton(ICategorySoldRepository::class, CategorySoldRepository::class);
+        $app->singleton(IFormulaRepository::class, FormulaRepository::class);
     }
 }

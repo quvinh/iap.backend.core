@@ -14,6 +14,7 @@ class CategorySoldResource extends BaseDataResource
         'id',
         'name',
         'note',
+        'status',
         'created_by'
     ];
 

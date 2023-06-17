@@ -13,6 +13,7 @@ class CategorySold extends BaseModel
     protected $fillable = [
         'name',
         'note',
+        'status',
         'created_by',
         'updated_by'
     ];
