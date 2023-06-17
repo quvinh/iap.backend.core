@@ -18,7 +18,8 @@ return new class extends Migration
             $table->string('name');
             $table->unsignedBigInteger('company_detail_id');
             $table->unsignedBigInteger('company_type_id');
-            $table->string('note');
+            $table->boolean('status')->default(1);
+            $table->string('note')->nullable();
             $table->string('created_by')->nullable();
             $table->string('updated_by')->nullable();
             $table->softDeletes();

@@ -8,6 +8,7 @@ use App\Http\Controllers\Api\CompanyController;
 use App\Http\Controllers\Api\CompanyDetailController;
 use App\Http\Controllers\Api\CompanyTypeController;
 use App\Http\Controllers\Api\FirstAriseAccountController;
+use App\Http\Controllers\Api\FormulaController;
 use App\Http\Controllers\Api\MediaStorageController;
 use App\Http\Controllers\Api\PermissionController;
 use App\Http\Controllers\Api\RoleController;
@@ -40,6 +41,7 @@ function registerResourceRoutes(string $group = UserRoles::ADMINISTRATOR): void
     FirstAriseAccountController::registerRoutes($group);
     CategoryPurchaseController::registerRoutes($group);
     CategorySoldController::registerRoutes($group);
+    FormulaController::registerRoutes($group);
 }
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {

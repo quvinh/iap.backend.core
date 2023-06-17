@@ -33,7 +33,7 @@ class FormulaController extends ApiController
      */
     public static function registerRoutes(string $role = null): void
     {
-        $root = 'category_solds';
+        $root = 'formulas';
         if ($role == UserRoles::ADMINISTRATOR) {
             Route::post($root . '/search', [FormulaController::class, 'search']);
             Route::get($root . '/{id}', [FormulaController::class, 'getSingleObject']);

@@ -43,7 +43,10 @@ class FormulaCreateRequest extends BaseRequest
                         ['company_detail_id', $company_detail_id]
                     ]);
                 })
-            ]
+            ],
+            'company_detail_id' => ['required', 'integer', 'exists:company_details,id'],
+            'company_detail_id' => ['required', 'integer', 'exists:company_types,id'],
+            'note' => ['nullable', 'string']
         ];
     }
 }

@@ -3,6 +3,7 @@
 namespace App\DataResources\Formula;
 
 use App\DataResources\BaseDataResource;
+use App\DataResources\CompanyDetail\CompanyDetailResource;
 use App\Models\Formula;
 
 class FormulaResource extends BaseDataResource
@@ -14,6 +15,7 @@ class FormulaResource extends BaseDataResource
         'id',
         'name',
         'company_detail_id',
+        'company_type_id',
         'status',
         'note'
     ];
@@ -34,5 +36,9 @@ class FormulaResource extends BaseDataResource
     public function load(mixed $obj): void
     {
         parent::copy($obj, $this->fields);
+
+        if (in_array('company_detail', $this->fields)) {
+            $this->company_detail = BaseDataResource::generateResources($obj->company_detail()->get(), CompanyDetailResource::class, ['company']);
+        }
     }
 }
