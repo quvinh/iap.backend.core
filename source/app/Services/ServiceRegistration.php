@@ -18,6 +18,10 @@ use App\Services\FirstAriseAccount\FirstAriseAccountService;
 use App\Services\FirstAriseAccount\IFirstAriseAccountService;
 use App\Services\Formula\FormulaService;
 use App\Services\Formula\IFormulaService;
+use App\Services\FormulaCategoryPurchase\FormulaCategoryPurchaseService;
+use App\Services\FormulaCategoryPurchase\IFormulaCategoryPurchaseService;
+use App\Services\FormulaCategorySold\FormulaCategorySoldService;
+use App\Services\FormulaCategorySold\IFormulaCategorySoldService;
 use App\Services\Permission\IPermissionService;
 use App\Services\Permission\PermissionService;
 use App\Services\Role\IRoleService;
@@ -44,5 +48,7 @@ class ServiceRegistration
         $app->singleton(ICategoryPurchaseService::class, CategoryPurchaseService::class);
         $app->singleton(ICategorySoldService::class, CategorySoldService::class);
         $app->singleton(IFormulaService::class, FormulaService::class);
+        $app->singleton(IFormulaCategoryPurchaseService::class, FormulaCategoryPurchaseService::class);
+        $app->singleton(IFormulaCategorySoldService::class, FormulaCategorySoldService::class);
     }
 }

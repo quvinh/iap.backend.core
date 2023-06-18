@@ -5,17 +5,14 @@ namespace App\Http\Requests\Formula;
 use App\Http\Requests\DefaultSearchRequest;
 use Illuminate\Foundation\Http\FormRequest;
 
-class FormulaSearchRequest extends DefaultSearchRequest
+class FormulaCategoryPurchaseSearchRequest extends DefaultSearchRequest
 {
     /**
      * Available relations to retrieve
      * @var string[]
      */
     protected array $relations = [
-        'company_detail',
-        'company_type',
-        'category_purchases',
-        'category_solds',
+        'category_purchase'
     ];
 
     protected array $fields = [         
