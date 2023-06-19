@@ -1,29 +1,12 @@
 <?php
 
-namespace App\Http\Requests\Formula;
+namespace App\Http\Requests\FormulaMaterial;
 
 use App\Http\Requests\DefaultSearchRequest;
 use Illuminate\Foundation\Http\FormRequest;
 
-class FormulaSearchRequest extends DefaultSearchRequest
+class FormulaMaterialSearchRequest extends DefaultSearchRequest
 {
-    /**
-     * Available relations to retrieve
-     * @var string[]
-     */
-    protected array $relations = [
-        'company_detail',
-        'company_type',
-        'category_purchases',
-        'category_solds',
-        'commodities',
-        'materials',
-    ];
-
-    protected array $fields = [         
-        'withs'
-    ];
-
     /**
      * Overwrite this function to prepare or convert data before validating
      * @return void

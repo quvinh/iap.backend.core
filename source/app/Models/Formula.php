@@ -51,4 +51,20 @@ class Formula extends BaseModel
     {
         return $this->hasMany(FormulaCategorySold::class, 'formula_id', 'id');
     }
+
+    /**
+     * @return HasMany
+     */
+    public function commodities(): HasMany
+    {
+        return $this->hasMany(FormulaCommodity::class, 'formula_id', 'id');
+    }
+
+    /**
+     * @return HasMany
+     */
+    public function materials(): HasMany
+    {
+        return $this->hasMany(FormulaMaterial::class, 'formula_id', 'id');
+    }
 }

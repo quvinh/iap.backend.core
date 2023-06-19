@@ -20,6 +20,10 @@ use App\Repositories\FormulaCategoryPurchase\FormulaCategoryPurchaseRepository;
 use App\Repositories\FormulaCategoryPurchase\IFormulaCategoryPurchaseRepository;
 use App\Repositories\FormulaCategorySold\FormulaCategorySoldRepository;
 use App\Repositories\FormulaCategorySold\IFormulaCategorySoldRepository;
+use App\Repositories\FormulaCommodity\FormulaCommodityRepository;
+use App\Repositories\FormulaCommodity\IFormulaCommodityRepository;
+use App\Repositories\FormulaMaterial\FormulaMaterialRepository;
+use App\Repositories\FormulaMaterial\IFormulaMaterialRepository;
 use App\Repositories\Permission\IPermissionRepository;
 use App\Repositories\Permission\PermissionRepository;
 use App\Repositories\Role\IRoleRepository;
@@ -47,5 +51,7 @@ class RepositoryRegistration
         $app->singleton(IFormulaRepository::class, FormulaRepository::class);
         $app->singleton(IFormulaCategoryPurchaseRepository::class, FormulaCategoryPurchaseRepository::class);
         $app->singleton(IFormulaCategorySoldRepository::class, FormulaCategorySoldRepository::class);
+        $app->singleton(IFormulaCommodityRepository::class, FormulaCommodityRepository::class);
+        $app->singleton(IFormulaMaterialRepository::class, FormulaMaterialRepository::class);
     }
 }

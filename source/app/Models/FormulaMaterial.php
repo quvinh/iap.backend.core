@@ -15,8 +15,25 @@ class FormulaMaterial extends BaseModel
         'formula_id',
         'value_from',
         'value_to',
-        'value_ave',
+        'value_avg',
         'note',
         'status'
     ];
+
+    public function setFormulaMaterial(float $value_from, float $value_to): void
+    {
+        $this->value_from = $value_from;
+        $this->value_to = $value_to;
+        $this->value_avg = $this->getAverage();
+    }
+
+    public function getAverage(): float
+    {
+        try {
+            $avg = ($this->value_from + $this->value_to) / 2;
+            return round($avg, 2);
+        } catch (\Exception) {
+            return 0;
+        }
+    }
 }

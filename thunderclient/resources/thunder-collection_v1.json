@@ -1,7 +1,7 @@
 {
     "client": "Thunder Client",
     "collectionName": "v1",
-    "dateExported": "2023-06-18T17:00:42.305Z",
+    "dateExported": "2023-06-19T17:06:41.885Z",
     "version": "1.1",
     "folders": [
         {
@@ -101,6 +101,20 @@
             "containerId": "",
             "created": "2023-06-18T15:46:26.775Z",
             "sortNum": 125000
+        },
+        {
+            "_id": "99415d4e-d4b1-4a5d-b0c7-1b9db65e0b75",
+            "name": "FormulaCommodities",
+            "containerId": "",
+            "created": "2023-06-19T16:39:57.332Z",
+            "sortNum": 135000
+        },
+        {
+            "_id": "98f67966-fa3b-447c-8905-e051c85a50a7",
+            "name": "FormulaMaterials",
+            "containerId": "",
+            "created": "2023-06-19T16:52:34.741Z",
+            "sortNum": 145000
         }
     ],
     "requests": [
@@ -460,7 +474,7 @@
             "method": "POST",
             "sortNum": 20000,
             "created": "2023-06-17T14:16:25.151Z",
-            "modified": "2023-06-18T16:40:42.379Z",
+            "modified": "2023-06-19T17:03:29.108Z",
             "headers": [
                 {
                     "name": "Accept",
@@ -474,7 +488,7 @@
             "params": [],
             "body": {
                 "type": "json",
-                "raw": "{\n  \"pagination\": {\n    \"page\": 1,\n    \"per_page\": 25\n  },\n  \"withs\": [\n    \"company_detail\",\n    \"company_type\",\n    \"category_purchases\",\n    \"category_solds\"\n  ]\n}",
+                "raw": "{\n  \"pagination\": {\n    \"page\": 1,\n    \"per_page\": 25\n  },\n  \"withs\": [\n    \"company_detail\",\n    \"company_type\",\n    \"category_purchases\",\n    \"category_solds\",\n    \"commodities\",\n    \"materials\"\n  ]\n}",
                 "form": []
             },
             "auth": {
@@ -525,6 +539,70 @@
             "sortNum": 20000,
             "created": "2023-06-18T15:46:26.775Z",
             "modified": "2023-06-18T15:46:57.888Z",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "X-IDENTIFIER",
+                    "value": "{{app.identifier}}"
+                }
+            ],
+            "params": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n    \"pagination\":{\"page\": 1, \"per_page\": 25},\n    \"withs\": [\"company_detail\", \"company_type\"]\n}",
+                "form": []
+            },
+            "auth": {
+                "type": "bearer",
+                "bearer": "{{token.admin}}"
+            },
+            "tests": []
+        },
+        {
+            "_id": "1f752f5b-c078-48f2-b71f-967d3557e7b2",
+            "colId": "1306d1be-f8a0-41ca-a96a-f7c0d16ed64d",
+            "containerId": "99415d4e-d4b1-4a5d-b0c7-1b9db65e0b75",
+            "name": "search",
+            "url": "{{iap.api.base_url}}/formula_commodities/search",
+            "method": "POST",
+            "sortNum": 20000,
+            "created": "2023-06-19T16:39:57.333Z",
+            "modified": "2023-06-19T16:40:46.963Z",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "X-IDENTIFIER",
+                    "value": "{{app.identifier}}"
+                }
+            ],
+            "params": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n    \"pagination\":{\"page\": 1, \"per_page\": 25},\n    \"withs\": [\"company_detail\", \"company_type\"]\n}",
+                "form": []
+            },
+            "auth": {
+                "type": "bearer",
+                "bearer": "{{token.admin}}"
+            },
+            "tests": []
+        },
+        {
+            "_id": "c359c752-e471-4654-86e8-df83cdc80b7f",
+            "colId": "1306d1be-f8a0-41ca-a96a-f7c0d16ed64d",
+            "containerId": "98f67966-fa3b-447c-8905-e051c85a50a7",
+            "name": "search",
+            "url": "{{iap.api.base_url}}/formula_materials/search",
+            "method": "POST",
+            "sortNum": 20000,
+            "created": "2023-06-19T16:52:34.741Z",
+            "modified": "2023-06-19T16:53:00.192Z",
             "headers": [
                 {
                     "name": "Accept",
@@ -881,6 +959,60 @@
             "sortNum": 25000,
             "created": "2023-06-18T15:46:26.777Z",
             "modified": "2023-06-18T15:47:04.334Z",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "X-IDENTIFIER",
+                    "value": "{{app.identifier}}"
+                }
+            ],
+            "params": [],
+            "auth": {
+                "type": "bearer",
+                "bearer": "{{token.admin}}"
+            },
+            "tests": []
+        },
+        {
+            "_id": "b68f7e5b-072f-4fa5-8b3c-07b17160d9ae",
+            "colId": "1306d1be-f8a0-41ca-a96a-f7c0d16ed64d",
+            "containerId": "99415d4e-d4b1-4a5d-b0c7-1b9db65e0b75",
+            "name": "getSingleObject",
+            "url": "{{iap.api.base_url}}/formula_commodities/1",
+            "method": "GET",
+            "sortNum": 25000,
+            "created": "2023-06-19T16:39:57.334Z",
+            "modified": "2023-06-19T16:41:24.885Z",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "X-IDENTIFIER",
+                    "value": "{{app.identifier}}"
+                }
+            ],
+            "params": [],
+            "auth": {
+                "type": "bearer",
+                "bearer": "{{token.admin}}"
+            },
+            "tests": []
+        },
+        {
+            "_id": "e638df05-1f4b-4778-b528-240e4b23d130",
+            "colId": "1306d1be-f8a0-41ca-a96a-f7c0d16ed64d",
+            "containerId": "98f67966-fa3b-447c-8905-e051c85a50a7",
+            "name": "getSingleObject",
+            "url": "{{iap.api.base_url}}/formula_commodities/1",
+            "method": "GET",
+            "sortNum": 25000,
+            "created": "2023-06-19T16:52:34.742Z",
+            "modified": "2023-06-19T16:52:34.741Z",
             "headers": [
                 {
                     "name": "Accept",
@@ -1369,6 +1501,70 @@
             "tests": []
         },
         {
+            "_id": "db86f903-910b-4ced-a861-f1ea6f7df961",
+            "colId": "1306d1be-f8a0-41ca-a96a-f7c0d16ed64d",
+            "containerId": "99415d4e-d4b1-4a5d-b0c7-1b9db65e0b75",
+            "name": "create",
+            "url": "{{iap.api.base_url}}/formula_commodities",
+            "method": "POST",
+            "sortNum": 30000,
+            "created": "2023-06-19T16:39:57.335Z",
+            "modified": "2023-06-19T16:42:04.561Z",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "X-IDENTIFIER",
+                    "value": "{{app.identifier}}"
+                }
+            ],
+            "params": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"name\": \"Demo\",\n  \"formula_id\": 1\n}",
+                "form": []
+            },
+            "auth": {
+                "type": "bearer",
+                "bearer": "{{token.admin}}"
+            },
+            "tests": []
+        },
+        {
+            "_id": "e35afa72-02ce-4dcb-ad0b-7a03877ee615",
+            "colId": "1306d1be-f8a0-41ca-a96a-f7c0d16ed64d",
+            "containerId": "98f67966-fa3b-447c-8905-e051c85a50a7",
+            "name": "create",
+            "url": "{{iap.api.base_url}}/formula_materials",
+            "method": "POST",
+            "sortNum": 30000,
+            "created": "2023-06-19T16:52:34.743Z",
+            "modified": "2023-06-19T16:53:33.664Z",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "X-IDENTIFIER",
+                    "value": "{{app.identifier}}"
+                }
+            ],
+            "params": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"name\": \"Demo\",\n  \"formula_id\": 1,\n  \"value_from\": 1,\n  \"value_to\": 1.3\n}",
+                "form": []
+            },
+            "auth": {
+                "type": "bearer",
+                "bearer": "{{token.admin}}"
+            },
+            "tests": []
+        },
+        {
             "_id": "02f72303-7065-4be4-b5f6-9bcf7b8852f6",
             "colId": "1306d1be-f8a0-41ca-a96a-f7c0d16ed64d",
             "containerId": "6d961ad7-be6e-44a4-937a-af14edb4ce7c",
@@ -1808,6 +2004,70 @@
             "tests": []
         },
         {
+            "_id": "cbb537cb-4a14-4ab9-aee9-b9355d16dd7a",
+            "colId": "1306d1be-f8a0-41ca-a96a-f7c0d16ed64d",
+            "containerId": "99415d4e-d4b1-4a5d-b0c7-1b9db65e0b75",
+            "name": "update",
+            "url": "{{iap.api.base_url}}/formula_commodities/1",
+            "method": "PUT",
+            "sortNum": 40000,
+            "created": "2023-06-19T16:39:57.336Z",
+            "modified": "2023-06-19T16:42:15.413Z",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "X-IDENTIFIER",
+                    "value": "{{app.identifier}}"
+                }
+            ],
+            "params": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"name\": \"Demo\",\n  \"formula_id\": 1\n}",
+                "form": []
+            },
+            "auth": {
+                "type": "bearer",
+                "bearer": "{{token.admin}}"
+            },
+            "tests": []
+        },
+        {
+            "_id": "9b9b35da-a886-4d90-831b-a4df76e1e727",
+            "colId": "1306d1be-f8a0-41ca-a96a-f7c0d16ed64d",
+            "containerId": "98f67966-fa3b-447c-8905-e051c85a50a7",
+            "name": "update",
+            "url": "{{iap.api.base_url}}/formula_materials/1",
+            "method": "PUT",
+            "sortNum": 40000,
+            "created": "2023-06-19T16:52:34.744Z",
+            "modified": "2023-06-19T16:53:56.430Z",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "X-IDENTIFIER",
+                    "value": "{{app.identifier}}"
+                }
+            ],
+            "params": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"name\": \"Demo\",\n  \"formula_id\": 1,\n  \"value_from\": 1,\n  \"value_to\": 1.5\n}",
+                "form": []
+            },
+            "auth": {
+                "type": "bearer",
+                "bearer": "{{token.admin}}"
+            },
+            "tests": []
+        },
+        {
             "_id": "c751ca49-a4b6-4ff0-a0ad-c8c14fc78614",
             "colId": "1306d1be-f8a0-41ca-a96a-f7c0d16ed64d",
             "containerId": "ef250475-87bd-4e37-9b60-cb44fc4fc0d3",
@@ -2178,6 +2438,60 @@
             "sortNum": 50000,
             "created": "2023-06-18T15:46:26.780Z",
             "modified": "2023-06-18T15:46:26.776Z",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "X-IDENTIFIER",
+                    "value": "{{app.identifier}}"
+                }
+            ],
+            "params": [],
+            "auth": {
+                "type": "bearer",
+                "bearer": "{{token.admin}}"
+            },
+            "tests": []
+        },
+        {
+            "_id": "17fbc21f-8819-4092-9f2b-697f1de9ae8a",
+            "colId": "1306d1be-f8a0-41ca-a96a-f7c0d16ed64d",
+            "containerId": "99415d4e-d4b1-4a5d-b0c7-1b9db65e0b75",
+            "name": "delete",
+            "url": "{{iap.api.base_url}}/formulas/2",
+            "method": "DELETE",
+            "sortNum": 50000,
+            "created": "2023-06-19T16:39:57.337Z",
+            "modified": "2023-06-19T16:39:57.333Z",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "X-IDENTIFIER",
+                    "value": "{{app.identifier}}"
+                }
+            ],
+            "params": [],
+            "auth": {
+                "type": "bearer",
+                "bearer": "{{token.admin}}"
+            },
+            "tests": []
+        },
+        {
+            "_id": "0f1f0caf-60c8-4cfa-8964-2b214317eb31",
+            "colId": "1306d1be-f8a0-41ca-a96a-f7c0d16ed64d",
+            "containerId": "98f67966-fa3b-447c-8905-e051c85a50a7",
+            "name": "delete",
+            "url": "{{iap.api.base_url}}/formulas/2",
+            "method": "DELETE",
+            "sortNum": 50000,
+            "created": "2023-06-19T16:52:34.745Z",
+            "modified": "2023-06-19T16:52:34.741Z",
             "headers": [
                 {
                     "name": "Accept",

@@ -22,6 +22,10 @@ use App\Services\FormulaCategoryPurchase\FormulaCategoryPurchaseService;
 use App\Services\FormulaCategoryPurchase\IFormulaCategoryPurchaseService;
 use App\Services\FormulaCategorySold\FormulaCategorySoldService;
 use App\Services\FormulaCategorySold\IFormulaCategorySoldService;
+use App\Services\FormulaCommodity\FormulaCommodityService;
+use App\Services\FormulaCommodity\IFormulaCommodityService;
+use App\Services\FormulaMaterial\FormulaMaterialService;
+use App\Services\FormulaMaterial\IFormulaMaterialService;
 use App\Services\Permission\IPermissionService;
 use App\Services\Permission\PermissionService;
 use App\Services\Role\IRoleService;
@@ -50,5 +54,7 @@ class ServiceRegistration
         $app->singleton(IFormulaService::class, FormulaService::class);
         $app->singleton(IFormulaCategoryPurchaseService::class, FormulaCategoryPurchaseService::class);
         $app->singleton(IFormulaCategorySoldService::class, FormulaCategorySoldService::class);
+        $app->singleton(IFormulaCommodityService::class, FormulaCommodityService::class);
+        $app->singleton(IFormulaMaterialService::class, FormulaMaterialService::class);
     }
 }
