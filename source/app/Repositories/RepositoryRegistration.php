@@ -10,6 +10,8 @@ use App\Repositories\CategoryPurchase\CategoryPurchaseRepository;
 use App\Repositories\CategoryPurchase\ICategoryPurchaseRepository;
 use App\Repositories\CategorySold\CategorySoldRepository;
 use App\Repositories\CategorySold\ICategorySoldRepository;
+use App\Repositories\CompanyDetailTaxFreeVoucher\CompanyDetailTaxFreeVoucherRepository;
+use App\Repositories\CompanyDetailTaxFreeVoucher\ICompanyDetailTaxFreeVoucherRepository;
 use App\Repositories\CompanyType\CompanyTypeRepository;
 use App\Repositories\CompanyType\ICompanyTypeRepository;
 use App\Repositories\FirstAriseAccount\FirstAriseAccountRepository;
@@ -28,6 +30,8 @@ use App\Repositories\Permission\IPermissionRepository;
 use App\Repositories\Permission\PermissionRepository;
 use App\Repositories\Role\IRoleRepository;
 use App\Repositories\Role\RoleRepository;
+use App\Repositories\TaxFreeVoucher\ITaxFreeVoucherRepository;
+use App\Repositories\TaxFreeVoucher\TaxFreeVoucherRepository;
 use App\Repositories\User\IUserRepository;
 use App\Repositories\User\UserRepository;
 
@@ -53,5 +57,7 @@ class RepositoryRegistration
         $app->singleton(IFormulaCategorySoldRepository::class, FormulaCategorySoldRepository::class);
         $app->singleton(IFormulaCommodityRepository::class, FormulaCommodityRepository::class);
         $app->singleton(IFormulaMaterialRepository::class, FormulaMaterialRepository::class);
+        $app->singleton(ITaxFreeVoucherRepository::class, TaxFreeVoucherRepository::class);
+        $app->singleton(ICompanyDetailTaxFreeVoucherRepository::class, CompanyDetailTaxFreeVoucherRepository::class);
     }
 }

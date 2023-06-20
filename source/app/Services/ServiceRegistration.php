@@ -12,6 +12,8 @@ use App\Services\Company\CompanyService;
 use App\Services\Company\ICompanyService;
 use App\Services\CompanyDetail\CompanyDetailService;
 use App\Services\CompanyDetail\ICompanyDetailService;
+use App\Services\CompanyDetailTaxFreeVoucher\CompanyDetailTaxFreeVoucherService;
+use App\Services\CompanyDetailTaxFreeVoucher\ICompanyDetailTaxFreeVoucherService;
 use App\Services\CompanyType\CompanyTypeService;
 use App\Services\CompanyType\ICompanyTypeService;
 use App\Services\FirstAriseAccount\FirstAriseAccountService;
@@ -30,6 +32,8 @@ use App\Services\Permission\IPermissionService;
 use App\Services\Permission\PermissionService;
 use App\Services\Role\IRoleService;
 use App\Services\Role\RoleService;
+use App\Services\TaxFreeVoucher\ITaxFreeVoucherService;
+use App\Services\TaxFreeVoucher\TaxFreeVoucherService;
 use App\Services\User\IUserService;
 use App\Services\User\UserService;
 
@@ -56,5 +60,7 @@ class ServiceRegistration
         $app->singleton(IFormulaCategorySoldService::class, FormulaCategorySoldService::class);
         $app->singleton(IFormulaCommodityService::class, FormulaCommodityService::class);
         $app->singleton(IFormulaMaterialService::class, FormulaMaterialService::class);
+        $app->singleton(ITaxFreeVoucherService::class, TaxFreeVoucherService::class);
+        $app->singleton(ICompanyDetailTaxFreeVoucherService::class, CompanyDetailTaxFreeVoucherService::class);
     }
 }

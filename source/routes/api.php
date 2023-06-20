@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\CategoryPurchaseController;
 use App\Http\Controllers\Api\CategorySoldController;
 use App\Http\Controllers\Api\CompanyController;
 use App\Http\Controllers\Api\CompanyDetailController;
+use App\Http\Controllers\Api\CompanyDetailTaxFreeVoucherController;
 use App\Http\Controllers\Api\CompanyTypeController;
 use App\Http\Controllers\Api\FirstAriseAccountController;
 use App\Http\Controllers\Api\FormulaCategoryPurchaseController;
@@ -16,6 +17,7 @@ use App\Http\Controllers\Api\FormulaMaterialController;
 use App\Http\Controllers\Api\MediaStorageController;
 use App\Http\Controllers\Api\PermissionController;
 use App\Http\Controllers\Api\RoleController;
+use App\Http\Controllers\Api\TaxFreeVoucherController;
 use App\Http\Controllers\Api\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -50,6 +52,8 @@ function registerResourceRoutes(string $group = UserRoles::ADMINISTRATOR): void
     FormulaCategorySoldController::registerRoutes($group);
     FormulaCommodityController::registerRoutes($group);
     FormulaMaterialController::registerRoutes($group);
+    TaxFreeVoucherController::registerRoutes($group);
+    CompanyDetailTaxFreeVoucherController::registerRoutes($group);
 }
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
