@@ -32,13 +32,13 @@ class CompanyDetailTaxFreeVoucherCreateRequest extends BaseRequest
     public function rules(): array
     {
         $company_detail_id = $this->input('company_detail_id');
-        $tax_free_voucher_id = $this->input('taxt_free_voucher_id');
+        $tax_free_voucher_id = $this->input('tax_free_voucher_id');
         return [
             'company_detail_id' => [
                 'required',
                 'integer',
                 'exists:company_details,id',
-                Rule::unique('company_detail_tax_free_vouchers')->where(function ($query) use($company_detail_id, $tax_free_voucher_id) {
+                Rule::unique('company_detail_tax_free_vouchers')->where(function ($query) use ($company_detail_id, $tax_free_voucher_id) {
                     return $query->where([
                         ['company_detail_id', $company_detail_id],
                         ['tax_free_voucher_id', $tax_free_voucher_id],

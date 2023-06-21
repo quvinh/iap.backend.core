@@ -33,7 +33,7 @@ interface IRepository
      * @param string $idColumnName
      * @return mixed
      */
-    function getSingleObject(mixed $id, string $idColumnName = 'id', array $withs = []): Builder | null;
+    function getSingleObject(mixed $id, string $idColumnName = 'id', array $withs = [], bool $trashed = false): Builder | null;
 
     /**
      * Try to create the object using the given info

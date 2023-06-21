@@ -28,6 +28,8 @@ use App\Services\FormulaCommodity\FormulaCommodityService;
 use App\Services\FormulaCommodity\IFormulaCommodityService;
 use App\Services\FormulaMaterial\FormulaMaterialService;
 use App\Services\FormulaMaterial\IFormulaMaterialService;
+use App\Services\InvoiceTask\IInvoiceTaskService;
+use App\Services\InvoiceTask\InvoiceTaskService;
 use App\Services\Permission\IPermissionService;
 use App\Services\Permission\PermissionService;
 use App\Services\Role\IRoleService;
@@ -62,5 +64,6 @@ class ServiceRegistration
         $app->singleton(IFormulaMaterialService::class, FormulaMaterialService::class);
         $app->singleton(ITaxFreeVoucherService::class, TaxFreeVoucherService::class);
         $app->singleton(ICompanyDetailTaxFreeVoucherService::class, CompanyDetailTaxFreeVoucherService::class);
+        $app->singleton(IInvoiceTaskService::class, InvoiceTaskService::class);
     }
 }

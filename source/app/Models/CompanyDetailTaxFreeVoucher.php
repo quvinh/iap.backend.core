@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Helpers\Common\MetaInfo as CommonMetaInfo;
 
 class CompanyDetailTaxFreeVoucher extends Model
 {
@@ -13,6 +14,8 @@ class CompanyDetailTaxFreeVoucher extends Model
         'company_detail_id',
         'tax_free_voucher_id'
     ];
+
+    public $timestamps = false;
 
     /**
      * Meta info

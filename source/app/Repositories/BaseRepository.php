@@ -82,14 +82,15 @@ abstract class BaseRepository implements IRepository
      * @param string $idColumnName
      * @return Builder
      */
-    function getSingleObject(mixed $id, string $idColumnName = 'id', array $withs = []): Builder | null
+    function getSingleObject(mixed $id, string $idColumnName = 'id', array $withs = [], bool $trashed = false): Builder | null
     {
         if ($id == null)
             return null;
-
         $model_class = $this->getRepositoryModelClass();
         $query = (new $model_class())->query();
         $query = $query->where($idColumnName, $id);
+        
+        if ($trashed) $query = $query->withTrashed();
         if (isset($withs)) $query = $query->with($withs);
         return $query;
     }
@@ -157,9 +158,10 @@ abstract class BaseRepository implements IRepository
      */
     function delete(mixed $id, bool $soft = false, MetaInfo $meta = null, string $idColumnName = 'id'): bool
     {
-        $obj = $this->getSingleObject($id, $idColumnName);
-        if ($obj === null)
+        $obj = $this->getSingleObject($id, $idColumnName, [], !$soft)->first();
+        if (!$soft && $obj === null) {
             throw new DBRecordIsNotFoundException();
+        }
         $classUses = class_uses($obj);
         $classUses = is_array($classUses) ? $classUses : [];
         if ($soft && in_array('Illuminate\Database\Eloquent\SoftDeletes', $classUses)) {

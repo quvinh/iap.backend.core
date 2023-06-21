@@ -46,6 +46,14 @@ class CompanyDetail extends Model
     }
 
     /**
+     * @return HasMany
+     */
+    public function tax_free_vouchers(): HasMany
+    {
+        return $this->hasMany(CompanyDetailTaxFreeVoucher::class, 'company_detail_id', 'id');
+    }
+
+    /**
      * Meta info
      */
     public function setMetaInfo(CommonMetaInfo $meta = null, bool $isCreate = true): void

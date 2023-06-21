@@ -1,25 +1,22 @@
 <?php
 
-namespace App\Http\Requests\CompanyDetail;
+namespace App\Http\Requests\InvoiceTask;
 
 use App\Http\Requests\DefaultSearchRequest;
 use Illuminate\Foundation\Http\FormRequest;
 
-class CompanyDetailSearchRequest extends DefaultSearchRequest
+class InvoiceTaskSearchRequest extends DefaultSearchRequest
 {
     /**
      * Available relations to retrieve
      * @var string[]
      */
     protected array $relations = [
-        'company',
-        'type',
-        'accounts',
-        'tax_free_vouchers'
+        'company'
     ];
 
     protected array $fields = [
-        'year', 
+        'month_of_year',
         'withs'
     ];
 

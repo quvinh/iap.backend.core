@@ -4,13 +4,9 @@ namespace App\DataResources\CompanyDetail;
 
 use App\DataResources\BaseDataResource;
 use App\DataResources\Company\CompanyResource;
-use App\DataResources\CompanyDetail\CompanyDetailTaxFreeVoucherResource;
-use App\DataResources\CompanyType\CompanyTypeResource;
-use App\DataResources\FirstAriseAccount\FirstAriseAccountResource;
-use App\Models\CompanyDetail;
 use App\Models\CompanyDetailTaxFreeVoucher;
 
-class CompanyDetailResource extends BaseDataResource
+class CompanyDetailTaxFreeVoucherResource extends BaseDataResource
 {
     /**
      * @var array|string[]

@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\DataResources\CompanyDetailTaxFreeVoucher\CompanyDetailTaxFreeVoucherResource;
+use App\DataResources\CompanyDetail\CompanyDetailTaxFreeVoucherResource;
 use App\Helpers\Common\MetaInfo;
 use App\Helpers\Enums\UserCompanyDetailTaxFreeVouchers;
 use App\Helpers\Enums\UserRoles;
@@ -32,10 +32,10 @@ class CompanyDetailTaxFreeVoucherController extends ApiController
      * @param string|null $CompanyDetailTaxFreeVoucher
      * @return void
      */
-    public static function registerRoutes(string $CompanyDetailTaxFreeVoucher = null): void
+    public static function registerRoutes(string $companyDetailTaxFreeVoucher = null): void
     {
         $root = 'company_detail_tax_free_vouchers';
-        if ($CompanyDetailTaxFreeVoucher == UserRoles::ADMINISTRATOR) {
+        if ($companyDetailTaxFreeVoucher == UserRoles::ADMINISTRATOR) {
             Route::post($root . '/search', [CompanyDetailTaxFreeVoucherController::class, 'search']);
             Route::get($root . '/{id}', [CompanyDetailTaxFreeVoucherController::class, 'getSingleObject']);
             Route::post($root, [CompanyDetailTaxFreeVoucherController::class, 'create']);

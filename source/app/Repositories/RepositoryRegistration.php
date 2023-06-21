@@ -26,6 +26,8 @@ use App\Repositories\FormulaCommodity\FormulaCommodityRepository;
 use App\Repositories\FormulaCommodity\IFormulaCommodityRepository;
 use App\Repositories\FormulaMaterial\FormulaMaterialRepository;
 use App\Repositories\FormulaMaterial\IFormulaMaterialRepository;
+use App\Repositories\InvoiceTask\IInvoiceTaskRepository;
+use App\Repositories\InvoiceTask\InvoiceTaskRepository;
 use App\Repositories\Permission\IPermissionRepository;
 use App\Repositories\Permission\PermissionRepository;
 use App\Repositories\Role\IRoleRepository;
@@ -59,5 +61,6 @@ class RepositoryRegistration
         $app->singleton(IFormulaMaterialRepository::class, FormulaMaterialRepository::class);
         $app->singleton(ITaxFreeVoucherRepository::class, TaxFreeVoucherRepository::class);
         $app->singleton(ICompanyDetailTaxFreeVoucherRepository::class, CompanyDetailTaxFreeVoucherRepository::class);
+        $app->singleton(IInvoiceTaskRepository::class, InvoiceTaskRepository::class);
     }
 }
