@@ -1,7 +1,7 @@
 {
     "client": "Thunder Client",
     "collectionName": "v1",
-    "dateExported": "2023-06-20T09:02:15.454Z",
+    "dateExported": "2023-06-21T09:12:14.686Z",
     "version": "1.1",
     "folders": [
         {
@@ -122,6 +122,13 @@
             "containerId": "",
             "created": "2023-06-20T08:19:44.040Z",
             "sortNum": 155000
+        },
+        {
+            "_id": "59fb6d61-2432-4e84-8666-415483219bee",
+            "name": "InvoiceTasks",
+            "containerId": "",
+            "created": "2023-06-21T07:45:10.052Z",
+            "sortNum": 165000
         }
     ],
     "requests": [
@@ -353,7 +360,7 @@
             "method": "POST",
             "sortNum": 20000,
             "created": "2023-06-20T07:23:33.580Z",
-            "modified": "2023-06-20T07:23:33.580Z",
+            "modified": "2023-06-21T04:44:50.382Z",
             "headers": [
                 {
                     "name": "Accept",
@@ -367,7 +374,7 @@
             "params": [],
             "body": {
                 "type": "json",
-                "raw": "{\n    \"pagination\":{\"page\": 1, \"per_page\": 25},\n    \"withs\": [\"company\", \"type\", \"accounts\"],\n    \"year\": \"2022\"\n}",
+                "raw": "{\n  \"pagination\": {\n    \"page\": 1,\n    \"per_page\": 25\n  },\n  \"withs\": [\n    \"company\",\n    \"type\",\n    \"accounts\",\n    \"tax_free_vouchers\"\n  ],\n  \"year\": \"2022\"\n}",
                 "form": []
             },
             "auth": {
@@ -656,6 +663,38 @@
             "body": {
                 "type": "json",
                 "raw": "{\n    \"pagination\":{\"page\": 1, \"per_page\": 25}\n}",
+                "form": []
+            },
+            "auth": {
+                "type": "bearer",
+                "bearer": "{{token.admin}}"
+            },
+            "tests": []
+        },
+        {
+            "_id": "b3e85adf-584e-450c-aa70-0619580e7020",
+            "colId": "6238485b-4f16-41a4-8e97-25c1954c4f90",
+            "containerId": "59fb6d61-2432-4e84-8666-415483219bee",
+            "name": "search",
+            "url": "{{iap.api.base_url}}/invoice_tasks/search",
+            "method": "POST",
+            "sortNum": 20000,
+            "created": "2023-06-21T07:45:10.052Z",
+            "modified": "2023-06-21T09:11:13.098Z",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "X-IDENTIFIER",
+                    "value": "{{app.identifier}}"
+                }
+            ],
+            "params": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n    \"pagination\":{\"page\": 1, \"per_page\": 25},\n    \"withs\": [\"company\"]\n}",
                 "form": []
             },
             "auth": {
@@ -1079,6 +1118,33 @@
             "sortNum": 25000,
             "created": "2023-06-20T08:19:44.042Z",
             "modified": "2023-06-20T08:21:49.823Z",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "X-IDENTIFIER",
+                    "value": "{{app.identifier}}"
+                }
+            ],
+            "params": [],
+            "auth": {
+                "type": "bearer",
+                "bearer": "{{token.admin}}"
+            },
+            "tests": []
+        },
+        {
+            "_id": "c03d0ba3-93e1-4b38-90bf-a4ea84e3f21d",
+            "colId": "6238485b-4f16-41a4-8e97-25c1954c4f90",
+            "containerId": "59fb6d61-2432-4e84-8666-415483219bee",
+            "name": "getSingleObject",
+            "url": "{{iap.api.base_url}}/invoice_tasks/10",
+            "method": "GET",
+            "sortNum": 25000,
+            "created": "2023-06-21T07:45:10.053Z",
+            "modified": "2023-06-21T09:03:06.447Z",
             "headers": [
                 {
                     "name": "Accept",
@@ -1639,7 +1705,7 @@
             "method": "POST",
             "sortNum": 30000,
             "created": "2023-06-20T08:19:44.043Z",
-            "modified": "2023-06-20T08:21:38.116Z",
+            "modified": "2023-06-21T04:45:53.456Z",
             "headers": [
                 {
                     "name": "Accept",
@@ -1663,6 +1729,38 @@
             "tests": []
         },
         {
+            "_id": "3baeab9c-e49e-4065-8954-17c3d4219487",
+            "colId": "6238485b-4f16-41a4-8e97-25c1954c4f90",
+            "containerId": "59fb6d61-2432-4e84-8666-415483219bee",
+            "name": "create",
+            "url": "{{iap.api.base_url}}/invoice_tasks",
+            "method": "POST",
+            "sortNum": 30000,
+            "created": "2023-06-21T07:45:10.054Z",
+            "modified": "2023-06-21T09:08:02.801Z",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "X-IDENTIFIER",
+                    "value": "{{app.identifier}}"
+                }
+            ],
+            "params": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"company_id\": 1,\n  \"month_of_year\": \"01/2022\"\n}",
+                "form": []
+            },
+            "auth": {
+                "type": "bearer",
+                "bearer": "{{token.admin}}"
+            },
+            "tests": []
+        },
+        {
             "_id": "338e8931-608d-4e48-8dd4-fc95eb03d451",
             "colId": "6238485b-4f16-41a4-8e97-25c1954c4f90",
             "containerId": "f1d5bb84-b754-414b-8dd6-4dcd896627a4",
@@ -1671,7 +1769,7 @@
             "method": "POST",
             "sortNum": 35000,
             "created": "2023-06-20T07:23:33.622Z",
-            "modified": "2023-06-20T07:23:33.622Z",
+            "modified": "2023-06-21T03:46:38.569Z",
             "headers": [
                 {
                     "name": "Accept",
@@ -1686,6 +1784,38 @@
             "body": {
                 "type": "json",
                 "raw": "{\n  \"company_detail_id\":1,\n  \"arise_account_id\":1,\n  \"value_from\":19,\n  \"value_to\":20.5\n}",
+                "form": []
+            },
+            "auth": {
+                "type": "bearer",
+                "bearer": "{{token.admin}}"
+            },
+            "tests": []
+        },
+        {
+            "_id": "d83b9058-760e-40d0-a67b-83647e9a3139",
+            "colId": "6238485b-4f16-41a4-8e97-25c1954c4f90",
+            "containerId": "f1d5bb84-b754-414b-8dd6-4dcd896627a4",
+            "name": "createTaxFreeVoucher",
+            "url": "{{iap.api.base_url}}/company_detail_tax_free_vouchers",
+            "method": "POST",
+            "sortNum": 37500,
+            "created": "2023-06-21T03:30:41.701Z",
+            "modified": "2023-06-21T04:46:15.535Z",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "X-IDENTIFIER",
+                    "value": "{{app.identifier}}"
+                }
+            ],
+            "params": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"company_detail_id\":1,\n  \"tax_free_voucher_id\":3\n}",
                 "form": []
             },
             "auth": {
@@ -2198,6 +2328,38 @@
             "tests": []
         },
         {
+            "_id": "24abd947-8cf1-4d6a-9cb8-844bd6bec70a",
+            "colId": "6238485b-4f16-41a4-8e97-25c1954c4f90",
+            "containerId": "59fb6d61-2432-4e84-8666-415483219bee",
+            "name": "update",
+            "url": "{{iap.api.base_url}}/invoice_tasks/1",
+            "method": "PUT",
+            "sortNum": 40000,
+            "created": "2023-06-21T07:45:10.055Z",
+            "modified": "2023-06-21T07:56:56.716Z",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "X-IDENTIFIER",
+                    "value": "{{app.identifier}}"
+                }
+            ],
+            "params": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"company_id\": 1,\n  \"month_of_year\": \"01/2022\",\n  \"task_progress\": \"completed\"\n}",
+                "form": []
+            },
+            "auth": {
+                "type": "bearer",
+                "bearer": "{{token.admin}}"
+            },
+            "tests": []
+        },
+        {
             "_id": "1d57aa7d-1eaf-48f1-a03b-a2fdf195e963",
             "colId": "6238485b-4f16-41a4-8e97-25c1954c4f90",
             "containerId": "7bcbca5f-c7d4-429a-ae32-8e44eb610d5d",
@@ -2253,6 +2415,38 @@
             "body": {
                 "type": "json",
                 "raw": "{\n  \"value_from\":12,\n  \"value_to\":12\n}",
+                "form": []
+            },
+            "auth": {
+                "type": "bearer",
+                "bearer": "{{token.admin}}"
+            },
+            "tests": []
+        },
+        {
+            "_id": "dfb224d7-9c70-4199-a089-702706c786c7",
+            "colId": "6238485b-4f16-41a4-8e97-25c1954c4f90",
+            "containerId": "f1d5bb84-b754-414b-8dd6-4dcd896627a4",
+            "name": "updateTaxFreeVoucher",
+            "url": "{{iap.api.base_url}}/company_detail_tax_free_vouchers/1",
+            "method": "PUT",
+            "sortNum": 47500,
+            "created": "2023-06-21T03:31:07.493Z",
+            "modified": "2023-06-21T04:35:17.224Z",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "X-IDENTIFIER",
+                    "value": "{{app.identifier}}"
+                }
+            ],
+            "params": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"company_detail_id\":2,\n  \"tax_free_voucher_id\":1\n}",
                 "form": []
             },
             "auth": {
@@ -2667,6 +2861,33 @@
             "tests": []
         },
         {
+            "_id": "96e0978e-2631-4b71-8765-be50c3d1b2e2",
+            "colId": "6238485b-4f16-41a4-8e97-25c1954c4f90",
+            "containerId": "59fb6d61-2432-4e84-8666-415483219bee",
+            "name": "delete",
+            "url": "{{iap.api.base_url}}/invoice_tasks/8",
+            "method": "DELETE",
+            "sortNum": 50000,
+            "created": "2023-06-21T07:45:10.056Z",
+            "modified": "2023-06-21T09:01:22.221Z",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "X-IDENTIFIER",
+                    "value": "{{app.identifier}}"
+                }
+            ],
+            "params": [],
+            "auth": {
+                "type": "bearer",
+                "bearer": "{{token.admin}}"
+            },
+            "tests": []
+        },
+        {
             "_id": "7a1a88ea-494b-4c34-ab6b-708cea383fa0",
             "colId": "6238485b-4f16-41a4-8e97-25c1954c4f90",
             "containerId": "f1d5bb84-b754-414b-8dd6-4dcd896627a4",
@@ -2676,6 +2897,33 @@
             "sortNum": 60000,
             "created": "2023-06-20T07:23:33.654Z",
             "modified": "2023-06-20T07:23:33.654Z",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "X-IDENTIFIER",
+                    "value": "{{app.identifier}}"
+                }
+            ],
+            "params": [],
+            "auth": {
+                "type": "bearer",
+                "bearer": "{{token.admin}}"
+            },
+            "tests": []
+        },
+        {
+            "_id": "1c06d7fe-149e-48ef-8fa2-14dd3957beb6",
+            "colId": "6238485b-4f16-41a4-8e97-25c1954c4f90",
+            "containerId": "59fb6d61-2432-4e84-8666-415483219bee",
+            "name": "forceDelete",
+            "url": "{{iap.api.base_url}}/invoice_tasks/force/9",
+            "method": "DELETE",
+            "sortNum": 60000,
+            "created": "2023-06-21T08:08:27.201Z",
+            "modified": "2023-06-21T09:02:21.445Z",
             "headers": [
                 {
                     "name": "Accept",
@@ -2719,6 +2967,33 @@
                 "raw": "{\n  \"image_raw\": \"{{image.iap.test}}\"\n}",
                 "form": []
             },
+            "auth": {
+                "type": "bearer",
+                "bearer": "{{token.admin}}"
+            },
+            "tests": []
+        },
+        {
+            "_id": "4cb93bff-e2cd-40d0-ad37-ed7fc1b44bd6",
+            "colId": "6238485b-4f16-41a4-8e97-25c1954c4f90",
+            "containerId": "f1d5bb84-b754-414b-8dd6-4dcd896627a4",
+            "name": "deleteTaxFreeVoucher",
+            "url": "{{iap.api.base_url}}/company_detail_tax_free_vouchers/1",
+            "method": "DELETE",
+            "sortNum": 70000,
+            "created": "2023-06-21T04:40:59.023Z",
+            "modified": "2023-06-21T04:41:38.257Z",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "X-IDENTIFIER",
+                    "value": "{{app.identifier}}"
+                }
+            ],
+            "params": [],
             "auth": {
                 "type": "bearer",
                 "bearer": "{{token.admin}}"
