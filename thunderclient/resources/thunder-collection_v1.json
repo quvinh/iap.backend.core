@@ -1,7 +1,7 @@
 {
     "client": "Thunder Client",
     "collectionName": "v1",
-    "dateExported": "2023-06-21T09:12:14.686Z",
+    "dateExported": "2023-06-21T10:30:11.580Z",
     "version": "1.1",
     "folders": [
         {
@@ -128,6 +128,20 @@
             "name": "InvoiceTasks",
             "containerId": "",
             "created": "2023-06-21T07:45:10.052Z",
+            "sortNum": 165000
+        },
+        {
+            "_id": "887e7649-004a-4d8d-a42c-3032fa1e1e44",
+            "name": "ExchangeRateApi",
+            "containerId": "",
+            "created": "2023-06-21T09:21:17.752Z",
+            "sortNum": 165000
+        },
+        {
+            "_id": "678b5fa0-ff7e-4e5b-9560-c6a074196273",
+            "name": "ItemCode",
+            "containerId": "",
+            "created": "2023-06-21T10:25:50.354Z",
             "sortNum": 165000
         }
     ],
@@ -704,6 +718,38 @@
             "tests": []
         },
         {
+            "_id": "af056992-72e4-4ee1-954f-a333597ed027",
+            "colId": "6238485b-4f16-41a4-8e97-25c1954c4f90",
+            "containerId": "678b5fa0-ff7e-4e5b-9560-c6a074196273",
+            "name": "search",
+            "url": "{{iap.api.base_url}}/item_codes/search",
+            "method": "POST",
+            "sortNum": 20000,
+            "created": "2023-06-21T10:25:50.354Z",
+            "modified": "2023-06-21T10:26:46.195Z",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "X-IDENTIFIER",
+                    "value": "{{app.identifier}}"
+                }
+            ],
+            "params": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n    \"pagination\":{\"page\": 1, \"per_page\": 25}\n}",
+                "form": []
+            },
+            "auth": {
+                "type": "bearer",
+                "bearer": "{{token.admin}}"
+            },
+            "tests": []
+        },
+        {
             "_id": "9351d36a-7ba6-42ff-8e54-672597aea70b",
             "colId": "6238485b-4f16-41a4-8e97-25c1954c4f90",
             "containerId": "2062d6e5-2ac3-459a-9af0-b042d8069274",
@@ -1145,6 +1191,33 @@
             "sortNum": 25000,
             "created": "2023-06-21T07:45:10.053Z",
             "modified": "2023-06-21T09:03:06.447Z",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "X-IDENTIFIER",
+                    "value": "{{app.identifier}}"
+                }
+            ],
+            "params": [],
+            "auth": {
+                "type": "bearer",
+                "bearer": "{{token.admin}}"
+            },
+            "tests": []
+        },
+        {
+            "_id": "a682c7f4-dc4a-4e2f-8c3e-52411c9bd8a8",
+            "colId": "6238485b-4f16-41a4-8e97-25c1954c4f90",
+            "containerId": "678b5fa0-ff7e-4e5b-9560-c6a074196273",
+            "name": "getSingleObject",
+            "url": "{{iap.api.base_url}}/item_codes/10",
+            "method": "GET",
+            "sortNum": 25000,
+            "created": "2023-06-21T10:25:50.355Z",
+            "modified": "2023-06-21T10:26:50.329Z",
             "headers": [
                 {
                     "name": "Accept",
@@ -1761,6 +1834,38 @@
             "tests": []
         },
         {
+            "_id": "df0c14ec-024b-4f65-9a86-5368e38f365a",
+            "colId": "6238485b-4f16-41a4-8e97-25c1954c4f90",
+            "containerId": "678b5fa0-ff7e-4e5b-9560-c6a074196273",
+            "name": "create",
+            "url": "{{iap.api.base_url}}/item_codes",
+            "method": "POST",
+            "sortNum": 30000,
+            "created": "2023-06-21T10:25:50.356Z",
+            "modified": "2023-06-21T10:29:19.144Z",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "X-IDENTIFIER",
+                    "value": "{{app.identifier}}"
+                }
+            ],
+            "params": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"company_id\": 1,\n  \"product_code\": \"Demo\",\n  \"product_exchange\": \"Demo\",\n  \"year\": \"2000\"\n}",
+                "form": []
+            },
+            "auth": {
+                "type": "bearer",
+                "bearer": "{{token.admin}}"
+            },
+            "tests": []
+        },
+        {
             "_id": "338e8931-608d-4e48-8dd4-fc95eb03d451",
             "colId": "6238485b-4f16-41a4-8e97-25c1954c4f90",
             "containerId": "f1d5bb84-b754-414b-8dd6-4dcd896627a4",
@@ -2360,6 +2465,38 @@
             "tests": []
         },
         {
+            "_id": "963e718c-99c5-4c79-be22-094cf27cf678",
+            "colId": "6238485b-4f16-41a4-8e97-25c1954c4f90",
+            "containerId": "678b5fa0-ff7e-4e5b-9560-c6a074196273",
+            "name": "update",
+            "url": "{{iap.api.base_url}}/item_codes/1",
+            "method": "PUT",
+            "sortNum": 40000,
+            "created": "2023-06-21T10:25:50.357Z",
+            "modified": "2023-06-21T10:27:00.868Z",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "X-IDENTIFIER",
+                    "value": "{{app.identifier}}"
+                }
+            ],
+            "params": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"company_id\": 1,\n  \"month_of_year\": \"01/2022\",\n  \"task_progress\": \"completed\"\n}",
+                "form": []
+            },
+            "auth": {
+                "type": "bearer",
+                "bearer": "{{token.admin}}"
+            },
+            "tests": []
+        },
+        {
             "_id": "1d57aa7d-1eaf-48f1-a03b-a2fdf195e963",
             "colId": "6238485b-4f16-41a4-8e97-25c1954c4f90",
             "containerId": "7bcbca5f-c7d4-429a-ae32-8e44eb610d5d",
@@ -2888,6 +3025,47 @@
             "tests": []
         },
         {
+            "_id": "fe157a7d-2555-4d05-8e1b-6458472e5d94",
+            "colId": "6238485b-4f16-41a4-8e97-25c1954c4f90",
+            "containerId": "887e7649-004a-4d8d-a42c-3032fa1e1e44",
+            "name": "exchangeRate.api",
+            "url": "https://v6.exchangerate-api.com/v6/4c9a910c2fa0d785ff69c5b6/latest/USD",
+            "method": "GET",
+            "sortNum": 50000,
+            "created": "2023-06-21T09:44:46.966Z",
+            "modified": "2023-06-21T09:44:55.038Z",
+            "headers": [],
+            "params": [],
+            "tests": []
+        },
+        {
+            "_id": "a68709df-63d4-4d9d-ba86-142b039b1e08",
+            "colId": "6238485b-4f16-41a4-8e97-25c1954c4f90",
+            "containerId": "678b5fa0-ff7e-4e5b-9560-c6a074196273",
+            "name": "delete",
+            "url": "{{iap.api.base_url}}/item_codes/8",
+            "method": "DELETE",
+            "sortNum": 50000,
+            "created": "2023-06-21T10:25:50.358Z",
+            "modified": "2023-06-21T10:27:04.475Z",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "X-IDENTIFIER",
+                    "value": "{{app.identifier}}"
+                }
+            ],
+            "params": [],
+            "auth": {
+                "type": "bearer",
+                "bearer": "{{token.admin}}"
+            },
+            "tests": []
+        },
+        {
             "_id": "7a1a88ea-494b-4c34-ab6b-708cea383fa0",
             "colId": "6238485b-4f16-41a4-8e97-25c1954c4f90",
             "containerId": "f1d5bb84-b754-414b-8dd6-4dcd896627a4",
@@ -2924,6 +3102,33 @@
             "sortNum": 60000,
             "created": "2023-06-21T08:08:27.201Z",
             "modified": "2023-06-21T09:02:21.445Z",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "X-IDENTIFIER",
+                    "value": "{{app.identifier}}"
+                }
+            ],
+            "params": [],
+            "auth": {
+                "type": "bearer",
+                "bearer": "{{token.admin}}"
+            },
+            "tests": []
+        },
+        {
+            "_id": "b7505daa-c1c4-4e7e-800c-c06a6dfb3b42",
+            "colId": "6238485b-4f16-41a4-8e97-25c1954c4f90",
+            "containerId": "678b5fa0-ff7e-4e5b-9560-c6a074196273",
+            "name": "forceDelete",
+            "url": "{{iap.api.base_url}}/item_codes/force/9",
+            "method": "DELETE",
+            "sortNum": 60000,
+            "created": "2023-06-21T10:25:50.359Z",
+            "modified": "2023-06-21T10:27:09.195Z",
             "headers": [
                 {
                     "name": "Accept",
@@ -3030,6 +3235,51 @@
                 "type": "bearer",
                 "bearer": "{{token.admin}}"
             },
+            "tests": []
+        },
+        {
+            "_id": "80124a2b-be8b-439e-8bf4-69dea6057ec8",
+            "colId": "6238485b-4f16-41a4-8e97-25c1954c4f90",
+            "containerId": "887e7649-004a-4d8d-a42c-3032fa1e1e44",
+            "name": "msn",
+            "url": "https://assets.msn.com/service/Finance/Quotes?apikey=0QfOX3Vn51YCzitbLaRkTTBadtWpgTN8NZLW0C1SEM&activityId=E9F261DE-4B0F-4F30-8CC6-FB355D41AA08&ocid=finance-utils-peregrine&cm=vi-vn&it=web&ids=avyufr&wrapodata=false",
+            "method": "GET",
+            "sortNum": 100000,
+            "created": "2023-06-21T09:22:06.952Z",
+            "modified": "2023-06-21T09:42:20.691Z",
+            "headers": [],
+            "params": [
+                {
+                    "name": "activityId",
+                    "value": "E9F261DE-4B0F-4F30-8CC6-FB355D41AA08",
+                    "isPath": false
+                },
+                {
+                    "name": "ocid",
+                    "value": "finance-utils-peregrine",
+                    "isPath": false
+                },
+                {
+                    "name": "cm",
+                    "value": "vi-vn",
+                    "isPath": false
+                },
+                {
+                    "name": "it",
+                    "value": "web",
+                    "isPath": false
+                },
+                {
+                    "name": "ids",
+                    "value": "avyufr",
+                    "isPath": false
+                },
+                {
+                    "name": "wrapodata",
+                    "value": "false",
+                    "isPath": false
+                }
+            ],
             "tests": []
         }
     ]
