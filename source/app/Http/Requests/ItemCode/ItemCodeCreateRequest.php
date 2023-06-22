@@ -43,7 +43,7 @@ class ItemCodeCreateRequest extends BaseRequest
                     return $query->where([
                         ['company_id', $company_id],
                         ['product_code', $product_code],
-                        ['product_exchange', $product_exchange],
+                        // ['product_exchange', $product_exchange],
                         ['year', $year],
                     ]);
                 })
@@ -51,9 +51,10 @@ class ItemCodeCreateRequest extends BaseRequest
             'company_id' => ['required', 'integer', 'exists:companies,id'],
             'product_exchange' => ['required', 'string'],
             'product' => ['nullable', 'string'],
+            'unit' => ['required', 'string', 'max:100'],
             'price' => ['nullable', 'numeric'],
-            'quantity' => ['nullable', 'numeric'],
-            'begining_total_value' => ['nullable', 'numeric'],
+            'quantity' => ['required', 'numeric', 'min:1'],
+            'begining_total_value' => ['required', 'numeric', 'min:0'],
             'year' => ['required', 'integer', 'digits:4', 'min:2000']
         ];
     }

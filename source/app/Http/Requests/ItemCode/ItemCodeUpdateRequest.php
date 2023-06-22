@@ -45,7 +45,7 @@ class ItemCodeUpdateRequest extends BaseRequest
                     return $query->where([
                         ['company_id', $company_id],
                         ['product_code', $product_code],
-                        ['product_exchange', $product_exchange],
+                        // ['product_exchange', $product_exchange],
                         ['year', $year],
                     ]);
                 })->ignore($id)
@@ -53,9 +53,10 @@ class ItemCodeUpdateRequest extends BaseRequest
             'company_id' => ['required', 'integer', 'exists:companies,id'],
             'product_exchange' => ['required', 'string'],
             'product' => ['nullable', 'string'],
-            'price' => ['nullable', 'numeric'],
-            'quantity' => ['nullable', 'numeric'],
-            'begining_total_value' => ['nullable', 'numeric'],
+            'unit' => ['required', 'string', 'max:100'],
+            'price' => ['numeric'],
+            'quantity' => ['numeric', 'min:1'],
+            'begining_total_value' => ['numeric', 'min:0'],
             'year' => ['required', 'integer', 'digits:4', 'min:2000']
         ];
     }

@@ -11,9 +11,13 @@ class ItemCodeSearchRequest extends DefaultSearchRequest
      * Available relations to retrieve
      * @var string[]
      */
-    protected array $relations = [];
+    protected array $relations = [
+        'company'
+    ];
 
     protected array $fields = [
+        'company_id',
+        'year',
         'withs'
     ];
 

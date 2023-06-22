@@ -3,6 +3,7 @@
 namespace App\DataResources\ItemCode;
 
 use App\DataResources\BaseDataResource;
+use App\DataResources\Company\CompanyResource;
 use App\Models\ItemCode;
 
 class ItemCodeResource extends BaseDataResource
@@ -42,5 +43,10 @@ class ItemCodeResource extends BaseDataResource
     public function load(mixed $obj): void
     {
         parent::copy($obj, $this->fields);
+
+        if (in_array('company', $this->fields)) {
+            $this->withField('company');
+            $this->company = new CompanyResource($obj->company);
+        }
     }
 }

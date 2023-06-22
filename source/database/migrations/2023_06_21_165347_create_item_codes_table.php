@@ -19,9 +19,9 @@ return new class extends Migration
             $table->string('product_code');
             $table->string('product_exchange');
             $table->string('product')->nullable();
-            $table->decimal('price', 10, 2)->default(0);
+            $table->decimal('price', 12, 2)->default(0);
             $table->float('quantity')->default(0);
-            $table->decimal('begining_total_value', 10, 2)->default(0);
+            $table->decimal('begining_total_value', 12, 2)->default(0);
             $table->string('unit', 100);
             $table->string('year', 4);
             $table->boolean('status')->default(1);
