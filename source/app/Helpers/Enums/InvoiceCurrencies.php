@@ -6,8 +6,8 @@ use BenSampo\Enum\Enum;
 
 class InvoiceCurrencies extends Enum
 {
-    const CNY = 'CNY';
-    const JPY = 'JPY';
-    const VND = 'VND';
-    const USD = 'USD';
+    const CNY = 'cny';
+    const JPY = 'jpy';
+    const VND = 'vnd';
+    const USD = 'usd';
 }
