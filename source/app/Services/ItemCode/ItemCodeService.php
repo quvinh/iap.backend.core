@@ -72,9 +72,15 @@ class ItemCodeService extends \App\Services\BaseService implements IItemCodeServ
                 $param = $rawConditions['company_id'];
                 $query = $this->itemCodeRepos->queryOnAField(['company_id', '=', $param], $query);
             }
+
             if (isset($rawConditions['year'])) {
                 $param = $rawConditions['year'];
                 $query = $this->itemCodeRepos->queryOnAField(['year', '=', $param], $query);
+            }
+
+            if (isset($rawConditions['product_code'])) {
+                $param = $rawConditions['product_code'];
+                $query = $this->itemCodeRepos->queryOnAField(['product_code', '=', $param], $query);
             }
 
             if (isset($rawConditions['updated_date'])) {
