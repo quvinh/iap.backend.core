@@ -14,9 +14,11 @@ use App\Helpers\Utils\StorageHelper;
 use App\Helpers\Utils\StringHelper;
 use App\Models\Invoice;
 use App\Models\InvoiceTask;
+use App\Models\ItemCode;
 use App\Repositories\Invoice\IInvoiceRepository;
 use App\Services\Company\ICompanyService;
 use App\Services\InvoiceTask\IInvoiceTaskService;
+use App\Services\ItemCode\IItemCodeService;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Support\Collection;
@@ -29,13 +31,20 @@ class InvoiceService extends \App\Services\BaseService implements IInvoiceServic
     private ?IInvoiceRepository $invoiceRepos = null;
     private ?ICompanyService $companyService = null;
     private ?IInvoiceTaskService $invoiceTaskService = null;
+    private ?IItemCodeService $itemCodeService = null;
 
-    public function __construct(IInvoiceRepository $repos, ICompanyService $companyService, IInvoiceTaskService $invoiceTaskService)
+    public function __construct(
+        IInvoiceRepository $repos, 
+        ICompanyService $companyService, 
+        IInvoiceTaskService $invoiceTaskService,
+        IItemCodeService $itemCodeService
+    )
     {
         $this->invoiceRepos = $repos;
 
         $this->companyService = $companyService;
         $this->invoiceTaskService = $invoiceTaskService;
+        $this->itemCodeService = $itemCodeService;
     }
 
     /**
@@ -242,6 +251,7 @@ class InvoiceService extends \App\Services\BaseService implements IInvoiceServic
 
             #1 Check task
             $task_month = Carbon::parse($param['date'])->format('m/Y');
+            $year = Carbon::parse($param['date'])->format('Y');
             $task = $this->invoiceTaskService->search([
                 'company_id' => $company_id,
                 'month_of_year' => $task_month,
@@ -277,10 +287,27 @@ class InvoiceService extends \App\Services\BaseService implements IInvoiceServic
                 }
             }
             #3 Check item code
+            #TODO: Nhap lieu hoa don chi kem ma hh, khong fill ten quy doi
             if (isset($param['product_code'])) {
-
+                $itemCode = $this->itemCodeService->search([
+                    'company_id' => $company_id,
+                    'year' => $year,
+                    'product_code' => $param['product_code']
+                ]);
+                if (empty($itemCode->first())) {
+                    $itemCode = new ItemCode();
+                    $itemCode->company_id = $company_id;
+                    $itemCode->product_code = $param['product_code'];
+                    $itemCode->product = $param['product'];
+                    $itemCode->price = $param['price'];
+                    $itemCode->quantity = $param['quantity'];
+                    $itemCode->begining_total_value = $param['total'];
+                    $itemCode->unit = $param['unit'];
+                    $itemCode->year = $year;
+                    $itemCode->save();
+                } else $itemCode = $itemCode->first();
             } else {
-
+                
             }
             #4 Store invoice detail
             DB::commit();
