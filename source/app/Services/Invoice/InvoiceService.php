@@ -13,6 +13,7 @@ use App\Helpers\Common\MetaInfo;
 use App\Helpers\Utils\StorageHelper;
 use App\Helpers\Utils\StringHelper;
 use App\Models\Invoice;
+use App\Models\InvoiceDetail;
 use App\Models\InvoiceTask;
 use App\Models\ItemCode;
 use App\Repositories\Invoice\IInvoiceRepository;
@@ -24,6 +25,7 @@ use Exception;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 use Throwable;
 
 class InvoiceService extends \App\Services\BaseService implements IInvoiceService
@@ -248,8 +250,12 @@ class InvoiceService extends \App\Services\BaseService implements IInvoiceServic
             $type = $param['type'];
             $invoice_number = $param['invoice_number'];
             $invoice_symbol = $param['invoice_symbol']; 
+            $unit = Str::lower($param['unit']); 
 
-            #1 Check task
+            # 0.Compare price * quantity with total_money
+            if ($param['price'] * $param['quantity'] != $param['total_money']) throw new ActionFailException();
+
+            # 1.Check task
             $task_month = Carbon::parse($param['date'])->format('m/Y');
             $year = Carbon::parse($param['date'])->format('Y');
             $task = $this->invoiceTaskService->search([
@@ -262,7 +268,7 @@ class InvoiceService extends \App\Services\BaseService implements IInvoiceServic
                 $task->month_of_year = $task_month;
                 $task->save();
             } else $task = $task->first();
-            #2 Check invoice
+            # 2.Check invoice
             $invoice = $this->search([
                 'company_id' => $company_id,
                 'partner_tax_code' => $partner_tax_code,
@@ -275,10 +281,12 @@ class InvoiceService extends \App\Services\BaseService implements IInvoiceServic
                 $invoice->company_id = $company_id;
                 $invoice->invoice_task_id = $task->id;
                 $invoice->partner_tax_code = $partner_tax_code;
+                $invoice->partner_name = $param['partner_name'] ?? null;
                 $invoice->type = $type;
                 $invoice->invoice_number = $invoice_number;
                 $invoice->invoice_symbol = $invoice_symbol;
                 $invoice->date = $param['date'];
+                $invoice->created_by = auth()->user()->id . '|' . auth()->user()->name;
                 $invoice->save();
             } else {
                 $invoice = $invoice->first();
@@ -286,7 +294,7 @@ class InvoiceService extends \App\Services\BaseService implements IInvoiceServic
                     throw new ActionFailException();
                 }
             }
-            #3 Check item code
+            # 3.Check item code
             #TODO: Nhap lieu hoa don chi kem ma hh, khong fill ten quy doi
             if (isset($param['product_code'])) {
                 $itemCode = $this->itemCodeService->search([
@@ -301,17 +309,29 @@ class InvoiceService extends \App\Services\BaseService implements IInvoiceServic
                     $itemCode->product = $param['product'];
                     $itemCode->price = $param['price'];
                     $itemCode->quantity = $param['quantity'];
-                    $itemCode->begining_total_value = $param['total'];
-                    $itemCode->unit = $param['unit'];
+                    $itemCode->begining_total_value = $param['total_money'];
+                    $itemCode->unit = $unit;
                     $itemCode->year = $year;
                     $itemCode->save();
                 } else $itemCode = $itemCode->first();
             } else {
-                
+                // nothing
             }
-            #4 Store invoice detail
+            # 4.Store invoice detail
+            $invoiceDetail = new InvoiceDetail();
+            $invoiceDetail->invoice_id = $invoice->id;
+            $invoiceDetail->item_code_id = $itemCode->id ?? null;
+            $invoiceDetail->product = $param['product'];
+            $invoiceDetail->unit = $unit;
+            $invoiceDetail->quantity = $param['quantity'];
+            $invoiceDetail->price = $param['price'];
+            $invoiceDetail->setInvoiceDetail($param['total_money'], $param['vat']);
+            $invoiceDetail->save();
+            # 5.Update sum value of invoice
+            $invoice->plusMoneyInvoice($invoiceDetail->total_money, $invoiceDetail->vat);
+            $invoice->save();
             DB::commit();
-            #5 Return
+            # 6.Return
             return $invoice;
         } catch (\Exception $e) {
             DB::rollBack();

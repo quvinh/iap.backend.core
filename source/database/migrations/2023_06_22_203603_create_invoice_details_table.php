@@ -19,14 +19,14 @@ return new class extends Migration
             $table->unsignedBigInteger('formula_id')->nullable();
             $table->unsignedBigInteger('formula_commodity_id')->nullable();
             $table->unsignedBigInteger('formula_material_id')->nullable();
-            $table->unsignedBigInteger('item_code_id');
+            $table->unsignedBigInteger('item_code_id')->nullable();
             $table->string('product');
             $table->string('unit', 100);
             $table->float('quantity')->default(0);
             $table->decimal('price', 12, 2)->default(0);
             $table->integer('vat')->default(0);
             $table->decimal('vat_money', 12, 2)->default(0);
-            $table->decimal('total_money', 12, 2)->default(0);
+            $table->decimal('total_money', 12, 2)->default(0); // price * quantity (novat)
             $table->boolean('warehouse')->default(0);
             $table->boolean('main_entity')->default(1);
             $table->boolean('visible')->default(1);

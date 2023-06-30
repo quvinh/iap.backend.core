@@ -3,6 +3,7 @@
 namespace App\DataResources\Invoice;
 
 use App\DataResources\BaseDataResource;
+use App\DataResources\InvoiceDetail\InvoiceDetailResource;
 use App\Models\Invoice;
 
 class InvoiceResource extends BaseDataResource
@@ -55,5 +56,9 @@ class InvoiceResource extends BaseDataResource
     public function load(mixed $obj): void
     {
         parent::copy($obj, $this->fields);
+
+        if (in_array('invoice_details', $this->fields)) {
+            $this->invoice_details = BaseDataResource::generateResources($obj->invoice_details, InvoiceDetailResource::class);
+        }
     }
 }

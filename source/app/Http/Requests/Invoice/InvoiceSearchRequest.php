@@ -11,7 +11,9 @@ class InvoiceSearchRequest extends DefaultSearchRequest
      * Available relations to retrieve
      * @var string[]
      */
-    protected array $relations = [];
+    protected array $relations = [
+        'invoice_details',
+    ];
 
     protected array $fields = [
         'withs',

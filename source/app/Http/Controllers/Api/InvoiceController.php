@@ -8,6 +8,7 @@ use App\Helpers\Enums\UserRoles;
 use App\Helpers\Responses\ApiResponse;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\Traits\DefaultRestActions;
+use App\Http\Requests\Invoice\InvoiceCreateEachRowRequest;
 use App\Http\Requests\Invoice\InvoiceCreateRequest;
 use App\Http\Requests\Invoice\InvoiceSearchRequest;
 use App\Http\Requests\Invoice\InvoiceUpdateRequest;
@@ -105,7 +106,7 @@ class InvoiceController extends ApiController
         }
     }
 
-    public function createEachRow(Request $request): Response
+    public function createEachRow(InvoiceCreateEachRowRequest $request): Response
     {
         $result = $this->invoiceService->storeEachRowInvoice($request->all());
         # Send response using the predefined format
