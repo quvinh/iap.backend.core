@@ -92,9 +92,19 @@ class InvoiceService extends \App\Services\BaseService implements IInvoiceServic
                 $query = $this->invoiceRepos->queryOnAField([DB::raw("upper(name)"), 'LIKE BINARY', DB::raw("upper(concat('%', ? , '%'))")], positionalBindings: ['name' => $param]);
             }
 
+            if (isset($rawConditions['id'])) {
+                $param = $rawConditions['id'];
+                $query = $this->invoiceRepos->queryOnAField(['id', '=', $param], $query);
+            }
+
             if (isset($rawConditions['company_id'])) {
                 $param = $rawConditions['company_id'];
                 $query = $this->invoiceRepos->queryOnAField(['company_id', '=', $param], $query);
+            }
+
+            if (isset($rawConditions['invoice_task_id'])) {
+                $param = $rawConditions['invoice_task_id'];
+                $query = $this->invoiceRepos->queryOnAField(['invoice_task_id', '=', $param], $query);
             }
 
             if (isset($rawConditions['partner_tax_code'])) {

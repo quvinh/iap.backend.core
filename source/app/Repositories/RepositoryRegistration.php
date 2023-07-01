@@ -28,6 +28,8 @@ use App\Repositories\FormulaMaterial\FormulaMaterialRepository;
 use App\Repositories\FormulaMaterial\IFormulaMaterialRepository;
 use App\Repositories\Invoice\IInvoiceRepository;
 use App\Repositories\Invoice\InvoiceRepository;
+use App\Repositories\InvoiceDetail\IInvoiceDetailRepository;
+use App\Repositories\InvoiceDetail\InvoiceDetailRepository;
 use App\Repositories\InvoiceTask\IInvoiceTaskRepository;
 use App\Repositories\InvoiceTask\InvoiceTaskRepository;
 use App\Repositories\ItemCode\IItemCodeRepository;
@@ -68,5 +70,6 @@ class RepositoryRegistration
         $app->singleton(IInvoiceTaskRepository::class, InvoiceTaskRepository::class);
         $app->singleton(IItemCodeRepository::class, ItemCodeRepository::class);
         $app->singleton(IInvoiceRepository::class, InvoiceRepository::class);
+        $app->singleton(IInvoiceDetailRepository::class, InvoiceDetailRepository::class);
     }
 }

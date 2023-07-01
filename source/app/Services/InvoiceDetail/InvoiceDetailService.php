@@ -188,4 +188,24 @@ class InvoiceDetailService extends \App\Services\BaseService implements IInvoice
             );
         }
     }
+
+    /**
+     * Update formula for inovice detail
+     * @return bool
+     */
+    public function updateProgressByFormula(array $param, MetaInfo $commandMetaInfo = null): bool
+    {
+        DB::beginTransaction();
+        try {
+            $result =  $this->invoiceDetailRepos->updateProgressByFormula($param, $commandMetaInfo);
+            DB::commit();
+            return $result;
+        } catch (\Exception $ex) {
+            DB::rollBack();
+            throw new ActionFailException(
+                message: 'update progress',
+                previous: $ex
+            );
+        }
+    }
 }

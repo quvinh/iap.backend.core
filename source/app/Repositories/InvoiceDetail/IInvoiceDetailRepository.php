@@ -8,4 +8,5 @@ use App\Repositories\IRepository;
 
 interface IInvoiceDetailRepository extends IRepository
 {
+    public function updateProgressByFormula(array $form, MetaInfo $meta = null): bool;
 }

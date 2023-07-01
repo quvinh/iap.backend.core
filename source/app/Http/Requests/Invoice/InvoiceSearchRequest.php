@@ -17,7 +17,9 @@ class InvoiceSearchRequest extends DefaultSearchRequest
 
     protected array $fields = [
         'withs',
+        'id',
         'company_id',
+        'invoice_task_id',
         'partner_tax_code',
         'type',
         'invoice_number',

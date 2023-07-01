@@ -30,6 +30,8 @@ use App\Services\FormulaMaterial\FormulaMaterialService;
 use App\Services\FormulaMaterial\IFormulaMaterialService;
 use App\Services\Invoice\IInvoiceService;
 use App\Services\Invoice\InvoiceService;
+use App\Services\InvoiceDetail\IInvoiceDetailService;
+use App\Services\InvoiceDetail\InvoiceDetailService;
 use App\Services\InvoiceTask\IInvoiceTaskService;
 use App\Services\InvoiceTask\InvoiceTaskService;
 use App\Services\ItemCode\IItemCodeService;
@@ -71,5 +73,6 @@ class ServiceRegistration
         $app->singleton(IInvoiceTaskService::class, InvoiceTaskService::class);
         $app->singleton(IItemCodeService::class, ItemCodeService::class);
         $app->singleton(IInvoiceService::class, InvoiceService::class);
+        $app->singleton(IInvoiceDetailService::class, InvoiceDetailService::class);
     }
 }
