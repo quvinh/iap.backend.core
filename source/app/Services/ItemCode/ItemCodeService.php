@@ -68,6 +68,11 @@ class ItemCodeService extends \App\Services\BaseService implements IItemCodeServ
     {
         try {
             $query = $this->itemCodeRepos->search();
+            if (isset($rawConditions['product'])) {
+                $param = StringHelper::escapeLikeQueryParameter($rawConditions['product']);
+                $query = $this->itemCodeRepos->queryOnAField([DB::raw("upper(product)"), 'LIKE BINARY', DB::raw("upper(concat('%', ? , '%'))")], positionalBindings: ['product' => $param]);
+            }
+
             if (isset($rawConditions['company_id'])) {
                 $param = $rawConditions['company_id'];
                 $query = $this->itemCodeRepos->queryOnAField(['company_id', '=', $param], $query);
