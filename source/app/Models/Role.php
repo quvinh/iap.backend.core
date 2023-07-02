@@ -16,6 +16,9 @@ class Role extends BaseModel
         'name'
     ];
 
+    /**
+     * @return HasManyThrougn
+     */
     public function permissions(): HasManyThrough
     {
         return $this->hasManyThrough(
@@ -28,6 +31,18 @@ class Role extends BaseModel
         );
     }
 
+    /**
+     * @return HasMany
+     */
+    public function permissionGroup(): HasMany
+    {
+        return $this->hasMany(PermissionGroup::class, 'role_id', 'id');
+    }
+
+    /**
+     * Get name of permissions
+     * @return string
+     */
     public function getNamePermissions()
     {
         $permissions = array_map(function ($item) {
@@ -39,6 +54,10 @@ class Role extends BaseModel
         return implode(', ', $permissions);
     }
 
+    /**
+     * Get id of permissions
+     * @return array
+     */
     public function getIdOfPermissions()
     {
         $permissions = array_map(function ($item) {
