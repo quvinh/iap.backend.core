@@ -160,8 +160,11 @@ class AuthenticationController extends ApiController
 
         $getAuthIdentifier = auth()->user()->getAuthIdentifier();
         if ($getAuthIdentifier) {
+            $user = auth()->user();
             $role = Role::find(auth()->user()->role_id ?? null);
             $ret = array_merge($ret, [
+                'name' => $user->name,
+                'username' => $user->username,
                 'role' => $role->name,
                 'permissions' => $role->getIdOfPermissions()
             ]);
