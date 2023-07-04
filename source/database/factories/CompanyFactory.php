@@ -19,6 +19,7 @@ class CompanyFactory extends Factory
         return [
             'name' => fake()->company(),
             'tax_code' => fake()->numerify('##########'), // 10 digit faker
+            'tax_password' => fake()->numerify('######'), // 6 digit faker
             'email' => fake()->unique()->safeEmail(),
             'phone' => fake()->phoneNumber(),
             'address' => fake()->address(),
