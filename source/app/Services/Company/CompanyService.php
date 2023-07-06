@@ -67,7 +67,7 @@ class CompanyService extends \App\Services\BaseService implements ICompanyServic
      */
     public function search(array $rawConditions, PaginationInfo &$paging = null, array $withs = []): Collection
     {
-        // try {
+        try {
             $query = $this->companyRepos->search();
             if (isset($rawConditions['name'])) {
                 $param = StringHelper::escapeLikeQueryParameter($rawConditions['name']);
@@ -93,12 +93,12 @@ class CompanyService extends \App\Services\BaseService implements ICompanyServic
                 return $this->companyRepos->sort($query, $sort)->get();
             }
             return $query->get();
-        // } catch (Exception $e) {
-        //     throw new ActionFailException(
-        //         message: 'search: ' . json_encode(['conditions' => $rawConditions, 'paging' => $paging, 'withs' => $withs]),
-        //         previous: $e
-        //     );
-        // }
+        } catch (Exception $e) {
+            throw new ActionFailException(
+                message: 'search: ' . json_encode(['conditions' => $rawConditions, 'paging' => $paging, 'withs' => $withs]),
+                previous: $e
+            );
+        }
     }
 
     /**
@@ -115,16 +115,16 @@ class CompanyService extends \App\Services\BaseService implements ICompanyServic
         try {
             #1 Create
             $record = $this->companyRepos->create($param, $commandMetaInfo);
-            if (empty($record)) {
-                throw new CannotSaveToDBException();
-            } else {
-                $detail = new CompanyDetail();
-                $detail->company_id = $record->id;
-                $detail->company_type_id = $param['company_type_id'];
-                $detail->description = isset($param['description']) ? $param['description'] : null;
-                $detail->year = $param['year'];
-                $detail->save();
-            }
+            // if (empty($record)) {
+            //     throw new CannotSaveToDBException();
+            // } else {
+            //     $detail = new CompanyDetail();
+            //     $detail->company_id = $record->id;
+            //     $detail->company_type_id = $param['company_type_id'];
+            //     $detail->description = isset($param['description']) ? $param['description'] : null;
+            //     $detail->year = $param['year'];
+            //     $detail->save();
+            // }
             DB::commit();
             #2 Return
             return $record;
