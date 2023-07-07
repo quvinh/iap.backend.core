@@ -33,7 +33,7 @@ class CompanyUpdateRequest extends BaseRequest
     {
         return [
             'name' => ['required', 'string'],
-            'tax_code' => ['required', 'min:100', 'string', 'unique:companies,tax_code'],
+            'tax_code' => ['required', 'max:100', 'string', 'unique:companies,tax_code,' . $this->id],
             'tax_password' => ['nullable', 'string'],
             'email' => ['nullable', 'string', 'email'],
             'phone' => ['nullable', 'string', 'min:10', 'max:20'],
