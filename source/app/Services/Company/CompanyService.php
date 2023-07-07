@@ -74,6 +74,16 @@ class CompanyService extends \App\Services\BaseService implements ICompanyServic
                 $query = $this->companyRepos->queryOnAField([DB::raw("upper(name)"), 'LIKE BINARY', DB::raw("upper(concat('%', ? , '%'))")], positionalBindings: ['name' => $param]);
             }
 
+            if (isset($rawConditions['tax_code'])) {
+                $param = $rawConditions['tax_code'];
+                $query = $this->companyRepos->queryOnAField(['tax_code', '=', $param], $query);
+            }
+
+            if (isset($rawConditions['status'])) {
+                $param = $rawConditions['status'];
+                $query = $this->companyRepos->queryOnAField(['status', '=', $param], $query);
+            }
+
             if (isset($rawConditions['updated_date'])) {
                 $query = $this->companyRepos->queryOnDateRangeField($query, 'updated_at', $rawConditions['updated_date']);
             }
@@ -96,6 +106,22 @@ class CompanyService extends \App\Services\BaseService implements ICompanyServic
         } catch (Exception $e) {
             throw new ActionFailException(
                 message: 'search: ' . json_encode(['conditions' => $rawConditions, 'paging' => $paging, 'withs' => $withs]),
+                previous: $e
+            );
+        }
+    }
+
+    /**
+     * Get all companies
+     * @return Collection
+     */
+    public function getAllCompanies(): Collection
+    {
+        try {
+            $companies = $this->companyRepos->getAllCompanies();
+            return $companies;
+        } catch (\Exception $e) {
+            throw new ActionFailException(
                 previous: $e
             );
         }

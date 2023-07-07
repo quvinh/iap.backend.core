@@ -17,7 +17,9 @@ class CompanySearchRequest extends DefaultSearchRequest
     ];
 
     protected array $fields = [
-        'withs'
+        'withs',
+        'status',
+        'tax_code',
     ];
 
     /**

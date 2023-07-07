@@ -2,9 +2,12 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\DataResources\BaseDataResource;
+use App\DataResources\Company\CompanyAllResource;
 use App\DataResources\Company\CompanyResource;
 use App\Helpers\Common\MetaInfo;
 use App\Helpers\Enums\UserRoles;
+use App\Helpers\Responses\ApiResponse;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\Traits\DefaultRestActions;
 use App\Http\Requests\Company\CompanyCreateRequest;
@@ -35,6 +38,7 @@ class CompanyController extends ApiController
     {
         $root = 'companies';
         if ($role == UserRoles::ADMINISTRATOR) {
+            Route::get($root . '/all', [CompanyController::class, 'all']);
             Route::post($root . '/search', [CompanyController::class, 'search']);
             Route::get($root . '/{id}', [CompanyController::class, 'getSingleObject']);
             Route::post($root, [CompanyController::class, 'create']);
@@ -100,5 +104,18 @@ class CompanyController extends ApiController
             default:
                 return $request;
         }
+    }
+
+    /**
+     * Get all companies
+     */
+    public function all()
+    {
+        $response = $this->companyService->getAllCompanies();
+        # Convert result to output resource
+        $result = BaseDataResource::generateResources($response, CompanyAllResource::class);
+        # Send response using the predefined format
+        $response = ApiResponse::v1();
+        return $response->send($result);
     }
 }

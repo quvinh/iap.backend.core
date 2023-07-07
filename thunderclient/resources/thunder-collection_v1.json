@@ -1,7 +1,7 @@
 {
     "client": "Thunder Client",
     "collectionName": "v1",
-    "dateExported": "2023-07-06T17:16:04.802Z",
+    "dateExported": "2023-07-07T17:28:16.686Z",
     "version": "1.1",
     "folders": [
         {
@@ -388,7 +388,7 @@
             "method": "POST",
             "sortNum": 20000,
             "created": "2023-07-02T02:03:32.437Z",
-            "modified": "2023-07-02T02:03:32.437Z",
+            "modified": "2023-07-07T16:14:29.746Z",
             "headers": [
                 {
                     "name": "Accept",
@@ -402,7 +402,7 @@
             "params": [],
             "body": {
                 "type": "json",
-                "raw": "{\n  \"pagination\": {\n    \"page\": 1,\n    \"per_page\": 25\n  },\n  \"withs\": [\n    \"company\",\n    \"type\",\n    \"accounts\",\n    \"tax_free_vouchers\"\n  ],\n  \"year\": \"2022\"\n}",
+                "raw": "{\n  \"pagination\": {\n    \"page\": 1,\n    \"per_page\": 25\n  },\n  \"withs\": [\n    \"company\",\n    \"type\",\n    \"accounts\",\n    \"tax_free_vouchers\"\n  ],\n  \"year\": \"2022\",\n  \"company_id\": 1\n}",
                 "form": []
             },
             "auth": {
@@ -1393,6 +1393,33 @@
                 "raw": "{\n  \"name\": \"Em. So đẹp1\",\n  \"username\": \"admin.So.dep\",\n  \"email\": \"admin@dev.test\"\n}",
                 "form": []
             },
+            "auth": {
+                "type": "bearer",
+                "bearer": "{{token.admin}}"
+            },
+            "tests": []
+        },
+        {
+            "_id": "5528e0e2-aa43-4a35-ad78-037f30a0c7fd",
+            "colId": "133c6d6e-6f76-445f-adc6-ef5c2548b6d7",
+            "containerId": "3962749d-c72a-49ea-afa7-972616928bce",
+            "name": "getAll",
+            "url": "{{iap.api.base_url}}/companies/all",
+            "method": "GET",
+            "sortNum": 27500,
+            "created": "2023-07-07T15:50:01.973Z",
+            "modified": "2023-07-07T15:50:15.383Z",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "X-IDENTIFIER",
+                    "value": "{{app.identifier}}"
+                }
+            ],
+            "params": [],
             "auth": {
                 "type": "bearer",
                 "bearer": "{{token.admin}}"
