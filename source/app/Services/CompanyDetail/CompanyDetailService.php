@@ -69,6 +69,11 @@ class CompanyDetailService extends \App\Services\BaseService implements ICompany
     {
         try {
             $query = $this->companyDetailRepos->search();
+            if (isset($rawConditions['id'])) {
+                $param = $rawConditions['id'];
+                $query = $this->companyDetailRepos->queryOnAField(['id', '=', $param], $query);
+            }
+
             if (isset($rawConditions['year'])) {
                 $param = $rawConditions['year'];
                 $query = $this->companyDetailRepos->queryOnAField(['year', '=', $param], $query);
