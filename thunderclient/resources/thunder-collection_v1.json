@@ -2015,7 +2015,7 @@
             "params": [],
             "body": {
                 "type": "json",
-                "raw": "{\n  \"company_id\": 1,\n  \"product_code\": \"Demo\",\n  \"product_exchange\": \"Demo\",\n  \"product\": \"Demo\",\n  \"unit\": \"item\",\n  \"quantity\": 1,\n  \"begining_total_value\": 0,\n  \"year\": \"2000\"\n}",
+                "raw": "{\n  \"company_id\": 1,\n  \"product_code\": \"Demo\",\n  \"product_exchange\": \"Demo\",\n  \"product\": \"Demo\",\n  \"unit\": \"item\",\n  \"quantity\": 1,\n  \"opening_balance_value\": 0,\n  \"year\": \"2000\"\n}",
                 "form": []
             },
             "auth": {
@@ -2047,7 +2047,7 @@
             "params": [],
             "body": {
                 "type": "json",
-                "raw": "{\n  \"company_id\": 1,\n  \"product_code\": \"Demo\",\n  \"product_exchange\": \"Demo\",\n  \"product\": \"Demo\",\n  \"unit\": \"item\",\n  \"quantity\": 1,\n  \"begining_total_value\": 0,\n  \"year\": \"2000\"\n}",
+                "raw": "{\n  \"company_id\": 1,\n  \"product_code\": \"Demo\",\n  \"product_exchange\": \"Demo\",\n  \"product\": \"Demo\",\n  \"unit\": \"item\",\n  \"quantity\": 1,\n  \"opening_balance_value\": 0,\n  \"year\": \"2000\"\n}",
                 "form": []
             },
             "auth": {
@@ -2079,7 +2079,7 @@
             "params": [],
             "body": {
                 "type": "json",
-                "raw": "{\n  \"company_id\": 1,\n  \"product_code\": \"Demo\",\n  \"product_exchange\": \"Demo\",\n  \"product\": \"Demo\",\n  \"unit\": \"item\",\n  \"quantity\": 1,\n  \"begining_total_value\": 0,\n  \"year\": \"2000\"\n}",
+                "raw": "{\n  \"company_id\": 1,\n  \"product_code\": \"Demo\",\n  \"product_exchange\": \"Demo\",\n  \"product\": \"Demo\",\n  \"unit\": \"item\",\n  \"quantity\": 1,\n  \"opening_balance_value\": 0,\n  \"year\": \"2000\"\n}",
                 "form": []
             },
             "auth": {
@@ -2742,7 +2742,7 @@
             "params": [],
             "body": {
                 "type": "json",
-                "raw": "{\n  \"company_id\": 1,\n  \"product_code\": \"Demoo\",\n  \"product_exchange\": \"Demo\",\n  \"product\": \"Demo\",\n  \"unit\": \"item\",\n  \"quantity\": 3,\n  \"begining_total_value\": 4,\n  \"year\": \"2000\"\n}",
+                "raw": "{\n  \"company_id\": 1,\n  \"product_code\": \"Demoo\",\n  \"product_exchange\": \"Demo\",\n  \"product\": \"Demo\",\n  \"unit\": \"item\",\n  \"quantity\": 3,\n  \"opening_balance_value\": 4,\n  \"year\": \"2000\"\n}",
                 "form": []
             },
             "auth": {
@@ -2774,7 +2774,7 @@
             "params": [],
             "body": {
                 "type": "json",
-                "raw": "{\n  \"company_id\": 1,\n  \"product_code\": \"Demoo\",\n  \"product_exchange\": \"Demo\",\n  \"product\": \"Demo\",\n  \"unit\": \"item\",\n  \"quantity\": 3,\n  \"begining_total_value\": 4,\n  \"year\": \"2000\"\n}",
+                "raw": "{\n  \"company_id\": 1,\n  \"product_code\": \"Demoo\",\n  \"product_exchange\": \"Demo\",\n  \"product\": \"Demo\",\n  \"unit\": \"item\",\n  \"quantity\": 3,\n  \"opening_balance_value\": 4,\n  \"year\": \"2000\"\n}",
                 "form": []
             },
             "auth": {
@@ -2806,7 +2806,7 @@
             "params": [],
             "body": {
                 "type": "json",
-                "raw": "{\n  \"company_id\": 1,\n  \"product_code\": \"Demoo\",\n  \"product_exchange\": \"Demo\",\n  \"product\": \"Demo\",\n  \"unit\": \"item\",\n  \"quantity\": 3,\n  \"begining_total_value\": 4,\n  \"year\": \"2000\"\n}",
+                "raw": "{\n  \"company_id\": 1,\n  \"product_code\": \"Demoo\",\n  \"product_exchange\": \"Demo\",\n  \"product\": \"Demo\",\n  \"unit\": \"item\",\n  \"quantity\": 3,\n  \"opening_balance_value\": 4,\n  \"year\": \"2000\"\n}",
                 "form": []
             },
             "auth": {

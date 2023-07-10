@@ -19,7 +19,7 @@ class ItemCodeResource extends BaseDataResource
         'product',
         'price',
         'quantity',
-        'begining_total_value',
+        'opening_balance_value',
         'unit',
         'year',
         'status',

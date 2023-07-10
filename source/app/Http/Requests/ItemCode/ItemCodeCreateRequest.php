@@ -54,7 +54,7 @@ class ItemCodeCreateRequest extends BaseRequest
             'unit' => ['required', 'string', 'max:100'],
             'price' => ['nullable', 'numeric'],
             'quantity' => ['required', 'numeric', 'min:1'],
-            'begining_total_value' => ['required', 'numeric', 'min:0'],
+            'opening_balance_value' => ['required', 'numeric', 'min:0'],
             'year' => ['required', 'integer', 'digits:4', 'min:2000']
         ];
     }

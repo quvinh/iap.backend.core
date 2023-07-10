@@ -56,7 +56,7 @@ class ItemCodeUpdateRequest extends BaseRequest
             'unit' => ['required', 'string', 'max:100'],
             'price' => ['numeric'],
             'quantity' => ['numeric', 'min:1'],
-            'begining_total_value' => ['numeric', 'min:0'],
+            'opening_balance_value' => ['numeric', 'min:0'],
             'year' => ['required', 'integer', 'digits:4', 'min:2000']
         ];
     }

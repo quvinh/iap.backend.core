@@ -319,7 +319,7 @@ class InvoiceService extends \App\Services\BaseService implements IInvoiceServic
                     $itemCode->product = $param['product'];
                     $itemCode->price = $param['price'];
                     $itemCode->quantity = $param['quantity'];
-                    $itemCode->begining_total_value = $param['total_money'];
+                    $itemCode->opening_balance_value = $param['total_money'];
                     $itemCode->unit = $unit;
                     $itemCode->year = $year;
                     $itemCode->save();

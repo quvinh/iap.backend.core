@@ -34,7 +34,7 @@ class ItemCodeRepository extends BaseRepository implements IItemCodeRepository
         $entity = new ItemCode();
         $entity->fill($form);
         if (!isset($form['price'])) {
-            $entity->setItemCode($form['quantity'], $form['begining_total_value']);
+            $entity->setItemCode($form['quantity'], $form['opening_balance_value']);
         }
         $entity->setMetaInfo($meta, true);
         $chk = $entity->save();
@@ -63,7 +63,7 @@ class ItemCodeRepository extends BaseRepository implements IItemCodeRepository
         if (isset($entity)) {
             $entity->fill($form);
             if (!isset($form['price'])) {
-                $entity->setItemCode($form['quantity'], $form['begining_total_value']);
+                $entity->setItemCode($form['quantity'], $form['opening_balance_value']);
             }
             $entity->setMetaInfo($meta, true);
             if ($entity->save() !== false) {

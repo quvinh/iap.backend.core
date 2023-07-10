@@ -21,7 +21,7 @@ return new class extends Migration
             $table->string('product')->nullable();
             $table->decimal('price', 12, 2)->default(0);
             $table->float('quantity')->default(0);
-            $table->decimal('begining_total_value', 12, 2)->default(0);
+            $table->decimal('opening_balance_value', 12, 2)->default(0);
             $table->string('unit', 100)->default('unit');
             $table->string('year', 4);
             $table->boolean('status')->default(1);
