@@ -34,7 +34,7 @@ class CompanyDetailTaxFreeVoucherController extends ApiController
      */
     public static function registerRoutes(string $companyDetailTaxFreeVoucher = null): void
     {
-        $root = 'company_detail_tax_free_vouchers';
+        $root = 'company-detail-tax-free-vouchers';
         if ($companyDetailTaxFreeVoucher == UserRoles::ADMINISTRATOR) {
             Route::post($root . '/search', [CompanyDetailTaxFreeVoucherController::class, 'search']);
             Route::get($root . '/{id}', [CompanyDetailTaxFreeVoucherController::class, 'getSingleObject']);

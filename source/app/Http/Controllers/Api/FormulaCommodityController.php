@@ -33,7 +33,7 @@ class FormulaCommodityController extends ApiController
      */
     public static function registerRoutes(string $role = null): void
     {
-        $root = 'formula_commodities';
+        $root = 'formula-commodities';
         if ($role == UserRoles::ADMINISTRATOR) {
             Route::post($root . '/search', [FormulaCommodityController::class, 'search']);
             Route::get($root . '/{id}', [FormulaCommodityController::class, 'getSingleObject']);

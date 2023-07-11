@@ -36,7 +36,7 @@ class CompanyDetailController extends ApiController
      */
     public static function registerRoutes(string $role = null): void
     {
-        $root = 'company_details';
+        $root = 'company-details';
         if ($role == UserRoles::ADMINISTRATOR) {
             Route::post($root . '/search', [CompanyDetailController::class, 'search']);
             Route::get($root . '/{id}', [CompanyDetailController::class, 'getSingleObject']);
@@ -44,9 +44,9 @@ class CompanyDetailController extends ApiController
             Route::put($root . '/{id}', [CompanyDetailController::class, 'update']);
             Route::delete($root . '/{id}', [CompanyDetailController::class, 'delete']);
 
-            Route::post($root . '/arise_account', [CompanyDetailController::class, 'createAriseAccount']);
-            Route::put($root . '/arise_account/{id}', [CompanyDetailController::class, 'updateAriseAccount']);
-            Route::delete($root . '/arise_account/{id}', [CompanyDetailController::class, 'deleteAriseAccount']);
+            Route::post($root . '/arise-account', [CompanyDetailController::class, 'createAriseAccount']);
+            Route::put($root . '/arise-account/{id}', [CompanyDetailController::class, 'updateAriseAccount']);
+            Route::delete($root . '/arise-account/{id}', [CompanyDetailController::class, 'deleteAriseAccount']);
         }
     }
 

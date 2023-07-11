@@ -35,7 +35,7 @@ class InvoiceDetailController extends ApiController
      */
     public static function registerRoutes(string $role = null): void
     {
-        $root = 'invoice_details';
+        $root = 'invoice-details';
         if ($role == UserRoles::ADMINISTRATOR) {
             Route::post($root . '/search', [InvoiceDetailController::class, 'search']);
             Route::get($root . '/{id}', [InvoiceDetailController::class, 'getSingleObject']);

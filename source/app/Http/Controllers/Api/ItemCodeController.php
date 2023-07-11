@@ -34,7 +34,7 @@ class ItemCodeController extends ApiController
      */
     public static function registerRoutes(string $ItemCode = null): void
     {
-        $root = 'item_codes';
+        $root = 'item-codes';
         if ($ItemCode == UserRoles::ADMINISTRATOR) {
             Route::post($root . '/search', [ItemCodeController::class, 'search']);
             Route::get($root . '/{id}', [ItemCodeController::class, 'getSingleObject']);

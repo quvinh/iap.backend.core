@@ -33,7 +33,7 @@ class FormulaCategorySoldController extends ApiController
      */
     public static function registerRoutes(string $role = null): void
     {
-        $root = 'formula_category_solds';
+        $root = 'formula-category-solds';
         if ($role == UserRoles::ADMINISTRATOR) {
             Route::post($root . '/search', [FormulaCategorySoldController::class, 'search']);
             Route::get($root . '/{id}', [FormulaCategorySoldController::class, 'getSingleObject']);

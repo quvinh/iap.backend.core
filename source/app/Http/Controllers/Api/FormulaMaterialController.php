@@ -33,7 +33,7 @@ class FormulaMaterialController extends ApiController
      */
     public static function registerRoutes(string $role = null): void
     {
-        $root = 'formula_materials';
+        $root = 'formula-materials';
         if ($role == UserRoles::ADMINISTRATOR) {
             Route::post($root . '/search', [FormulaMaterialController::class, 'search']);
             Route::get($root . '/{id}', [FormulaMaterialController::class, 'getSingleObject']);

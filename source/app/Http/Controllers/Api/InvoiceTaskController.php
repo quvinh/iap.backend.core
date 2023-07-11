@@ -34,7 +34,7 @@ class InvoiceTaskController extends ApiController
      */
     public static function registerRoutes(string $invoiceTask = null): void
     {
-        $root = 'invoice_tasks';
+        $root = 'invoice-tasks';
         if ($invoiceTask == UserRoles::ADMINISTRATOR) {
             Route::post($root . '/search', [InvoiceTaskController::class, 'search']);
             Route::get($root . '/{id}', [InvoiceTaskController::class, 'getSingleObject']);

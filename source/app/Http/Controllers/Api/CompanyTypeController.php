@@ -33,7 +33,7 @@ class CompanyTypeController extends ApiController
      */
     public static function registerRoutes(string $role = null): void
     {
-        $root = 'company_types';
+        $root = 'company-types';
         if ($role == UserRoles::ADMINISTRATOR) {
             Route::post($root . '/search', [CompanyTypeController::class, 'search']);
             Route::get($root . '/{id}', [CompanyTypeController::class, 'getSingleObject']);

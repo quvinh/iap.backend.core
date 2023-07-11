@@ -36,7 +36,7 @@ class FirstAriseAccountController extends ApiController
      */
     public static function registerRoutes(string $role = null): void
     {
-        $root = 'arise_accounts';
+        $root = 'arise-accounts';
         if ($role == UserRoles::ADMINISTRATOR) {
             Route::get($root . '/all', [CompanyController::class, 'all']);
             Route::post($root . '/search', [FirstAriseAccountController::class, 'search']);

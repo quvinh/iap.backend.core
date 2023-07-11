@@ -33,7 +33,7 @@ class TaxFreeVoucherController extends ApiController
      */
     public static function registerRoutes(string $role = null): void
     {
-        $root = 'tax_free_vouchers';
+        $root = 'tax-free-vouchers';
         if ($role == UserRoles::ADMINISTRATOR) {
             Route::post($root . '/search', [TaxFreeVoucherController::class, 'search']);
             Route::get($root . '/{id}', [TaxFreeVoucherController::class, 'getSingleObject']);
