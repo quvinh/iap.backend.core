@@ -8,6 +8,8 @@ use App\Helpers\Common\MetaInfo;
 use App\Models\FirstAriseAccount;
 use App\Repositories\BaseRepository;
 use App\Exceptions\DB\RecordIsNotFoundException as DBRecordIsNotFoundException;
+use Illuminate\Support\Collection;
+
 use function Spatie\SslCertificate\starts_with;
 
 class FirstAriseAccountRepository extends BaseRepository implements IFirstAriseAccountRepository
@@ -19,5 +21,14 @@ class FirstAriseAccountRepository extends BaseRepository implements IFirstAriseA
     function getRepositoryModelClass(): string
     {
         return FirstAriseAccount::class;
+    }
+
+    /**
+     * Get all arise accounts
+     */
+    public function getAllAriseAccounts(): Collection
+    {
+        $accounts = FirstAriseAccount::where('status', 1)->orderByDesc('id')->get();
+        return $accounts;
     }
 }

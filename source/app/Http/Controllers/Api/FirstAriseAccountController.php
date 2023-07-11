@@ -2,9 +2,12 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\DataResources\BaseDataResource;
+use App\DataResources\FirstAriseAccount\FirstAriseAccountAllResource;
 use App\DataResources\FirstAriseAccount\FirstAriseAccountResource;
 use App\Helpers\Common\MetaInfo;
 use App\Helpers\Enums\UserRoles;
+use App\Helpers\Responses\ApiResponse;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\Traits\DefaultRestActions;
 use App\Http\Requests\FirstAriseAccount\FirstAriseAccountCreateRequest;
@@ -35,6 +38,7 @@ class FirstAriseAccountController extends ApiController
     {
         $root = 'arise_accounts';
         if ($role == UserRoles::ADMINISTRATOR) {
+            Route::get($root . '/all', [CompanyController::class, 'all']);
             Route::post($root . '/search', [FirstAriseAccountController::class, 'search']);
             Route::get($root . '/{id}', [FirstAriseAccountController::class, 'getSingleObject']);
             Route::post($root, [FirstAriseAccountController::class, 'create']);
@@ -100,5 +104,18 @@ class FirstAriseAccountController extends ApiController
             default:
                 return $request;
         }
+    }
+
+    /**
+     * Get all arise accounts
+     */
+    public function all()
+    {
+        $response = $this->firstAriseAccountService->getAllAriseAccounts();
+        # Convert result to output resource
+        $result = BaseDataResource::generateResources($response, FirstAriseAccountAllResource::class);
+        # Send response using the predefined format
+        $response = ApiResponse::v1();
+        return $response->send($result);
     }
 }

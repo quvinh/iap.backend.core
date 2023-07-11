@@ -101,6 +101,22 @@ class FirstAriseAccountService extends \App\Services\BaseService implements IFir
     }
 
     /**
+     * Get all arise account
+     * @return Collection
+     */
+    public function getAllAriseAccounts(): Collection
+    {
+        try {
+            $companies = $this->firstAriseAccountRepos->getAllAriseAccounts();
+            return $companies;
+        } catch (\Exception $e) {
+            throw new ActionFailException(
+                previous: $e
+            );
+        }
+    }
+
+    /**
      * Create new item
      *
      * @param array $param
