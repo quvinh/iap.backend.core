@@ -19,6 +19,7 @@ use Exception;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 use Throwable;
 
 class ItemCodeService extends \App\Services\BaseService implements IItemCodeService
@@ -201,6 +202,61 @@ class ItemCodeService extends \App\Services\BaseService implements IItemCodeServ
                 message: 'update: ' . json_encode(['id' => $id, 'softDelete' => $softDelete]),
                 previous: $ex
             );
+        }
+    }
+
+    /**
+     * Handle import excel
+     * 
+     * @param array $param
+     * @param MetaInfo|null $commandMetaInfo
+     * @return bool
+     */
+    public function import(array $param, MetaInfo $commandMetaInfo = null): array
+    {
+        DB::beginTransaction();
+        try {
+            foreach ($param['import'] as $index => $item) {
+                # Find record
+                $entity = (new ItemCode())->query()->where([
+                    ['company_id', $param['company_id']],
+                    ['year', $param['year']],
+                    ['product_code', $item['product_code']],
+                ])->first();
+                $item = array_merge($item, [
+                    'year' => $param['year'],
+                    'company_id' => $param['company_id'],
+                    'unit' => Str::lower($item['unit']),
+                ]);
+                if ($entity == null) {
+                    # Create by code
+                    $this->itemCodeRepos->create($item, $commandMetaInfo);
+                } else {
+                    $item = array_merge($item, [
+                        'id' => $entity->id,
+                        'quantity' => $item['quantity'] ?? $entity->quantity,
+                    ]);
+                    # Check with product_exchange
+                    if (empty($item['product_exchange'])) {
+                        # Update by code
+                        $this->itemCodeRepos->update($item, $commandMetaInfo);
+                    } elseif ($entity->product_exchange == $item['product_exchange']) {
+                        # Update by code
+                        $this->itemCodeRepos->update($item, $commandMetaInfo);
+                    } else throw new ActionFailException(message: "product exchange not match at row " . ($index + 1));
+                }
+            }
+            DB::commit();
+            return ['status' => true];
+        } catch (\Exception $ex) {
+            DB::rollBack();
+            if ($ex instanceof ActionFailException) {
+                return [
+                    'status' => false,
+                    'message' => $ex->getMessage()
+                ];
+            }
+            throw new Exception($ex);
         }
     }
 }

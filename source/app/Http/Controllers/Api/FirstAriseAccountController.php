@@ -38,7 +38,7 @@ class FirstAriseAccountController extends ApiController
     {
         $root = 'arise-accounts';
         if ($role == UserRoles::ADMINISTRATOR) {
-            Route::get($root . '/all', [CompanyController::class, 'all']);
+            Route::get($root . '/all', [FirstAriseAccountController::class, 'all']);
             Route::post($root . '/search', [FirstAriseAccountController::class, 'search']);
             Route::get($root . '/{id}', [FirstAriseAccountController::class, 'getSingleObject']);
             Route::post($root, [FirstAriseAccountController::class, 'create']);

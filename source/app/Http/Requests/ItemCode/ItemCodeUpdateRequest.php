@@ -54,9 +54,9 @@ class ItemCodeUpdateRequest extends BaseRequest
             'product_exchange' => ['required', 'string'],
             'product' => ['nullable', 'string'],
             'unit' => ['required', 'string', 'max:100'],
-            'price' => ['numeric'],
-            'quantity' => ['numeric', 'min:1'],
-            'opening_balance_value' => ['numeric', 'min:0'],
+            'price' => ['numeric', 'min:0'],
+            'quantity' => ['numeric', 'min:0'],
+            'opening_balance_value' => ['numeric', 'min:0'], // , 'gte:price'
             'year' => ['required', 'integer', 'digits:4', 'min:2000']
         ];
     }

@@ -8,6 +8,7 @@ use App\Helpers\Enums\UserRoles;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\Traits\DefaultRestActions;
 use App\Http\Requests\ItemCode\ItemCodeCreateRequest;
+use App\Http\Requests\ItemCode\ItemCodeImportRequest;
 use App\Http\Requests\ItemCode\ItemCodeSearchRequest;
 use App\Http\Requests\ItemCode\ItemCodeUpdateRequest;
 use App\Services\IService;
@@ -42,6 +43,8 @@ class ItemCodeController extends ApiController
             Route::put($root . '/{id}', [ItemCodeController::class, 'update']);
             Route::delete($root . '/{id}', [ItemCodeController::class, 'delete']);
             Route::delete($root . '/force/{id}', [ItemCodeController::class, 'forceDelete']);
+
+            Route::post($root . '/import', [ItemCodeController::class, 'import']);
         }
     }
 
@@ -111,6 +114,15 @@ class ItemCodeController extends ApiController
     public function forceDelete(int $id): Response
     {
         $result = $this->itemCodeService->delete($id, false);
+        return $this->getResponseHandler()->send($result);
+    }
+
+    /**
+     * Handle import excel
+     */
+    public function import(ItemCodeImportRequest $request)
+    {
+        $result = $this->itemCodeService->import($request->all(), $this->getCurrentMetaInfo());
         return $this->getResponseHandler()->send($result);
     }
 }

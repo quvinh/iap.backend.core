@@ -11,6 +11,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property float $price
  * @property float $quantity
  * @property float $opening_balance_value
+ * @property string $created_by
+ * @property string $update_by
  */
 class ItemCode extends BaseModel
 {
@@ -29,19 +31,20 @@ class ItemCode extends BaseModel
         'status',
     ];
 
-    public function setItemCode(float $quantity, float $opening_balance_value): void
+    public function setItemCode(float $quantity, float $price): void
     {
         if ($quantity <= 0) throw new \Exception('Invalid quantity');
-        $this->price = $this->getPrice();
         $this->quantity = $quantity;
-        $this->opening_balance_value = $opening_balance_value;
+        $this->price = $price;
+        $this->opening_balance_value = $this->getTotal();
     }
 
-    public function getPrice(): float
+    public function getTotal(): float
     {
         try {
-            $getPrice = $this->opening_balance_value / $this->quantity;
-            return round($getPrice, 3);
+            // $getPrice = $this->opening_balance_value / $this->quantity;
+            $total = $this->quantity * $this->price;
+            return round($total, 3);
         } catch (\Exception) {
             return 0;
         }

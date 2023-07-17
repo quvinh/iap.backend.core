@@ -33,8 +33,8 @@ class ItemCodeRepository extends BaseRepository implements IItemCodeRepository
     {
         $entity = new ItemCode();
         $entity->fill($form);
-        if (!isset($form['price'])) {
-            $entity->setItemCode($form['quantity'], $form['opening_balance_value']);
+        if (!isset($form['opening_balance_value'])) {
+            $entity->setItemCode($form['quantity'], $form['price']);
         }
         $entity->setMetaInfo($meta, true);
         $chk = $entity->save();
@@ -62,11 +62,11 @@ class ItemCodeRepository extends BaseRepository implements IItemCodeRepository
         $entity = $this->getSingleObject($form[$idColumnName], $idColumnName)->first();
         if (isset($entity)) {
             $entity->fill($form);
-            if (!isset($form['price'])) {
-                $entity->setItemCode($form['quantity'], $form['opening_balance_value']);
+            if (!isset($form['opening_balance_value'])) {
+                $entity->setItemCode($form['quantity'], $form['price']);
             }
-            $entity->setMetaInfo($meta, true);
-            if ($entity->save() !== false) {
+            $entity->setMetaInfo($meta, false);
+            if ($entity->save()) {
                 return $entity;
             } else {
                 throw new CannotSaveToDBException();

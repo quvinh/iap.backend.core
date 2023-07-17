@@ -52,9 +52,9 @@ class ItemCodeCreateRequest extends BaseRequest
             'product_exchange' => ['required', 'string'],
             'product' => ['nullable', 'string'],
             'unit' => ['required', 'string', 'max:100'],
-            'price' => ['nullable', 'numeric'],
-            'quantity' => ['required', 'numeric', 'min:1'],
-            'opening_balance_value' => ['required', 'numeric', 'min:0'],
+            'price' => ['required', 'numeric', 'min:0'],
+            'quantity' => ['required', 'numeric', 'min:0'],
+            'opening_balance_value' => ['numeric', 'min:0'], // auto compute (, 'gte:price')
             'year' => ['required', 'integer', 'digits:4', 'min:2000']
         ];
     }

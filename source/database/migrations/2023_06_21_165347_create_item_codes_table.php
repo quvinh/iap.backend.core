@@ -15,15 +15,15 @@ return new class extends Migration
     {
         Schema::create('item_codes', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('company_id');
-            $table->string('product_code');
+            $table->unsignedBigInteger('company_id')->index();
+            $table->string('product_code')->index();
             $table->string('product_exchange')->default('product_exchange');
             $table->string('product')->nullable();
             $table->decimal('price', 12, 2)->default(0);
             $table->float('quantity')->default(0);
             $table->decimal('opening_balance_value', 12, 2)->default(0);
             $table->string('unit', 100)->default('unit');
-            $table->string('year', 4);
+            $table->string('year', 4)->index();
             $table->boolean('status')->default(1);
             $table->string('created_by')->nullable();
             $table->string('updated_by')->nullable();

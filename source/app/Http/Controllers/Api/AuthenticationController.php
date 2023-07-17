@@ -129,15 +129,16 @@ class AuthenticationController extends ApiController
         $claims = RequestHelper::getClaims();
         $meta = RequestHelper::getMetaInfo();
         $hook = RequestHelper::findHanshakeHook($claims->getByClaimName('cnidh')->getValue());
-        if (is_null($hook)) throw new AuthorizationIsInvalid();
+        if (is_null($hook)) return response('Login failed', 404); //throw new AuthorizationIsInvalid();
         $identifier = $meta->identifier;
         $currentConnectionHash = Hash::make($hook['value'] . $identifier);
         $handshake = $this->authService->handshake($currentConnectionHash, $meta);
 
-        if (is_null($handshake)) throw new AuthorizationIsInvalid();
+        if (is_null($handshake)) return response('Login failed', 404); //throw new AuthorizationIsInvalid();
         # 2. login
         if (!$token = auth()->claims($handshake->getJWTCustomClaims())->attempt($payload)) {
-            throw new AuthorizationIsInvalid(ErrorCodes::ERR_INVALID_CREDENTIALS);
+            return response('Login failed', 404);
+            // throw new AuthorizationIsInvalid(ErrorCodes::ERR_INVALID_CREDENTIALS);
         }
 
         return $this->createNewToken($token);
