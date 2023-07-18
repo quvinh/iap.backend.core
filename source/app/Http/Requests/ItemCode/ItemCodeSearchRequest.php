@@ -19,7 +19,12 @@ class ItemCodeSearchRequest extends DefaultSearchRequest
         'company_id',
         'year',
         'product_code',
+        'product_exchange',
         'product',
+        'unit',
+        'price_from',
+        'price_to',
+        'status',
         'withs'
     ];
 

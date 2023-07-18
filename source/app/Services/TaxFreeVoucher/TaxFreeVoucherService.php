@@ -101,6 +101,22 @@ class TaxFreeVoucherService extends \App\Services\BaseService implements ITaxFre
     }
 
     /**
+     * Get all tax free vouchers
+     * @return Collection
+     */
+    public function getAllTaxFreeVouchers(): Collection
+    {
+        try {
+            $taxFreeVouchers = $this->taxFreeVoucherRepos->getAllTaxFreeVouchers();
+            return $taxFreeVouchers;
+        } catch (\Exception $e) {
+            throw new ActionFailException(
+                previous: $e
+            );
+        }
+    }
+
+    /**
      * Create new item
      *
      * @param array $param

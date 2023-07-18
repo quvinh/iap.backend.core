@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\DataResources\CompanyType\CompanyTypeResource;
 use App\Helpers\Common\MetaInfo;
 use App\Helpers\Enums\UserRoles;
+use App\Helpers\Responses\ApiResponse;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\Traits\DefaultRestActions;
 use App\Http\Requests\CompanyType\CompanyTypeCreateRequest;
@@ -35,6 +36,7 @@ class CompanyTypeController extends ApiController
     {
         $root = 'company-types';
         if ($role == UserRoles::ADMINISTRATOR) {
+            Route::get($root . '/all', [CompanyTypeController::class, 'all']);
             Route::post($root . '/search', [CompanyTypeController::class, 'search']);
             Route::get($root . '/{id}', [CompanyTypeController::class, 'getSingleObject']);
             Route::post($root, [CompanyTypeController::class, 'create']);
@@ -100,5 +102,16 @@ class CompanyTypeController extends ApiController
             default:
                 return $request;
         }
+    }
+
+    /**
+     * Get all company types
+     */
+    public function all()
+    {
+        $result = $this->companyTypeService->getAllCompanyTypes();
+        # Send response using the predefined format
+        $response = ApiResponse::v1();
+        return $response->send($result);
     }
 }

@@ -73,6 +73,11 @@ class CompanyTypeService extends \App\Services\BaseService implements ICompanyTy
                 $query = $this->companyTypeRepos->queryOnAField([DB::raw("upper(name)"), 'LIKE BINARY', DB::raw("upper(concat('%', ? , '%'))")], positionalBindings: ['name' => $param]);
             }
 
+            if (isset($rawConditions['status'])) {
+                $param = $rawConditions['status'];
+                $query = $this->companyTypeRepos->queryOnAField(['status', '=', $param], $query);
+            }
+
             if (isset($rawConditions['updated_date'])) {
                 $query = $this->companyTypeRepos->queryOnDateRangeField($query, 'updated_at', $rawConditions['updated_date']);
             }
@@ -95,6 +100,22 @@ class CompanyTypeService extends \App\Services\BaseService implements ICompanyTy
         } catch (Exception $e) {
             throw new ActionFailException(
                 message: 'search: ' . json_encode(['conditions' => $rawConditions, 'paging' => $paging, 'withs' => $withs]),
+                previous: $e
+            );
+        }
+    }
+
+    /**
+     * Get all companies
+     * @return Collection
+     */
+    public function getAllCompanyTypes(): Collection
+    {
+        try {
+            $companyTypes = $this->companyTypeRepos->getAllCompanyTypes();
+            return $companyTypes;
+        } catch (\Exception $e) {
+            throw new ActionFailException(
                 previous: $e
             );
         }

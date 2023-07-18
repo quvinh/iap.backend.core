@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\DataResources\TaxFreeVoucher\TaxFreeVoucherResource;
 use App\Helpers\Common\MetaInfo;
 use App\Helpers\Enums\UserRoles;
+use App\Helpers\Responses\ApiResponse;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\Traits\DefaultRestActions;
 use App\Http\Requests\TaxFreeVoucher\TaxFreeVoucherCreateRequest;
@@ -35,6 +36,7 @@ class TaxFreeVoucherController extends ApiController
     {
         $root = 'tax-free-vouchers';
         if ($role == UserRoles::ADMINISTRATOR) {
+            Route::get($root . '/all', [TaxFreeVoucherController::class, 'all']);
             Route::post($root . '/search', [TaxFreeVoucherController::class, 'search']);
             Route::get($root . '/{id}', [TaxFreeVoucherController::class, 'getSingleObject']);
             Route::post($root, [TaxFreeVoucherController::class, 'create']);
@@ -100,5 +102,16 @@ class TaxFreeVoucherController extends ApiController
             default:
                 return $request;
         }
+    }
+
+    /**
+     * Get all tax free vouchers
+     */
+    public function all()
+    {
+        $result = $this->taxFreeVoucherService->getAllTaxFreeVouchers();
+        # Send response using the predefined format
+        $response = ApiResponse::v1();
+        return $response->send($result);
     }
 }

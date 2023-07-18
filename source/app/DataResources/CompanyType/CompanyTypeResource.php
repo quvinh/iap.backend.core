@@ -14,7 +14,8 @@ class CompanyTypeResource extends BaseDataResource
         'id',
         'name',
         'note',
-        'status'
+        'status',
+        'created_by',
     ];
 
     /**

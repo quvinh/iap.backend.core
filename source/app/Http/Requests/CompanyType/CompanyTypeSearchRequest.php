@@ -8,6 +8,17 @@ use Illuminate\Foundation\Http\FormRequest;
 class CompanyTypeSearchRequest extends DefaultSearchRequest
 {
     /**
+     * Available relations to retrieve
+     * @var string[]
+     */
+    protected array $relations = [];
+
+    protected array $fields = [
+        'status',
+        'withs',
+    ];
+
+    /**
      * Overwrite this function to prepare or convert data before validating
      * @return void
      * @throws InvalidDatetimeInputException

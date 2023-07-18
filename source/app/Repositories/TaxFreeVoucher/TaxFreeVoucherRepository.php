@@ -8,6 +8,8 @@ use App\Helpers\Common\MetaInfo;
 use App\Models\TaxFreeVoucher;
 use App\Repositories\BaseRepository;
 use App\Exceptions\DB\RecordIsNotFoundException as DBRecordIsNotFoundException;
+use Illuminate\Support\Collection;
+
 use function Spatie\SslCertificate\starts_with;
 
 class TaxFreeVoucherRepository extends BaseRepository implements ITaxFreeVoucherRepository
@@ -19,5 +21,14 @@ class TaxFreeVoucherRepository extends BaseRepository implements ITaxFreeVoucher
     function getRepositoryModelClass(): string
     {
         return TaxFreeVoucher::class;
+    }
+
+    /**
+     * Get all tax free vouchers
+     */
+    public function getAllTaxFreeVouchers(): Collection
+    {
+        $taxFreeVouchers = TaxFreeVoucher::where('status', 1)->orderByDesc('id')->get();
+        return $taxFreeVouchers;
     }
 }

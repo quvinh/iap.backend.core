@@ -69,9 +69,24 @@ class ItemCodeService extends \App\Services\BaseService implements IItemCodeServ
     {
         try {
             $query = $this->itemCodeRepos->search();
+            if (isset($rawConditions['product_code'])) {
+                $param = StringHelper::escapeLikeQueryParameter($rawConditions['product_code']);
+                $query = $this->itemCodeRepos->queryOnAField([DB::raw("upper(product_code)"), 'LIKE BINARY', DB::raw("upper(concat('%', ? , '%'))")], positionalBindings: ['product_code' => $param]);
+            }
+
+            if (isset($rawConditions['product_exchange'])) {
+                $param = StringHelper::escapeLikeQueryParameter($rawConditions['product_exchange']);
+                $query = $this->itemCodeRepos->queryOnAField([DB::raw("upper(product_exchange)"), 'LIKE BINARY', DB::raw("upper(concat('%', ? , '%'))")], $query, positionalBindings: ['product_exchange' => $param]);
+            }
+
             if (isset($rawConditions['product'])) {
                 $param = StringHelper::escapeLikeQueryParameter($rawConditions['product']);
-                $query = $this->itemCodeRepos->queryOnAField([DB::raw("upper(product)"), 'LIKE BINARY', DB::raw("upper(concat('%', ? , '%'))")], positionalBindings: ['product' => $param]);
+                $query = $this->itemCodeRepos->queryOnAField([DB::raw("upper(product)"), 'LIKE BINARY', DB::raw("upper(concat('%', ? , '%'))")], $query, positionalBindings: ['product' => $param]);
+            }
+
+            if (isset($rawConditions['unit'])) {
+                $param = StringHelper::escapeLikeQueryParameter($rawConditions['unit']);
+                $query = $this->itemCodeRepos->queryOnAField([DB::raw("upper(unit)"), 'LIKE BINARY', DB::raw("upper(concat('%', ? , '%'))")], $query);
             }
 
             if (isset($rawConditions['company_id'])) {
@@ -84,9 +99,19 @@ class ItemCodeService extends \App\Services\BaseService implements IItemCodeServ
                 $query = $this->itemCodeRepos->queryOnAField(['year', '=', $param], $query);
             }
 
-            if (isset($rawConditions['product_code'])) {
-                $param = $rawConditions['product_code'];
-                $query = $this->itemCodeRepos->queryOnAField(['product_code', '=', $param], $query);
+            if (isset($rawConditions['status'])) {
+                $param = $rawConditions['status'];
+                $query = $this->itemCodeRepos->queryOnAField(['status', '=', $param], $query);
+            }
+
+            if (isset($rawConditions['price_from'])) {
+                $param = $rawConditions['price_from'];
+                $query = $this->itemCodeRepos->queryOnAField(['price', '>=', $param], $query);
+            }
+
+            if (isset($rawConditions['price_to'])) {
+                $param = $rawConditions['price_to'];
+                $query = $this->itemCodeRepos->queryOnAField(['price', '<=', $param], $query);
             }
 
             if (isset($rawConditions['updated_date'])) {
