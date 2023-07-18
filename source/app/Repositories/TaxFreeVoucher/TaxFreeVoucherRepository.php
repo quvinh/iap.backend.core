@@ -28,7 +28,7 @@ class TaxFreeVoucherRepository extends BaseRepository implements ITaxFreeVoucher
      */
     public function getAllTaxFreeVouchers(): Collection
     {
-        $taxFreeVouchers = TaxFreeVoucher::where('status', 1)->orderByDesc('id')->get();
+        $taxFreeVouchers = TaxFreeVoucher::where('status', 1)->orderBy('name')->get();
         return $taxFreeVouchers;
     }
 }

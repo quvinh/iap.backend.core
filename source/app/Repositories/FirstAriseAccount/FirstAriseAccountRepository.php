@@ -28,7 +28,7 @@ class FirstAriseAccountRepository extends BaseRepository implements IFirstAriseA
      */
     public function getAllAriseAccounts(): Collection
     {
-        $accounts = FirstAriseAccount::where('status', 1)->orderByDesc('id')->get();
+        $accounts = FirstAriseAccount::where('status', 1)->orderByDesc('number_percent')->orderBy('name')->get();
         return $accounts;
     }
 }

@@ -13,6 +13,7 @@ class FirstAriseAccount extends BaseModel
     protected $fillable = [
         'name',
         'number_account',
+        'number_percent',
         'note',
         'status'
     ];
