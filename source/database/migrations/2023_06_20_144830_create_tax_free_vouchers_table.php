@@ -14,7 +14,7 @@ return new class extends Migration
     public function up()
     {
         Schema::create('tax_free_vouchers', function (Blueprint $table) {
-            $table->id();
+            $table->id()->index();
             $table->string('name');
             $table->string('number_account', 10)->nullable();
             $table->string('note')->nullable();

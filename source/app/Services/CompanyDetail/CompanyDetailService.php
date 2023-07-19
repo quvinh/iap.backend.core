@@ -14,6 +14,8 @@ use App\Helpers\Utils\StorageHelper;
 use App\Helpers\Utils\StringHelper;
 use App\Models\CompanyDetail;
 use App\Repositories\CompanyDetail\ICompanyDetailRepository;
+use App\Repositories\FirstAriseAccount\IFirstAriseAccountRepository;
+use App\Services\TaxFreeVoucher\ITaxFreeVoucherService;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Database\Eloquent\Model;
@@ -25,10 +27,14 @@ use Throwable;
 class CompanyDetailService extends \App\Services\BaseService implements ICompanyDetailService
 {
     private ?ICompanyDetailRepository $companyDetailRepos = null;
+    private ?IFirstAriseAccountRepository $ariseAccountRepos = null;
+    private ?ITaxFreeVoucherService $taxFreeVoucherRepos = null;
 
-    public function __construct(ICompanyDetailRepository $repos)
+    public function __construct(ICompanyDetailRepository $repos, IFirstAriseAccountRepository $ariseAccountRepos, ITaxFreeVoucherService $taxFreeVoucherRepos)
     {
         $this->companyDetailRepos = $repos;
+        $this->ariseAccountRepos = $ariseAccountRepos;
+        $this->taxFreeVoucherRepos = $taxFreeVoucherRepos;
     }
 
     /**
@@ -212,6 +218,7 @@ class CompanyDetailService extends \App\Services\BaseService implements ICompany
             DB::commit();
             return $record;
         } catch (\Exception $e) {
+            DB::rollBack();
             throw new CannotSaveToDBException(
                 message: 'create: ' . json_encode(['param' => $param]),
                 previous: $e
@@ -235,6 +242,7 @@ class CompanyDetailService extends \App\Services\BaseService implements ICompany
             DB::commit();
             return $record;
         } catch (\Exception $e) {
+            DB::rollBack();
             throw new CannotUpdateDBException(
                 message: 'update: ' . json_encode(['param' => $param]),
                 previous: $e
@@ -246,16 +254,79 @@ class CompanyDetailService extends \App\Services\BaseService implements ICompany
      * Delete company_detail_arise_accout
      * @param mixed $id
      */
-    public function deleteAriseAccount(mixed $id): bool
+    // public function deleteAriseAccount(mixed $id): bool
+    // {
+    //     DB::beginTransaction();
+    //     try {
+    //         $record = $this->companyDetailRepos->deleteAriseAccount($id);
+    //         DB::commit();
+    //         return $record;
+    //     } catch (\Exception $e) {
+    //         DB::rollBack();
+    //         throw new CannotDeleteDBException(
+    //             message: 'delete: ' . json_encode(['id' => $id]),
+    //             previous: $e
+    //         );
+    //     }
+    // }
+
+    /**
+     * Update company detail property
+     * @param array $param
+     * @param mixed $id
+     */
+    public function updateProperties(mixed $id, array $param, MetaInfo $commandMetaInfo = null): CompanyDetail
     {
         DB::beginTransaction();
         try {
-            $record = $this->companyDetailRepos->deleteAriseAccount($id);
+            $entity = $this->companyDetailRepos->getSingleObject($id)->first();
+            if (!$entity) throw new RecordIsNotFoundException();
+            # TODO: first arise accounts
+            $this->companyDetailRepos->deleteAriseAccount($entity->id, array_map(function($value) {
+                return $value['id'];
+            }, $param['arise_accounts']));
+            foreach ($param['arise_accounts'] as $acc) {
+                $account = $this->ariseAccountRepos->getSingleObject($acc['id'])->first();
+                if (!$account) throw new RecordIsNotFoundException();
+                $ckAccount = $this->companyDetailRepos->getSinglePropertyObject($entity->id, $account->id)->first();
+                if ($ckAccount) {
+                    # Update info
+                    $this->companyDetailRepos->updateAriseAccount([
+                        'id' => $ckAccount->id,
+                        'company_detail_id' => $entity->id,
+                        'arise_account_id' => $ckAccount->id,
+                        'value_from' => $acc['value_from'],
+                        'value_to' => $acc['value_to'],
+                    ]);
+                } else {
+                    # Create info
+                    $this->companyDetailRepos->createAriseAccount([
+                        'company_detail_id' => $entity->id,
+                        'arise_account_id' => $account->id,
+                        'value_from' => $acc['value_from'],
+                        'value_to' => $acc['value_to'],
+                    ]);
+                }
+            }
+            # TODO: tax free vouchers 
+            $this->companyDetailRepos->deleteTaxFreeVoucher($entity->id, $param['tax_free_vouchers']);
+            foreach ($param['tax_free_vouchers'] as $idT) {
+                $tax = $this->taxFreeVoucherRepos->getSingleObject($idT)->first();
+                if (!$tax) throw new RecordIsNotFoundException();
+                // -----continue
+            }
+
+            $record = $this->companyDetailRepos->update([
+                'id' => $entity->id,
+                'company_type_id' => $param['company_type_id'],
+                'description' => $param['description'],
+            ], $commandMetaInfo);
             DB::commit();
             return $record;
         } catch (\Exception $e) {
-            throw new CannotDeleteDBException(
-                message: 'delete: ' . json_encode(['id' => $id]),
+            DB::rollBack();
+            throw new ActionFailException(
+                message: 'action failure',
                 previous: $e
             );
         }

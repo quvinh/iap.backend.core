@@ -10,6 +10,7 @@ use App\Http\Controllers\Traits\DefaultRestActions;
 use App\Http\Requests\CompanyDetail\AriseAccountCreateRequest;
 use App\Http\Requests\CompanyDetail\AriseAccountUpdateRequest;
 use App\Http\Requests\CompanyDetail\CompanyDetailCreateRequest;
+use App\Http\Requests\CompanyDetail\CompanyDetailPropertyUpdateRequest;
 use App\Http\Requests\CompanyDetail\CompanyDetailSearchRequest;
 use App\Http\Requests\CompanyDetail\CompanyDetailUpdateRequest;
 use App\Services\CompanyDetail\ICompanyDetailService;
@@ -47,6 +48,8 @@ class CompanyDetailController extends ApiController
             Route::post($root . '/arise-account', [CompanyDetailController::class, 'createAriseAccount']);
             Route::put($root . '/arise-account/{id}', [CompanyDetailController::class, 'updateAriseAccount']);
             Route::delete($root . '/arise-account/{id}', [CompanyDetailController::class, 'deleteAriseAccount']);
+
+            Route::put($root . '/properties/{id}', [CompanyDetailController::class, 'updateProperties']);
         }
     }
 
@@ -130,9 +133,18 @@ class CompanyDetailController extends ApiController
     /**
      * Delete
      */
-    public function deleteAriseAccount($id): Response
+    // public function deleteAriseAccount($id): Response
+    // {
+    //     $result = $this->companyDetailService->deleteAriseAccount($id);
+    //     return $this->getResponseHandler()->send($result);
+    // }
+
+    /**
+     * Update properties
+     */
+    public function updateProperties(mixed $id, CompanyDetailPropertyUpdateRequest $request): Response
     {
-        $result = $this->companyDetailService->deleteAriseAccount($id);
+        $result = $this->companyDetailService->updateProperties($id, $request->all());
         return $this->getResponseHandler()->send($result);
     }
 }
