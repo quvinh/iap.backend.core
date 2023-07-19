@@ -15,6 +15,7 @@ interface ICompanyDetailRepository extends IRepository
     public function updateAriseAccount(array $param): Model;
     public function deleteAriseAccount(mixed $idCom, array $ids): bool;
 
+    public function getSingleVoucherPropertyObject(mixed $idCom, mixed $idTax): Builder;
     public function createTaxFreeVoucher(array $param): Model;
     public function deleteTaxFreeVoucher(mixed $idCom, array $ids): bool;
 }

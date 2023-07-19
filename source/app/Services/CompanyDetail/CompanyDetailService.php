@@ -15,7 +15,7 @@ use App\Helpers\Utils\StringHelper;
 use App\Models\CompanyDetail;
 use App\Repositories\CompanyDetail\ICompanyDetailRepository;
 use App\Repositories\FirstAriseAccount\IFirstAriseAccountRepository;
-use App\Services\TaxFreeVoucher\ITaxFreeVoucherService;
+use App\Repositories\TaxFreeVoucher\ITaxFreeVoucherRepository;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Database\Eloquent\Model;
@@ -28,9 +28,9 @@ class CompanyDetailService extends \App\Services\BaseService implements ICompany
 {
     private ?ICompanyDetailRepository $companyDetailRepos = null;
     private ?IFirstAriseAccountRepository $ariseAccountRepos = null;
-    private ?ITaxFreeVoucherService $taxFreeVoucherRepos = null;
+    private ?ITaxFreeVoucherRepository $taxFreeVoucherRepos = null;
 
-    public function __construct(ICompanyDetailRepository $repos, IFirstAriseAccountRepository $ariseAccountRepos, ITaxFreeVoucherService $taxFreeVoucherRepos)
+    public function __construct(ICompanyDetailRepository $repos, IFirstAriseAccountRepository $ariseAccountRepos, ITaxFreeVoucherRepository $taxFreeVoucherRepos)
     {
         $this->companyDetailRepos = $repos;
         $this->ariseAccountRepos = $ariseAccountRepos;
@@ -282,7 +282,7 @@ class CompanyDetailService extends \App\Services\BaseService implements ICompany
             $entity = $this->companyDetailRepos->getSingleObject($id)->first();
             if (!$entity) throw new RecordIsNotFoundException();
             # TODO: first arise accounts
-            $this->companyDetailRepos->deleteAriseAccount($entity->id, array_map(function($value) {
+            $this->companyDetailRepos->deleteAriseAccount($entity->id, array_map(function ($value) {
                 return $value['id'];
             }, $param['arise_accounts']));
             foreach ($param['arise_accounts'] as $acc) {
@@ -313,7 +313,13 @@ class CompanyDetailService extends \App\Services\BaseService implements ICompany
             foreach ($param['tax_free_vouchers'] as $idT) {
                 $tax = $this->taxFreeVoucherRepos->getSingleObject($idT)->first();
                 if (!$tax) throw new RecordIsNotFoundException();
-                // -----continue
+                $ckTax = $this->companyDetailRepos->getSingleVoucherPropertyObject($entity->id, $tax->id)->first();
+                if (!$ckTax) {
+                    $this->companyDetailRepos->createTaxFreeVoucher([
+                        'company_detail_id' => $entity->id,
+                        'tax_free_voucher_id' => $tax->id,
+                    ]);
+                }
             }
 
             $record = $this->companyDetailRepos->update([

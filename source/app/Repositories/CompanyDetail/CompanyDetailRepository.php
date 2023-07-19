@@ -84,16 +84,28 @@ class CompanyDetailRepository extends BaseRepository implements ICompanyDetailRe
      */
     public function deleteAriseAccount(mixed $idCom, array $ids): bool
     {
-        $list = (new CompanyDetailAriseAccount())->query()->where('company_detail_id', $idCom)->get('arise_account_id')->toArray();
+        $list = (new CompanyDetailAriseAccount())->query()->where('company_detail_id', $idCom)->get(['id', 'arise_account_id'])->toArray();
         
         $needDelete = array_filter($list, function ($item) use ($ids) {
             return !in_array($item['arise_account_id'], $ids);
         });
 
         foreach ($needDelete as $item) {
-            (new CompanyDetailAriseAccount())->query()->where('arise_account_id', $item['arise_account_id'])->delete();         
+            (new CompanyDetailAriseAccount())->query()->where('id', $item['id'])->delete();         
         }
         return true;
+    }
+
+    /**
+     * Get company_detail_tax_free_voucher
+     */
+    public function getSingleVoucherPropertyObject(mixed $idCom, mixed $idTax): Builder
+    {
+        $query = (new CompanyDetailTaxFreeVoucher())->query();
+        return $query->where([
+            ['company_detail_id', $idCom],
+            ['tax_free_voucher_id', $idTax],
+        ]);
     }
 
     /**
@@ -120,14 +132,14 @@ class CompanyDetailRepository extends BaseRepository implements ICompanyDetailRe
      */
     public function deleteTaxFreeVoucher(mixed $idCom, array $ids): bool
     {
-        $list = (new CompanyDetailTaxFreeVoucher())->query()->where('company_detail_id', $idCom)->get('tax_free_voucher_id')->toArray();
-        
+        $list = (new CompanyDetailTaxFreeVoucher())->query()->where('company_detail_id', $idCom)->get(['id', 'tax_free_voucher_id'])->toArray();
+
         $needDelete = array_filter($list, function ($item) use ($ids) {
             return !in_array($item['tax_free_voucher_id'], $ids);
         });
-
+        
         foreach ($needDelete as $item) {
-            (new CompanyDetailAriseAccount())->query()->where('tax_free_voucher_id', $item['tax_free_voucher_id'])->delete();         
+            (new CompanyDetailTaxFreeVoucher())->query()->where('id', $item['id'])->delete();         
         }
         return true;
     }
