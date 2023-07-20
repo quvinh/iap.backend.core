@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\DataResources\CategoryPurchase\CategoryPurchaseResource;
 use App\Helpers\Common\MetaInfo;
 use App\Helpers\Enums\UserRoles;
+use App\Helpers\Responses\ApiResponse;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\Traits\DefaultRestActions;
 use App\Http\Requests\CategoryPurchase\CategoryPurchaseCreateRequest;
@@ -35,6 +36,7 @@ class CategoryPurchaseController extends ApiController
     {
         $root = 'category-purchases';
         if ($role == UserRoles::ADMINISTRATOR) {
+            Route::get($root . '/all', [CategoryPurchaseController::class, 'all']);
             Route::post($root . '/search', [CategoryPurchaseController::class, 'search']);
             Route::get($root . '/{id}', [CategoryPurchaseController::class, 'getSingleObject']);
             Route::post($root, [CategoryPurchaseController::class, 'create']);
@@ -100,5 +102,16 @@ class CategoryPurchaseController extends ApiController
             default:
                 return $request;
         }
+    }
+
+    /**
+     * Get all category purchases
+     */
+    public function all()
+    {
+        $result = $this->categoryPurchaseService->getAllCategoryPurchases();
+        # Send response using the predefined format
+        $response = ApiResponse::v1();
+        return $response->send($result);
     }
 }

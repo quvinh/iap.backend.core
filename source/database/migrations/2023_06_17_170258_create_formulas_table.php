@@ -14,7 +14,7 @@ return new class extends Migration
     public function up()
     {
         Schema::create('formulas', function (Blueprint $table) {
-            $table->id();
+            $table->id()->index();
             $table->string('name');
             $table->unsignedBigInteger('company_detail_id');
             $table->unsignedBigInteger('company_type_id');

@@ -34,6 +34,8 @@ class DevelopmentSeeder extends Seeder
             FirstAriseAccountSeeder::class,
             CompanySeeder::class,
             TaxFreeVoucherSeeder::class,
+            CategoryPurchaseSeeder::class,
+            CategorySoldSeeder::class,
         ]);
         
         DB::statement('SET FOREIGN_KEY_CHECKS=1');

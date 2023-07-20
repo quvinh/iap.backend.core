@@ -101,6 +101,22 @@ class CategorySoldService extends \App\Services\BaseService implements ICategory
     }
 
     /**
+     * Get all category solds
+     * @return Collection
+     */
+    public function getAllCategorySolds(): Collection
+    {
+        try {
+            $cat = $this->categorySoldRepos->getAllCategorySolds();
+            return $cat;
+        } catch (\Exception $e) {
+            throw new ActionFailException(
+                previous: $e
+            );
+        }
+    }
+
+    /**
      * Create new item
      *
      * @param array $param

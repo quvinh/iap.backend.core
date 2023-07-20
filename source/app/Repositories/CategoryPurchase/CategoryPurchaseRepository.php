@@ -8,6 +8,8 @@ use App\Helpers\Common\MetaInfo;
 use App\Models\CategoryPurchase;
 use App\Repositories\BaseRepository;
 use App\Exceptions\DB\RecordIsNotFoundException as DBRecordIsNotFoundException;
+use Illuminate\Support\Collection;
+
 use function Spatie\SslCertificate\starts_with;
 
 class CategoryPurchaseRepository extends BaseRepository implements ICategoryPurchaseRepository
@@ -19,5 +21,14 @@ class CategoryPurchaseRepository extends BaseRepository implements ICategoryPurc
     function getRepositoryModelClass(): string
     {
         return CategoryPurchase::class;
+    }
+
+    /**
+     * Get all category purchases
+     */
+    public function getAllCategoryPurchases(): Collection
+    {
+        $cat = CategoryPurchase::where('status', 1)->orderBy('id')->get();
+        return $cat;
     }
 }

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\DataResources\CategorySold\CategorySoldResource;
 use App\Helpers\Common\MetaInfo;
 use App\Helpers\Enums\UserRoles;
+use App\Helpers\Responses\ApiResponse;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\Traits\DefaultRestActions;
 use App\Http\Requests\CategorySold\CategorySoldCreateRequest;
@@ -35,6 +36,7 @@ class CategorySoldController extends ApiController
     {
         $root = 'category-solds';
         if ($role == UserRoles::ADMINISTRATOR) {
+            Route::get($root . '/all', [CategorySoldController::class, 'all']);
             Route::post($root . '/search', [CategorySoldController::class, 'search']);
             Route::get($root . '/{id}', [CategorySoldController::class, 'getSingleObject']);
             Route::post($root, [CategorySoldController::class, 'create']);
@@ -100,5 +102,16 @@ class CategorySoldController extends ApiController
             default:
                 return $request;
         }
+    }
+
+    /**
+     * Get all category solds
+     */
+    public function all()
+    {
+        $result = $this->categorySoldService->getAllCategorySolds();
+        # Send response using the predefined format
+        $response = ApiResponse::v1();
+        return $response->send($result);
     }
 }
