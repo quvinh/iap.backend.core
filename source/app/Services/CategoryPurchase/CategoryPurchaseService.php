@@ -101,6 +101,22 @@ class CategoryPurchaseService extends \App\Services\BaseService implements ICate
     }
 
     /**
+     * Get all category purchases
+     * @return Collection
+     */
+    public function getAllCategoryPurchases(): Collection
+    {
+        try {
+            $cat = $this->categoryPurchaseRepos->getAllCategoryPurchases();
+            return $cat;
+        } catch (\Exception $e) {
+            throw new ActionFailException(
+                previous: $e
+            );
+        }
+    }
+
+    /**
      * Create new item
      *
      * @param array $param
