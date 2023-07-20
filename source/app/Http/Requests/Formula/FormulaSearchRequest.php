@@ -23,6 +23,7 @@ class FormulaSearchRequest extends DefaultSearchRequest
     protected array $fields = [         
         'withs',
         'company_detail_id',
+        'id',
     ];
 
     /**
