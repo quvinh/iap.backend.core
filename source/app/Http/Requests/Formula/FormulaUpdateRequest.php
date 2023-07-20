@@ -46,7 +46,7 @@ class FormulaUpdateRequest extends BaseRequest
                 })->ignore($id)
             ],
             'company_detail_id' => ['nullable', 'integer', 'exists:company_details,id'],
-            'company_detail_id' => ['nullable', 'integer', 'exists:company_types,id'],
+            'company_type_id' => ['nullable', 'integer', 'exists:company_types,id'],
             'note' => ['nullable', 'string'],
             'status' => ['nullable', 'integer']
         ];

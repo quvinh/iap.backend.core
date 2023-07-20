@@ -22,7 +22,8 @@ class FormulaResource extends BaseDataResource
         'company_detail_id',
         'company_type_id',
         'status',
-        'note'
+        'note',
+        'created_by',
     ];
 
     /**

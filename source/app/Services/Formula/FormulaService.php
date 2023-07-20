@@ -73,6 +73,11 @@ class FormulaService extends \App\Services\BaseService implements IFormulaServic
                 $query = $this->formulaRepos->queryOnAField([DB::raw("upper(name)"), 'LIKE BINARY', DB::raw("upper(concat('%', ? , '%'))")], positionalBindings: ['name' => $param]);
             }
 
+            if (isset($rawConditions['company_detail_id'])) {
+                $param = $rawConditions['company_detail_id'];
+                $query = $this->formulaRepos->queryOnAField(['company_detail_id', '=', $param], $query);
+            }
+
             if (isset($rawConditions['updated_date'])) {
                 $query = $this->formulaRepos->queryOnDateRangeField($query, 'updated_at', $rawConditions['updated_date']);
             }

@@ -21,7 +21,8 @@ class FormulaSearchRequest extends DefaultSearchRequest
     ];
 
     protected array $fields = [         
-        'withs'
+        'withs',
+        'company_detail_id',
     ];
 
     /**
