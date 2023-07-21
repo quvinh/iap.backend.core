@@ -198,4 +198,27 @@ class FormulaService extends \App\Services\BaseService implements IFormulaServic
             );
         }
     }
+
+    /**
+     * Update formula detail
+     * @param array $param
+     * @param mixed $id
+     */
+    public function updateDetail(mixed $id, array $param, MetaInfo $commandMetaInfo = null): Formula
+    {
+        try {
+            $entity = $this->formulaRepos->getSingleObject($id)->first();
+            if (!$entity) throw new RecordIsNotFoundException();
+            # TODO: category solds
+
+            # TODO: category purchases
+            
+        } catch (\Exception $e) {
+            DB::rollBack();
+            throw new ActionFailException(
+                message: 'action failure',
+                previous: $e
+            );
+        }
+    }
 }
