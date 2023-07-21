@@ -20,7 +20,7 @@ return new class extends Migration
             $table->float('value_from')->default(0);
             $table->float('value_to')->default(0);
             $table->float('value_avg')->default(0);
-            $table->boolean('visible_value')->default(1);
+            // $table->boolean('visible_value')->default(1);
 
             $table->foreign('company_detail_id')->references('id')->on('company_details');
             $table->foreign('arise_account_id')->references('id')->on('first_arise_accounts');

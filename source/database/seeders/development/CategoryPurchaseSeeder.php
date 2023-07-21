@@ -16,11 +16,9 @@ class CategoryPurchaseSeeder extends Seeder
     public function run()
     {
         $types = [
-            'Thành phẩm',
-            'Hàng hoá bán ra',
-            'Dịch vụ bán ra',
-            'Thu nhập khác',
-            'Khuyến mãi',
+            'Hàng hoá',
+            'Dịch vụ',
+            'Nguyên vật liệu',
         ];
 
         foreach ($types as $type) {

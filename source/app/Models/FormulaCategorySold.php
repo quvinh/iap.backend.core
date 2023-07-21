@@ -17,7 +17,8 @@ class FormulaCategorySold extends Model
         'value_from',
         'value_to',
         'value_avg',
-        'visible_value',
+        'active_path',
+        // 'visible_value',
     ];
 
     public $timestamps = false;

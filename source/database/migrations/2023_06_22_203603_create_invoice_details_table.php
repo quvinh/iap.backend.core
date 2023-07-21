@@ -35,6 +35,8 @@ return new class extends Migration
             $table->string('updated_by')->nullable();
             $table->softDeletes();
             $table->timestamps();
+
+            $table->foreign('invoice_id')->references('id')->on('invoices');
         });
     }
 

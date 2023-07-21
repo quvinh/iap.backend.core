@@ -22,7 +22,7 @@ class FormulaCategoryPurchase extends Model
         'value_from',
         'value_to',
         'value_avg',
-        'visible_value',
+        // 'visible_value',
     ];
 
     public $timestamps = false;

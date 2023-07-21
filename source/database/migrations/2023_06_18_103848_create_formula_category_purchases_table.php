@@ -20,7 +20,10 @@ return new class extends Migration
             $table->float('value_from')->default(0);
             $table->float('value_to')->default(0);
             $table->float('value_avg')->default(0);
-            $table->boolean('visible_value')->default(1);
+            // $table->boolean('visible_value')->default(1);
+
+            $table->foreign('formula_id')->references('id')->on('formulas');
+            $table->foreign('category_purchase_id')->references('id')->on('category_purchases');
         });
     }
 

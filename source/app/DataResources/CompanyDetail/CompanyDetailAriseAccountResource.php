@@ -18,7 +18,7 @@ class CompanyDetailAriseAccountResource extends BaseDataResource
         'value_from',
         'value_to',
         'value_avg',
-        'visible_value'
+        // 'visible_value'
     ];
 
     /**
