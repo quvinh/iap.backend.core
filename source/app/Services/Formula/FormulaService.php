@@ -13,6 +13,8 @@ use App\Helpers\Common\MetaInfo;
 use App\Helpers\Utils\StorageHelper;
 use App\Helpers\Utils\StringHelper;
 use App\Models\Formula;
+use App\Repositories\CategoryPurchase\ICategoryPurchaseRepository;
+use App\Repositories\CategorySold\ICategorySoldRepository;
 use App\Repositories\Formula\IFormulaRepository;
 use Carbon\Carbon;
 use Exception;
@@ -24,10 +26,14 @@ use Throwable;
 class FormulaService extends \App\Services\BaseService implements IFormulaService
 {
     private ?IFormulaRepository $formulaRepos = null;
+    private ?ICategorySoldRepository $catSoldRepos = null;
+    private ?ICategoryPurchaseRepository $catPurchaseRepos = null;
 
-    public function __construct(IFormulaRepository $repos)
+    public function __construct(IFormulaRepository $repos, ICategorySoldRepository $catSoldRepos, ICategoryPurchaseRepository $catPurchaseRepos)
     {
         $this->formulaRepos = $repos;
+        $this->catSoldRepos = $catSoldRepos;
+        $this->catPurchaseRepos = $catPurchaseRepos;
     }
 
     /**
@@ -206,13 +212,61 @@ class FormulaService extends \App\Services\BaseService implements IFormulaServic
      */
     public function updateDetail(mixed $id, array $param, MetaInfo $commandMetaInfo = null): Formula
     {
+        DB::beginTransaction();
         try {
             $entity = $this->formulaRepos->getSingleObject($id)->first();
             if (!$entity) throw new RecordIsNotFoundException();
             # TODO: category solds
-
-            # TODO: category purchases
+            $this->formulaRepos->deleteCategorySold($entity->id, $param['category_solds']);
+            foreach ($param['category_solds'] as $idCat) {
+                $cat = $this->catSoldRepos->getSingleObject($idCat)->first();
+                if (!$cat) throw new RecordIsNotFoundException();
+                $ckCat = $this->formulaRepos->getSingleCategorySoldObject($entity->id, $cat->id)->first();
+                if (!$ckCat) {
+                    $this->formulaRepos->createCategorySold([
+                        'formula_id' => $entity->id,
+                        'category_sold_id' => $cat->id,
+                    ]);
+                }
+            }
             
+            # TODO: category purchases
+            $this->formulaRepos->deleteCategoryPurchase($entity->id, array_map(function ($value) {
+                return $value['id'];
+            }, $param['category_purchases']));
+            foreach ($param['category_purchases'] as $category) {
+                $cat = $this->catPurchaseRepos->getSingleObject($category['id'])->first();
+                if (!$cat) throw new RecordIsNotFoundException();
+                $ckCat = $this->formulaRepos->getSingleCategoryPurchaseObject($entity->id, $cat->id)->first();
+                if ($ckCat) {
+                    # Update info
+                    $this->formulaRepos->updateCategoryPurchase([
+                        'id' => $ckCat->id,
+                        'formula_id' => $entity->id,
+                        'category_purchase_id' => $ckCat->id,
+                        'value_from' => $category['value_from'],
+                        'value_to' => $category['value_to'],
+                    ]);
+                } else {
+                    # Create info
+                    $this->formulaRepos->createCategoryPurchase([
+                        'formula_id' => $entity->id,
+                        'category_purchase_id' => $cat->id,
+                        'value_from' => $category['value_from'],
+                        'value_to' => $category['value_to'],
+                    ]);
+                }
+            }
+
+            $record = $this->formulaRepos->update([
+                'id' => $entity->id,
+                'company_detail_id' => $param['company_detail_id'],
+                'company_type_id' => $param['company_type_id'],
+                'name' => $param['name'],
+                'note' => $param['note'] ?? null,
+            ], $commandMetaInfo);
+            DB::commit();
+            return $record;
         } catch (\Exception $e) {
             DB::rollBack();
             throw new ActionFailException(

@@ -8,11 +8,13 @@ use App\Helpers\Enums\UserRoles;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\Traits\DefaultRestActions;
 use App\Http\Requests\Formula\FormulaCreateRequest;
+use App\Http\Requests\Formula\FormulaDetailUpdateRequest;
 use App\Http\Requests\Formula\FormulaSearchRequest;
 use App\Http\Requests\Formula\FormulaUpdateRequest;
 use App\Services\IService;
 use App\Services\Formula\IFormulaService;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Route;
 
 class FormulaController extends ApiController
@@ -40,6 +42,8 @@ class FormulaController extends ApiController
             Route::post($root, [FormulaController::class, 'create']);
             Route::put($root . '/{id}', [FormulaController::class, 'update']);
             Route::delete($root . '/{id}', [FormulaController::class, 'delete']);
+
+            Route::put($root . '/detail/{id}', [FormulaController::class, 'updateDetail']);
         }
     }
 
@@ -100,5 +104,14 @@ class FormulaController extends ApiController
             default:
                 return $request;
         }
+    }
+
+    /**
+     * Update detail
+     */
+    public function updateDetail(mixed $id, FormulaDetailUpdateRequest $request): Response
+    {
+        $result = $this->formulaService->updateDetail($id, $request->all(), $this->getCurrentMetaInfo());
+        return $this->getResponseHandler()->send($result);
     }
 }
