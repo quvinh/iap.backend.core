@@ -13,6 +13,7 @@ use App\Http\Requests\FormulaCommodity\FormulaCommodityUpdateRequest;
 use App\Services\IService;
 use App\Services\FormulaCommodity\IFormulaCommodityService;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Route;
 
 class FormulaCommodityController extends ApiController
@@ -40,6 +41,7 @@ class FormulaCommodityController extends ApiController
             Route::post($root, [FormulaCommodityController::class, 'create']);
             Route::put($root . '/{id}', [FormulaCommodityController::class, 'update']);
             Route::delete($root . '/{id}', [FormulaCommodityController::class, 'delete']);
+            Route::delete($root . '/force/{id}', [FormulaCommodityController::class, 'forceDelete']);
         }
     }
 
@@ -100,5 +102,15 @@ class FormulaCommodityController extends ApiController
             default:
                 return $request;
         }
+    }
+
+    /**
+     * Force delete
+     * @return Response
+     */
+    public function forceDelete(int $id): Response
+    {
+        $result = $this->formulaCommodityService->delete($id, false);
+        return $this->getResponseHandler()->send($result);
     }
 }

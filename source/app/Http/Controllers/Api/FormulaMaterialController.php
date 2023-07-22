@@ -13,6 +13,7 @@ use App\Http\Requests\FormulaMaterial\FormulaMaterialUpdateRequest;
 use App\Services\IService;
 use App\Services\FormulaMaterial\IFormulaMaterialService;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Route;
 
 class FormulaMaterialController extends ApiController
@@ -40,6 +41,7 @@ class FormulaMaterialController extends ApiController
             Route::post($root, [FormulaMaterialController::class, 'create']);
             Route::put($root . '/{id}', [FormulaMaterialController::class, 'update']);
             Route::delete($root . '/{id}', [FormulaMaterialController::class, 'delete']);
+            Route::delete($root . '/force/{id}', [FormulaMaterialController::class, 'forceDelete']);
         }
     }
 
@@ -100,5 +102,15 @@ class FormulaMaterialController extends ApiController
             default:
                 return $request;
         }
+    }
+
+    /**
+     * Force delete
+     * @return Response
+     */
+    public function forceDelete(int $id): Response
+    {
+        $result = $this->formulaMaterialService->delete($id, false);
+        return $this->getResponseHandler()->send($result);
     }
 }

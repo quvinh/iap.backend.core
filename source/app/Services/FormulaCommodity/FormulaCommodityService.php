@@ -173,7 +173,7 @@ class FormulaCommodityService extends \App\Services\BaseService implements IForm
     {
         DB::beginTransaction();
         try {
-            $record = $this->formulaCommodityRepos->getSingleObject($id)->first();
+            $record = $this->formulaCommodityRepos->getSingleObject($id, 'id', [], !$softDelete)->first();
             if (empty($record)) {
                 throw new RecordIsNotFoundException();
             }

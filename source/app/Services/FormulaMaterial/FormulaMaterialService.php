@@ -173,7 +173,7 @@ class FormulaMaterialService extends \App\Services\BaseService implements IFormu
     {
         DB::beginTransaction();
         try {
-            $record = $this->formulaMaterialRepos->getSingleObject($id)->first();
+            $record = $this->formulaMaterialRepos->getSingleObject($id, 'id', [], !$softDelete)->first();
             if (empty($record)) {
                 throw new RecordIsNotFoundException();
             }
