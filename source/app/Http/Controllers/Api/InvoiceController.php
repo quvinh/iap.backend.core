@@ -10,6 +10,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Controllers\Traits\DefaultRestActions;
 use App\Http\Requests\Invoice\InvoiceCreateEachRowRequest;
 use App\Http\Requests\Invoice\InvoiceCreateRequest;
+use App\Http\Requests\Invoice\InvoiceImportRequest;
 use App\Http\Requests\Invoice\InvoiceSearchRequest;
 use App\Http\Requests\Invoice\InvoiceUpdateRequest;
 use App\Services\IService;
@@ -41,9 +42,11 @@ class InvoiceController extends ApiController
             Route::post($root . '/search', [InvoiceController::class, 'search']);
             Route::get($root . '/{id}', [InvoiceController::class, 'getSingleObject']);
             Route::post($root, [InvoiceController::class, 'create']);
-            Route::post($root . '/each', [InvoiceController::class, 'createEachRow']);
+            // Route::post($root . '/each', [InvoiceController::class, 'createEachRow']);
             Route::put($root . '/{id}', [InvoiceController::class, 'update']);
             Route::delete($root . '/{id}', [InvoiceController::class, 'delete']);
+
+            Route::post($root . '/import', [InvoiceController::class, 'import']);
         }
     }
 
@@ -109,6 +112,14 @@ class InvoiceController extends ApiController
     public function createEachRow(InvoiceCreateEachRowRequest $request): Response
     {
         $result = $this->invoiceService->storeEachRowInvoice($request->all());
+        # Send response using the predefined format
+        $response = ApiResponse::v1();
+        return $response->send($result);
+    }
+
+    public function import(InvoiceImportRequest $request): Response
+    {
+        $result = $this->invoiceService->import($request->all(), $this->getCurrentMetaInfo());
         # Send response using the predefined format
         $response = ApiResponse::v1();
         return $response->send($result);

@@ -8,7 +8,7 @@ use App\Rules\ComparisonTotalMoney;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
-class InvoiceCreateEachRowRequest extends BaseRequest
+class InvoiceImportRequest extends BaseRequest
 {
     /**
      * Available relations to retrieve
@@ -33,22 +33,21 @@ class InvoiceCreateEachRowRequest extends BaseRequest
      */
     public function rules(): array
     {
-        // $quantity = $this->input('quantity');
-        // $price = $this->input('price');
         return [
             'company_id' => ['required', 'integer', 'exists:companies,id'],
             'type' => ['required', 'string', Rule::in(InvoiceTypes::getValues())],
-            'date' => ['required', 'date_format:Y-m-d'],
-            'partner_name' => ['string'],
-            'partner_tax_code' => ['required', 'string', 'max:100'],
-            'invoice_number' => ['required', 'integer'],
-            'invoice_symbol' => ['required', 'string'],
-            'product' => ['required', 'string'],
-            'unit' => ['required', 'string'],
-            'vat' => ['required', 'integer'],
-            'quantity' => ['required', 'numeric'],
-            'price' => ['required', 'numeric'],
-            // 'total_money' => ['required', 'numeric', new ComparisonTotalMoney($quantity, $price)],
+            'invoice_details' => ['array'],
+            'invoice_details.*.date' => ['required', 'date_format:Y-m-d'],
+            'invoice_details.*.partner_name' => ['string'],
+            'invoice_details.*.partner_tax_code' => ['required', 'string', 'max:100'],
+            'invoice_details.*.invoice_number' => ['required', 'integer'],
+            'invoice_details.*.invoice_number_from' => ['integer'],
+            'invoice_details.*.invoice_symbol' => ['required', 'string'],
+            'invoice_details.*.product' => ['required', 'string'],
+            'invoice_details.*.unit' => ['required', 'string'],
+            'invoice_details.*.vat' => ['required', 'integer'],
+            'invoice_details.*.quantity' => ['required', 'numeric'],
+            'invoice_details.*.price' => ['required', 'numeric'],
         ];
     }
 }

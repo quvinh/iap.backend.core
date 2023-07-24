@@ -36,12 +36,11 @@ class InvoiceService extends \App\Services\BaseService implements IInvoiceServic
     private ?IItemCodeService $itemCodeService = null;
 
     public function __construct(
-        IInvoiceRepository $repos, 
-        ICompanyService $companyService, 
+        IInvoiceRepository $repos,
+        ICompanyService $companyService,
         IInvoiceTaskService $invoiceTaskService,
         IItemCodeService $itemCodeService
-    )
-    {
+    ) {
         $this->invoiceRepos = $repos;
 
         $this->companyService = $companyService;
@@ -259,11 +258,11 @@ class InvoiceService extends \App\Services\BaseService implements IInvoiceServic
             $partner_tax_code = $param['partner_tax_code'];
             $type = $param['type'];
             $invoice_number = $param['invoice_number'];
-            $invoice_symbol = $param['invoice_symbol']; 
-            $unit = Str::lower($param['unit']); 
+            $invoice_symbol = $param['invoice_symbol'];
+            $unit = Str::lower($param['unit']);
 
             # 0.Compare price * quantity with total_money
-            if ($param['price'] * $param['quantity'] != $param['total_money']) throw new ActionFailException();
+            // if ($param['price'] * $param['quantity'] != $param['total_money']) throw new ActionFailException();
 
             # 1.Check task
             $task_month = Carbon::parse($param['date'])->format('m/Y');
@@ -296,6 +295,7 @@ class InvoiceService extends \App\Services\BaseService implements IInvoiceServic
                 $invoice->invoice_number = $invoice_number;
                 $invoice->invoice_symbol = $invoice_symbol;
                 $invoice->date = $param['date'];
+                $invoice->invoice_number_form = $param['invoice_number_form'] ?? 1; # Warning
                 $invoice->created_by = auth()->user()->id . '|' . auth()->user()->name;
                 $invoice->save();
             } else {
@@ -319,9 +319,10 @@ class InvoiceService extends \App\Services\BaseService implements IInvoiceServic
                     $itemCode->product = $param['product'];
                     $itemCode->price = $param['price'];
                     $itemCode->quantity = $param['quantity'];
-                    $itemCode->opening_balance_value = $param['total_money'];
+                    // $itemCode->opening_balance_value = $param['total_money'];
                     $itemCode->unit = $unit;
                     $itemCode->year = $year;
+                    $itemCode->setItemCode($param['quantity'] ?? 1, $param['price']);
                     $itemCode->save();
                 } else $itemCode = $itemCode->first();
             } else {
@@ -335,11 +336,12 @@ class InvoiceService extends \App\Services\BaseService implements IInvoiceServic
             $invoiceDetail->unit = $unit;
             $invoiceDetail->quantity = $param['quantity'];
             $invoiceDetail->price = $param['price'];
-            $invoiceDetail->setInvoiceDetail($param['total_money'], $param['vat']);
+            $invoiceDetail->setInvoiceDetail($param['quantity'], $param['price'], $param['vat']);
             $invoiceDetail->save();
             # 5.Update sum value of invoice
             $invoice->plusMoneyInvoice($invoiceDetail->total_money, $invoiceDetail->vat);
             $invoice->save();
+
             DB::commit();
             # 6.Return
             return $invoice;
@@ -349,6 +351,49 @@ class InvoiceService extends \App\Services\BaseService implements IInvoiceServic
                 message: 'create: ' . json_encode(['param' => $param]),
                 previous: $e
             );
+        }
+    }
+
+    /**
+     * import invoice from excel's data
+     *
+     * @param array $param
+     * @param MetaInfo|null $commandMetaInfo
+     * @throws ActionFailException
+     */
+    public function import(array $param, MetaInfo $commandMetaInfo = null): array
+    {
+        DB::beginTransaction();
+        try {
+            foreach ($param['invoice_details'] as $index => $row) {
+                $record = $this->storeEachRowInvoice([
+                    'company_id' => $param['company_id'],
+                    'type' => $param['type'],
+                    'date' => $row['date'],
+                    'partner_name' => $row['partner_name'],
+                    'partner_tax_code' => $row['partner_tax_code'],
+                    'invoice_number' => $row['invoice_number'],
+                    'invoice_symbol' => $row['invoice_symbol'],
+                    'product' => $row['product'],
+                    'unit' => $row['unit'],
+                    'vat' => $row['vat'],
+                    'quantity' => $row['quantity'],
+                    'price' => $row['price'],
+                ], $commandMetaInfo);
+                if (empty($record)) throw new ActionFailException(message: "Failure at row $index");
+            }
+
+            DB::commit();
+            return ['status' => true];
+        } catch (\Exception $ex) {
+            DB::rollBack();
+            if ($ex instanceof ActionFailException) {
+                return [
+                    'status' => false,
+                    'message' => $ex->getMessage()
+                ];
+            }
+            throw new Exception($ex);
         }
     }
 }

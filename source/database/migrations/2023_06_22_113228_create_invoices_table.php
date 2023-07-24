@@ -35,7 +35,7 @@ return new class extends Migration
             $table->decimal('sum_money_vat', 12, 2)->default(0);
             $table->decimal('sum_money_discount', 12, 2)->default(0);
             $table->decimal('sum_money', 12, 2)->default(0);
-            $table->boolean('rounding')->default(0);
+            $table->boolean('rounding')->default(1);
             $table->string('payment_method', 30)->default('TM/CK');
             $table->string('verification_code')->nullable();
             $table->json('json')->nullable();

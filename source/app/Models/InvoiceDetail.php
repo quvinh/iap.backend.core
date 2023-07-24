@@ -40,9 +40,9 @@ class InvoiceDetail extends BaseModel
         'note',
     ];
 
-    public function setInvoiceDetail(float $total_money, int $vat): void
+    public function setInvoiceDetail(float $quantity, float $price, int $vat, bool $rounding = true): void
     {
-        $this->total_money = $total_money;
+        $this->total_money = $rounding ? round($quantity * $price, 2) : floor($quantity * $price);
         $this->vat = $vat;
         $this->vat_money = $this->getVatMoney();
     }
