@@ -35,14 +35,14 @@ class InvoiceImportRequest extends BaseRequest
     {
         return [
             'company_id' => ['required', 'integer', 'exists:companies,id'],
-            'type' => ['required', 'string', Rule::in(InvoiceTypes::getValues())],
+            'type' => ['required', 'string', 'max:10', Rule::in(InvoiceTypes::getValues())],
             'invoice_details' => ['array'],
             'invoice_details.*.date' => ['required', 'date_format:Y-m-d'],
             'invoice_details.*.partner_name' => ['string'],
-            'invoice_details.*.partner_tax_code' => ['required', 'string', 'max:100'],
+            'invoice_details.*.partner_tax_code' => ['required', 'string', 'max:60'],
             'invoice_details.*.invoice_number' => ['required', 'integer'],
             'invoice_details.*.invoice_number_from' => ['integer'],
-            'invoice_details.*.invoice_symbol' => ['required', 'string'],
+            'invoice_details.*.invoice_symbol' => ['required', 'string', 'max:20'],
             'invoice_details.*.product' => ['required', 'string'],
             'invoice_details.*.unit' => ['required', 'string'],
             'invoice_details.*.vat' => ['required', 'integer'],

@@ -3,6 +3,7 @@
 namespace App\DataResources\Invoice;
 
 use App\DataResources\BaseDataResource;
+use App\DataResources\Company\CompanyResource;
 use App\DataResources\InvoiceDetail\InvoiceDetailResource;
 use App\Models\Invoice;
 
@@ -59,6 +60,10 @@ class InvoiceResource extends BaseDataResource
 
         if (in_array('invoice_details', $this->fields)) {
             $this->invoice_details = BaseDataResource::generateResources($obj->invoice_details, InvoiceDetailResource::class);
+        }
+
+        if (in_array('company', $this->fields)) {
+            $this->company = BaseDataResource::generateResources($obj->company()->get(), CompanyResource::class);
         }
     }
 }

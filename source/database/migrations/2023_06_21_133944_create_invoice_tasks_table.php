@@ -16,8 +16,8 @@ return new class extends Migration
     {
         Schema::create('invoice_tasks', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('company_id');
-            $table->string('month_of_year', 7);
+            $table->unsignedBigInteger('company_id')->index();
+            $table->string('month_of_year', 7)->index();
             $table->string('task_import', 20)->default(TaskStatus::IN_PROGRESS);
             $table->string('task_progress', 20)->default(TaskStatus::NOT_YET_STARTED);
             $table->string('note')->nullable();

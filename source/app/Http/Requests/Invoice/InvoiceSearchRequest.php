@@ -13,6 +13,7 @@ class InvoiceSearchRequest extends DefaultSearchRequest
      */
     protected array $relations = [
         'invoice_details',
+        'company',
     ];
 
     protected array $fields = [
@@ -24,6 +25,7 @@ class InvoiceSearchRequest extends DefaultSearchRequest
         'type',
         'invoice_number',
         'invoice_symbol',
+        'status',
     ];
 
     /**

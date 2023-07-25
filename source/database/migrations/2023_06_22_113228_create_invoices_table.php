@@ -17,17 +17,17 @@ return new class extends Migration
     {
         Schema::create('invoices', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('company_id');
+            $table->unsignedBigInteger('company_id')->index();
             $table->unsignedBigInteger('invoice_task_id');
-            $table->string('type', 10);
+            $table->string('type', 10)->index();
             $table->date('date');
-            $table->string('invoice_symbol');
+            $table->string('invoice_symbol', 20)->index();
             $table->tinyInteger('invoice_number_form')->default(InvoiceNumberForms::VALUE_ADDED);
-            $table->bigInteger('invoice_number');
+            $table->bigInteger('invoice_number')->index();
             $table->tinyInteger('property')->default(0);
             $table->string('note')->nullable();
             $table->string('partner_name')->nullable();
-            $table->string('partner_tax_code', 100);
+            $table->string('partner_tax_code', 60)->index();
             $table->string('partner_address')->nullable();
             $table->string('currency', 3)->default(InvoiceCurrencies::VND);
             $table->float('currency_price')->default(1);
@@ -39,7 +39,7 @@ return new class extends Migration
             $table->string('payment_method', 30)->default('TM/CK');
             $table->string('verification_code')->nullable();
             $table->json('json')->nullable();
-            $table->tinyInteger('status')->default(1);
+            $table->tinyInteger('status')->default(0); // 0 - chua xu ly; 1 - da xu ly
             $table->string('created_by')->nullable();
             $table->string('updated_by')->nullable();
             $table->softDeletes();

@@ -126,6 +126,11 @@ class InvoiceService extends \App\Services\BaseService implements IInvoiceServic
                 $query = $this->invoiceRepos->queryOnAField(['invoice_symbol', '=', $param], $query);
             }
 
+            if (isset($rawConditions['status'])) {
+                $param = $rawConditions['status'];
+                $query = $this->invoiceRepos->queryOnAField(['status', '=', $param], $query);
+            }
+
             if (isset($rawConditions['updated_date'])) {
                 $query = $this->invoiceRepos->queryOnDateRangeField($query, 'updated_at', $rawConditions['updated_date']);
             }
@@ -278,6 +283,7 @@ class InvoiceService extends \App\Services\BaseService implements IInvoiceServic
                 $task->save();
             } else $task = $task->first();
             # 2.Check invoice
+            // dd($param);
             $invoice = $this->search([
                 'company_id' => $company_id,
                 'partner_tax_code' => $partner_tax_code,
@@ -380,7 +386,10 @@ class InvoiceService extends \App\Services\BaseService implements IInvoiceServic
                     'quantity' => $row['quantity'],
                     'price' => $row['price'],
                 ], $commandMetaInfo);
-                if (empty($record)) throw new ActionFailException(message: "Failure at row $index");
+                if (empty($record)) {
+                    $index += 1;
+                    throw new ActionFailException(message: "Failure at row $index");
+                }
             }
 
             DB::commit();

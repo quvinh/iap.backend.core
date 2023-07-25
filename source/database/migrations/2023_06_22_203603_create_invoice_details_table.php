@@ -15,7 +15,7 @@ return new class extends Migration
     {
         Schema::create('invoice_details', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('invoice_id');
+            $table->unsignedBigInteger('invoice_id')->index();
             $table->unsignedBigInteger('formula_commodity_id')->nullable();
             $table->unsignedBigInteger('formula_material_id')->nullable();
             $table->unsignedBigInteger('item_code_id')->nullable();
