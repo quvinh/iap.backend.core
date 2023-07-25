@@ -283,7 +283,7 @@ class InvoiceService extends \App\Services\BaseService implements IInvoiceServic
                 $task->save();
             } else $task = $task->first();
             # 2.Check invoice
-            // dd($param);
+            # Need store initialize invoice -> json
             $invoice = $this->search([
                 'company_id' => $company_id,
                 'partner_tax_code' => $partner_tax_code,
