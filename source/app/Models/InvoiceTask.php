@@ -26,4 +26,12 @@ class InvoiceTask extends BaseModel
     {
         return $this->hasOne(Company::class, 'id', 'company_id');
     }
+
+    /**
+     * @return HasOne
+     */
+    public function invoices(): HasOne
+    {
+        return $this->hasOne(Invoice::class, 'invoice_task_id', 'id');
+    }
 }

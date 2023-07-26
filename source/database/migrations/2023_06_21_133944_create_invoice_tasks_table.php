@@ -15,7 +15,7 @@ return new class extends Migration
     public function up()
     {
         Schema::create('invoice_tasks', function (Blueprint $table) {
-            $table->id();
+            $table->id()->index();
             $table->unsignedBigInteger('company_id')->index();
             $table->string('month_of_year', 7)->index();
             $table->string('task_import', 20)->default(TaskStatus::IN_PROGRESS);

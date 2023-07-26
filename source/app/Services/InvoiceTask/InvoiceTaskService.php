@@ -73,6 +73,11 @@ class InvoiceTaskService extends \App\Services\BaseService implements IInvoiceTa
             //     $query = $this->invoiceTaskRepos->queryOnAField([DB::raw("upper(month_of_year)"), 'LIKE BINARY', DB::raw("upper(concat('%', ? , '%'))")], positionalBindings: ['month_of_year' => $param]);
             // }
 
+            if (isset($rawConditions['id'])) {
+                $param = $rawConditions['id'];
+                $query = $this->invoiceTaskRepos->queryOnAField(['id', '=', $param], $query);
+            }
+
             if (isset($rawConditions['company_id'])) {
                 $param = $rawConditions['company_id'];
                 $query = $this->invoiceTaskRepos->queryOnAField(['company_id', '=', $param], $query);

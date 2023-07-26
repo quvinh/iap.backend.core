@@ -4,6 +4,7 @@ namespace App\DataResources\InvoiceTask;
 
 use App\DataResources\BaseDataResource;
 use App\DataResources\Company\CompanyResource;
+use App\DataResources\Invoice\InvoiceResource;
 use App\Models\InvoiceTask;
 
 class InvoiceTaskResource extends BaseDataResource
@@ -41,6 +42,10 @@ class InvoiceTaskResource extends BaseDataResource
         if (in_array('company', $this->fields)) {
             $this->withField('company');
             $this->company = new CompanyResource($obj->company);
+        }
+
+        if (in_array('invoices', $this->fields)) {
+            $this->invoices = BaseDataResource::generateResources($obj->invoices()->get(), InvoiceResource::class, ['invoice_details']);
         }
     }
 }

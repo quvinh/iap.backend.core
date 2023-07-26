@@ -16,7 +16,7 @@ return new class extends Migration
     public function up()
     {
         Schema::create('invoices', function (Blueprint $table) {
-            $table->id();
+            $table->id()->index();
             $table->unsignedBigInteger('company_id')->index();
             $table->unsignedBigInteger('invoice_task_id');
             $table->string('type', 10)->index();

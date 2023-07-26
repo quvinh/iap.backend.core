@@ -12,11 +12,13 @@ class InvoiceTaskSearchRequest extends DefaultSearchRequest
      * @var string[]
      */
     protected array $relations = [
-        'company'
+        'company',
+        'invoices',
     ];
 
     protected array $fields = [
         'month_of_year',
+        'id',
         'withs'
     ];
 
