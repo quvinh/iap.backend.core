@@ -16,6 +16,7 @@ return new class extends Migration
         Schema::create('category_purchases', function (Blueprint $table) {
             $table->id();
             $table->string('name');
+            $table->string('tag')->nullable();
             $table->string('note')->nullable();
             $table->boolean('status')->default(1);
             $table->string('created_by')->nullable();

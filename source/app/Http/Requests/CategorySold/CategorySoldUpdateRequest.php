@@ -2,8 +2,10 @@
 
 namespace App\Http\Requests\CategorySold;
 
+use App\Helpers\Enums\CategoryTags;
 use App\Http\Requests\BaseRequest;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class CategorySoldUpdateRequest extends BaseRequest
 {
@@ -31,7 +33,8 @@ class CategorySoldUpdateRequest extends BaseRequest
     public function rules(): array
     {
         return [
-            'name' => ['required', 'string', 'unique:category_solds,name,' . $this->id]
+            'name' => ['required', 'string', 'unique:category_solds,name,' . $this->id],
+            'tag' => ['nullable', 'string', Rule::in(CategoryTags::getValues())],
         ];
     }
 }

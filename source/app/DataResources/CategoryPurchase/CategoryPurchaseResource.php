@@ -13,6 +13,7 @@ class CategoryPurchaseResource extends BaseDataResource
     protected array $fields = [
         'id',
         'name',
+        'tag',
         'note',
         'status',
         'created_by'

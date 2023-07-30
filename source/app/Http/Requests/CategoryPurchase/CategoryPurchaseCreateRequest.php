@@ -2,8 +2,10 @@
 
 namespace App\Http\Requests\CategoryPurchase;
 
+use App\Helpers\Enums\CategoryTags;
 use App\Http\Requests\BaseRequest;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class CategoryPurchaseCreateRequest extends BaseRequest
 {
@@ -31,7 +33,8 @@ class CategoryPurchaseCreateRequest extends BaseRequest
     public function rules(): array
     {
         return [
-            'name' => ['required', 'string', 'unique:category_purchases,name']
+            'name' => ['required', 'string', 'unique:category_purchases,name'],
+            'tag' => ['nullable', 'string', Rule::in(CategoryTags::getValues())],
         ];
     }
 }

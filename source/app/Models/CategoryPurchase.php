@@ -12,6 +12,7 @@ class CategoryPurchase extends BaseModel
 
     protected $fillable = [
         'name',
+        'tag',
         'note',
         'status',
         'created_by',
