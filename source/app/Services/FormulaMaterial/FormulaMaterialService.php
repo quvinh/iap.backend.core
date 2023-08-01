@@ -73,6 +73,16 @@ class FormulaMaterialService extends \App\Services\BaseService implements IFormu
                 $query = $this->formulaMaterialRepos->queryOnAField([DB::raw("upper(name)"), 'LIKE BINARY', DB::raw("upper(concat('%', ? , '%'))")], positionalBindings: ['name' => $param]);
             }
 
+            if (isset($rawConditions['formula_id'])) {
+                $param = $rawConditions['formula_id'];
+                $query = $this->formulaMaterialRepos->queryOnAField(['formula_id', '=', $param], $query);
+            }
+
+            if (isset($rawConditions['status'])) {
+                $param = $rawConditions['status'];
+                $query = $this->formulaMaterialRepos->queryOnAField(['status', '=', $param], $query);
+            }
+
             if (isset($rawConditions['updated_date'])) {
                 $query = $this->formulaMaterialRepos->queryOnDateRangeField($query, 'updated_at', $rawConditions['updated_date']);
             }

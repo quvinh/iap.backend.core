@@ -73,6 +73,16 @@ class FormulaCommodityService extends \App\Services\BaseService implements IForm
                 $query = $this->formulaCommodityRepos->queryOnAField([DB::raw("upper(name)"), 'LIKE BINARY', DB::raw("upper(concat('%', ? , '%'))")], positionalBindings: ['name' => $param]);
             }
 
+            if (isset($rawConditions['formula_id'])) {
+                $param = $rawConditions['formula_id'];
+                $query = $this->formulaCommodityRepos->queryOnAField(['formula_id', '=', $param], $query);
+            }
+
+            if (isset($rawConditions['status'])) {
+                $param = $rawConditions['status'];
+                $query = $this->formulaCommodityRepos->queryOnAField(['status', '=', $param], $query);
+            }
+
             if (isset($rawConditions['updated_date'])) {
                 $query = $this->formulaCommodityRepos->queryOnDateRangeField($query, 'updated_at', $rawConditions['updated_date']);
             }

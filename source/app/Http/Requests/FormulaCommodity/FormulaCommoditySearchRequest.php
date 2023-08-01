@@ -8,6 +8,18 @@ use Illuminate\Foundation\Http\FormRequest;
 class FormulaCommoditySearchRequest extends DefaultSearchRequest
 {
     /**
+     * Available relations to retrieve
+     * @var string[]
+     */
+    protected array $relations = [];
+
+    protected array $fields = [         
+        'withs',
+        'formula_id',
+        'status',
+    ];
+    
+    /**
      * Overwrite this function to prepare or convert data before validating
      * @return void
      * @throws InvalidDatetimeInputException
