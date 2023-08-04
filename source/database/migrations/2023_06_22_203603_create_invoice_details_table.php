@@ -19,8 +19,10 @@ return new class extends Migration
             $table->unsignedBigInteger('formula_commodity_id')->nullable();
             $table->unsignedBigInteger('formula_material_id')->nullable();
             $table->unsignedBigInteger('item_code_id')->nullable();
-            $table->string('formula_path_id')->nullable(); // category | formula
+            $table->string('formula_path_id', 50)->nullable(); // category id, formula id, expenses, tag name, type
+            $table->string('formula_group_name')->nullable();
             $table->string('product');
+            $table->string('product_exchange')->nullable();
             $table->string('unit', 100);
             $table->float('quantity')->default(0);
             $table->decimal('price', 12, 2)->default(0);

@@ -8,6 +8,7 @@ use App\Helpers\Enums\UserRoles;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\Traits\DefaultRestActions;
 use App\Http\Requests\InvoiceTask\InvoiceTaskCreateRequest;
+use App\Http\Requests\InvoiceTask\InvoiceTaskHandleFormulaRequest;
 use App\Http\Requests\InvoiceTask\InvoiceTaskSearchRequest;
 use App\Http\Requests\InvoiceTask\InvoiceTaskUpdateRequest;
 use App\Services\IService;
@@ -42,6 +43,8 @@ class InvoiceTaskController extends ApiController
             Route::put($root . '/{id}', [InvoiceTaskController::class, 'update']);
             Route::delete($root . '/{id}', [InvoiceTaskController::class, 'delete']);
             Route::delete($root . '/force/{id}', [InvoiceTaskController::class, 'forceDelete']);
+
+            Route::put($root . '/formula/update', [InvoiceTaskController::class, 'updateHandleFormula']);
         }
     }
 
@@ -111,6 +114,12 @@ class InvoiceTaskController extends ApiController
     public function forceDelete(int $id): Response
     {
         $result = $this->invoiceTaskService->delete($id, false);
+        return $this->getResponseHandler()->send($result);
+    }
+
+    public function updateHandleFormula(InvoiceTaskHandleFormulaRequest $request): Response
+    {
+        $result = $this->invoiceTaskService->updateHandleFormula($request->all());
         return $this->getResponseHandler()->send($result);
     }
 }

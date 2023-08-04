@@ -7,4 +7,5 @@ use App\Services\IService;
 
 interface IInvoiceTaskService extends IService
 {
+    public function updateHandleFormula(array $params): mixed;
 }

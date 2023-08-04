@@ -14,8 +14,10 @@ use App\Helpers\Utils\StorageHelper;
 use App\Helpers\Utils\StringHelper;
 use App\Models\InvoiceTask;
 use App\Repositories\InvoiceTask\IInvoiceTaskRepository;
+use App\Services\InvoiceDetail\IInvoiceDetailService;
 use Carbon\Carbon;
 use Exception;
+use Illuminate\Database\RecordsNotFoundException;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -24,10 +26,12 @@ use Throwable;
 class InvoiceTaskService extends \App\Services\BaseService implements IInvoiceTaskService
 {
     private ?IInvoiceTaskRepository $invoiceTaskRepos = null;
+    private ?IInvoiceDetailService $invoiceDetailService = null;
 
-    public function __construct(IInvoiceTaskRepository $repos)
+    public function __construct(IInvoiceTaskRepository $repos, IInvoiceDetailService $invoiceDetailService)
     {
         $this->invoiceTaskRepos = $repos;
+        $this->invoiceDetailService = $invoiceDetailService;
     }
 
     /**
@@ -199,6 +203,85 @@ class InvoiceTaskService extends \App\Services\BaseService implements IInvoiceTa
             DB::rollBack();
             throw new CannotDeleteDBException(
                 message: 'update: ' . json_encode(['id' => $id, 'softDelete' => $softDelete]),
+                previous: $ex
+            );
+        }
+    }
+
+    /**
+     * Handle update formula
+     * @param array $params
+     * key: formula -> formula
+     *      formula_group -> commodity/material
+     */
+    public function updateHandleFormula(array $params): mixed
+    {
+        DB::beginTransaction();
+        try {
+            $key = $params['key'];
+            $entities = $params['entities'];
+            switch ($key) {
+                case 'formula':
+                    foreach ($entities as $row) {
+                        $record = $this->invoiceDetailService->getSingleObject($row['id']);
+                        if (empty($record)) throw new RecordsNotFoundException();
+                        $record->formula_path_id = $row['value'];
+                        if (!$record->save()) throw new CannotUpdateDBException();
+                    }
+                    $result = true;
+                    break;
+                case 'formula_group':
+                    foreach ($entities as $row) {
+                        $record = $this->invoiceDetailService->getSingleObject($row['id']);
+                        if (empty($record)) throw new RecordsNotFoundException();
+                        if ($record->formula_path_id) {
+                            # Get group commodity/material
+                            $group = explode(',', $record->formula_path_id)[3];
+                            # Get id group
+                            $group_string = explode('|', $row['value']);
+                            $group_id = $group_string[0];
+                            $group_name = $group_string[1];
+                            $group_id = is_numeric($group_id) ? $group_id : null;
+                            switch ($group) {
+                                case 'commodity':
+                                    $record->formula_commodity_id = $group_id;
+                                    $record->formula_material_id = null;
+                                    $record->formula_group_name = $group_id ? $group_name : '';
+                                    if (!$record->save()) throw new CannotUpdateDBException();
+                                    break;
+                                case 'material':
+                                    $record->formula_commodity_id = null;
+                                    $record->formula_material_id = $group_id;
+                                    $record->formula_group_name = $group_id ? $group_name : '';
+                                    if (!$record->save()) throw new CannotUpdateDBException();
+                                    break;
+                                default:
+                                    # code...
+                                    break;
+                            }
+                        }
+                    }
+                    $result = true;
+                    break;
+                case 'warehouse':
+                    foreach ($entities as $row) {
+                        $record = $this->invoiceDetailService->getSingleObject($row['id']);
+                        if (empty($record)) throw new RecordsNotFoundException();
+                        $record->warehouse = $row['value'];
+                        if (!$record->save()) throw new CannotUpdateDBException();
+                    }
+                    $result = true;
+                    break;
+                default:
+                    throw new ActionFailException('key not found');
+                    break;
+            }
+            DB::commit();
+            return $result;
+        } catch (\Exception $ex) {
+            DB::rollBack();
+            throw new CannotUpdateDBException(
+                message: 'update formula failure',
                 previous: $ex
             );
         }
