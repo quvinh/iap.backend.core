@@ -24,9 +24,11 @@ class InvoiceDetail extends BaseModel
     protected $fillable = [
         'invoice_id',
         'formula_id',
+        'formula_path_id',
         'formula_commodity_id',
         'formula_material_id',
         'item_code_id',
+        'formula_group_name',
         'product',
         'unit',
         'quantity',
