@@ -18,6 +18,9 @@ return new class extends Migration
             $table->string('name');
             $table->unsignedBigInteger('company_detail_id');
             $table->unsignedBigInteger('company_type_id');
+            $table->float('sum_from')->default(0);
+            $table->float('sum_to')->default(0);
+            $table->float('sum_avg')->default(0);
             $table->boolean('status')->default(1);
             $table->string('note')->nullable();
             $table->string('created_by')->nullable();

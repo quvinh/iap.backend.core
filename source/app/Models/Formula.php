@@ -8,6 +8,11 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
+/**
+ * @property float $sum_from
+ * @property float $sum_to
+ * @property float $sum_avg
+ */
 class Formula extends BaseModel
 {
     use HasFactory, SoftDeletes;
@@ -17,8 +22,28 @@ class Formula extends BaseModel
         'note',
         'company_detail_id',
         'company_type_id',
+        'sum_from',
+        'sum_to',
+        'sum_avg',
         'status'
     ];
+
+    public function setFormula(float $sum_from, float $sum_to): void
+    {
+        $this->sum_from = $sum_from;
+        $this->sum_to = $sum_to;
+        $this->sum_avg = $this->getAverage();
+    }
+
+    public function getAverage(): float
+    {
+        try {
+            $avg = ($this->sum_from + $this->sum_to) / 2;
+            return round($avg, 2);
+        } catch (\Exception) {
+            return 0;
+        }
+    }
 
     /**
      * @return HasOne

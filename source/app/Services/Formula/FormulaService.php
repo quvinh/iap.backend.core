@@ -234,6 +234,8 @@ class FormulaService extends \App\Services\BaseService implements IFormulaServic
             $this->formulaRepos->deleteCategoryPurchase($entity->id, array_map(function ($value) {
                 return $value['id'];
             }, $param['category_purchases']));
+            $sum_from = 0;
+            $sum_to = 0;
             foreach ($param['category_purchases'] as $category) {
                 $cat = $this->catPurchaseRepos->getSingleObject($category['id'])->first();
                 if (!$cat) throw new RecordIsNotFoundException();
@@ -247,6 +249,10 @@ class FormulaService extends \App\Services\BaseService implements IFormulaServic
                         'value_from' => $category['value_from'],
                         'value_to' => $category['value_to'],
                     ]);
+
+                    # Compute sum value formula
+                    $sum_from += $category['value_from'] ?? 0;
+                    $sum_to += $category['value_to'] ?? 0;
                 } else {
                     # Create info
                     $this->formulaRepos->createCategoryPurchase([
@@ -255,18 +261,29 @@ class FormulaService extends \App\Services\BaseService implements IFormulaServic
                         'value_from' => $category['value_from'],
                         'value_to' => $category['value_to'],
                     ]);
+
+                    # Compute sum value formula
+                    $sum_from += $category['value_from'] ?? 0;
+                    $sum_to += $category['value_to'] ?? 0;
                 }
             }
 
-            $record = $this->formulaRepos->update([
-                'id' => $entity->id,
-                'company_detail_id' => $param['company_detail_id'],
-                'company_type_id' => $param['company_type_id'],
-                'name' => $param['name'],
-                'note' => $param['note'] ?? null,
-            ], $commandMetaInfo);
+            // $record = $this->formulaRepos->update([
+            //     'id' => $entity->id,
+            //     'company_detail_id' => $param['company_detail_id'],
+            //     'company_type_id' => $param['company_type_id'],
+            //     'name' => $param['name'],
+            //     'note' => $param['note'] ?? null,
+            // ], $commandMetaInfo);
+            $entity->company_detail_id = $param['company_detail_id'];
+            $entity->company_type_id = $param['company_type_id'];
+            $entity->name = $param['name'];
+            $entity->note = $param['note'] ?? null;
+            $entity->setFormula($sum_from, $sum_to);
+            if (!$entity->save()) throw new ActionFailException();
+            
             DB::commit();
-            return $record;
+            return $entity;
         } catch (\Exception $e) {
             DB::rollBack();
             throw new ActionFailException(
