@@ -26,6 +26,7 @@ class InvoiceSearchRequest extends DefaultSearchRequest
         'invoice_number',
         'invoice_symbol',
         'status',
+        'date',
     ];
 
     /**

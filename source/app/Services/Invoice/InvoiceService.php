@@ -130,6 +130,10 @@ class InvoiceService extends \App\Services\BaseService implements IInvoiceServic
                 $param = $rawConditions['status'];
                 $query = $this->invoiceRepos->queryOnAField(['status', '=', $param], $query);
             }
+            
+            if (isset($rawConditions['date'])) {
+                $query = $this->invoiceRepos->queryOnDateRangeField($query, 'date', $rawConditions['date']);
+            }
 
             if (isset($rawConditions['updated_date'])) {
                 $query = $this->invoiceRepos->queryOnDateRangeField($query, 'updated_at', $rawConditions['updated_date']);
