@@ -15,6 +15,7 @@ class CategorySold extends BaseModel
         'tag',
         'note',
         'status',
+        'method',
         'created_by',
         'updated_by'
     ];

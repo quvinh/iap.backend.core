@@ -1,5 +1,6 @@
 <?php
 
+use App\Helpers\Enums\CategoryActions;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -19,6 +20,7 @@ return new class extends Migration
             $table->string('tag')->nullable();
             $table->string('note')->nullable();
             $table->boolean('status')->default(1);
+            $table->char('method', 5)->default(CategoryActions::PLUS);
             $table->string('created_by')->nullable();
             $table->string('updated_by')->nullable();
             $table->softDeletes();

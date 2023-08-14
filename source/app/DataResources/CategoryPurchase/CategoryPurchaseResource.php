@@ -16,6 +16,7 @@ class CategoryPurchaseResource extends BaseDataResource
         'tag',
         'note',
         'status',
+        'method',
         'created_by'
     ];
 
