@@ -20,7 +20,7 @@ return new class extends Migration
             $table->string('tag')->nullable();
             $table->string('note')->nullable();
             $table->boolean('status')->default(1);
-            $table->char('method', 5)->default(CategoryActions::PLUS);
+            $table->char('method', 10)->default(CategoryActions::PLUS);
             $table->string('created_by')->nullable();
             $table->string('updated_by')->nullable();
             $table->softDeletes();
