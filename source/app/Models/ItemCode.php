@@ -20,6 +20,7 @@ class ItemCode extends BaseModel
 
     protected $fillable = [
         'company_id',
+        'item_group_id',
         'product_code',
         'product_exchange',
         'product',
@@ -56,5 +57,13 @@ class ItemCode extends BaseModel
     public function company(): HasOne
     {
         return $this->hasOne(Company::class, 'id', 'company_id');
+    }
+
+    /**
+     * @return HasOne
+     */
+    public function item_group(): HasOne
+    {
+        return $this->hasOne(ItemGroup::class, 'id', 'item_group_id');
     }
 }

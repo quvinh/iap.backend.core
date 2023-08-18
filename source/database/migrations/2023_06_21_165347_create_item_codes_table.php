@@ -16,8 +16,9 @@ return new class extends Migration
         Schema::create('item_codes', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('company_id')->index();
+            $table->unsignedBigInteger('item_group_id')->nullable();
             $table->string('product_code')->index();
-            $table->string('product_exchange')->default('product_exchange');
+            $table->string('product_exchange')->nullable(); //->default('product_exchange');
             $table->string('product')->nullable();
             $table->decimal('price', 12, 2)->default(0);
             $table->float('quantity')->default(0);
@@ -31,6 +32,7 @@ return new class extends Migration
             $table->timestamps();
 
             $table->foreign('company_id')->references('id')->on('companies');
+            $table->foreign('item_group_id')->references('id')->on('item_groups');
         });
     }
 

@@ -4,6 +4,7 @@ namespace App\DataResources\ItemCode;
 
 use App\DataResources\BaseDataResource;
 use App\DataResources\Company\CompanyResource;
+use App\DataResources\ItemGroup\ItemGroupResource;
 use App\Models\ItemCode;
 
 class ItemCodeResource extends BaseDataResource
@@ -14,6 +15,7 @@ class ItemCodeResource extends BaseDataResource
     protected array $fields = [
         'id',
         'company_id',
+        'item_group_id',
         'product_code',
         'product_exchange',
         'product',
@@ -47,6 +49,11 @@ class ItemCodeResource extends BaseDataResource
         if (in_array('company', $this->fields)) {
             $this->withField('company');
             $this->company = new CompanyResource($obj->company);
+        }
+
+        if (in_array('item_group', $this->fields)) {
+            $this->withField('item_group');
+            $this->item_group = new ItemGroupResource($obj->item_group);
         }
     }
 }
