@@ -36,6 +36,8 @@ use App\Services\InvoiceTask\IInvoiceTaskService;
 use App\Services\InvoiceTask\InvoiceTaskService;
 use App\Services\ItemCode\IItemCodeService;
 use App\Services\ItemCode\ItemCodeService;
+use App\Services\ItemGroup\IItemGroupService;
+use App\Services\ItemGroup\ItemGroupService;
 use App\Services\Permission\IPermissionService;
 use App\Services\Permission\PermissionService;
 use App\Services\Role\IRoleService;
@@ -74,5 +76,6 @@ class ServiceRegistration
         $app->singleton(IItemCodeService::class, ItemCodeService::class);
         $app->singleton(IInvoiceService::class, InvoiceService::class);
         $app->singleton(IInvoiceDetailService::class, InvoiceDetailService::class);
+        $app->singleton(IItemGroupService::class, ItemGroupService::class);
     }
 }

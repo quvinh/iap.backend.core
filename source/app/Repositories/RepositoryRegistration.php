@@ -34,6 +34,8 @@ use App\Repositories\InvoiceTask\IInvoiceTaskRepository;
 use App\Repositories\InvoiceTask\InvoiceTaskRepository;
 use App\Repositories\ItemCode\IItemCodeRepository;
 use App\Repositories\ItemCode\ItemCodeRepository;
+use App\Repositories\ItemGroup\IItemGroupRepository;
+use App\Repositories\ItemGroup\ItemGroupRepository;
 use App\Repositories\Permission\IPermissionRepository;
 use App\Repositories\Permission\PermissionRepository;
 use App\Repositories\Role\IRoleRepository;
@@ -71,5 +73,6 @@ class RepositoryRegistration
         $app->singleton(IItemCodeRepository::class, ItemCodeRepository::class);
         $app->singleton(IInvoiceRepository::class, InvoiceRepository::class);
         $app->singleton(IInvoiceDetailRepository::class, InvoiceDetailRepository::class);
+        $app->singleton(IItemGroupRepository::class, ItemGroupRepository::class);
     }
 }

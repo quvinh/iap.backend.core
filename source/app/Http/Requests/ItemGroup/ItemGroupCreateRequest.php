@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Http\Requests\ItemCode;
+namespace App\Http\Requests\ItemGroup;
 
 use App\Http\Requests\BaseRequest;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
-class ItemCodeCreateRequest extends BaseRequest
+class ItemGroupCreateRequest extends BaseRequest
 {
     /**
      * Available relations to retrieve
@@ -37,7 +37,7 @@ class ItemCodeCreateRequest extends BaseRequest
             'item_group' => [
                 'required',
                 'string',
-                Rule::unique('item_codes')->where(function ($query) use ($company_id, $item_group) {
+                Rule::unique('item_groups')->where(function ($query) use ($company_id, $item_group) {
                     return $query->where([
                         ['company_id', $company_id],
                         ['item_group', $item_group],

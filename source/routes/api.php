@@ -18,6 +18,7 @@ use App\Http\Controllers\Api\InvoiceController;
 use App\Http\Controllers\Api\InvoiceDetailController;
 use App\Http\Controllers\Api\InvoiceTaskController;
 use App\Http\Controllers\Api\ItemCodeController;
+use App\Http\Controllers\Api\ItemGroupController;
 use App\Http\Controllers\Api\MediaStorageController;
 use App\Http\Controllers\Api\PermissionController;
 use App\Http\Controllers\Api\RoleController;
@@ -62,6 +63,7 @@ function registerResourceRoutes(string $group = UserRoles::ADMINISTRATOR): void
     ItemCodeController::registerRoutes($group);
     InvoiceController::registerRoutes($group);
     InvoiceDetailController::registerRoutes($group);
+    ItemGroupController::registerRoutes($group);
 }
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {

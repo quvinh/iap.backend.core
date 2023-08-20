@@ -12,7 +12,8 @@ class ItemCodeSearchRequest extends DefaultSearchRequest
      * @var string[]
      */
     protected array $relations = [
-        'company'
+        'company',
+        'item_group',
     ];
 
     protected array $fields = [

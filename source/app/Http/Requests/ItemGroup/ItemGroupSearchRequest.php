@@ -1,18 +1,19 @@
 <?php
 
-namespace App\Http\Requests\ItemCode;
+namespace App\Http\Requests\ItemGroup;
 
 use App\Http\Requests\DefaultSearchRequest;
 use Illuminate\Foundation\Http\FormRequest;
 
-class ItemCodeSearchRequest extends DefaultSearchRequest
+class ItemGroupSearchRequest extends DefaultSearchRequest
 {
     /**
      * Available relations to retrieve
      * @var string[]
      */
     protected array $relations = [
-        'item_codes'
+        'item_codes',
+        'company',
     ];
 
     protected array $fields = [

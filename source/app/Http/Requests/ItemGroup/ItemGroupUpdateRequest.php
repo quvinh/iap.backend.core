@@ -1,13 +1,13 @@
 <?php
 
-namespace App\Http\Requests\ItemCode;
+namespace App\Http\Requests\ItemGroup;
 
 use App\Http\Requests\BaseRequest;
 use App\Rules\IsBase64Image;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
-class ItemCodeUpdateRequest extends BaseRequest
+class ItemGroupUpdateRequest extends BaseRequest
 {
     /**
      * Available relations to retrieve
@@ -39,7 +39,7 @@ class ItemCodeUpdateRequest extends BaseRequest
             'item_group' => [
                 'required',
                 'string',
-                Rule::unique('item_codes')->where(function ($query) use ($company_id, $item_group) {
+                Rule::unique('item_groups')->where(function ($query) use ($company_id, $item_group) {
                     return $query->where([
                         ['company_id', $company_id],
                         ['item_group', $item_group],
