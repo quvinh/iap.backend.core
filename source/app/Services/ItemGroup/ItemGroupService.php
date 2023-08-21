@@ -13,9 +13,11 @@ use App\Helpers\Common\MetaInfo;
 use App\Helpers\Utils\StorageHelper;
 use App\Helpers\Utils\StringHelper;
 use App\Models\ItemGroup;
+use App\Repositories\ItemCode\IItemCodeRepository;
 use App\Repositories\ItemGroup\IItemGroupRepository;
 use Carbon\Carbon;
 use Exception;
+use Illuminate\Database\RecordsNotFoundException;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -24,10 +26,12 @@ use Throwable;
 class ItemGroupService extends \App\Services\BaseService implements IItemGroupService
 {
     private ?IItemGroupRepository $itemGroupRepos = null;
+    private ?IItemCodeRepository $itemCodeRepos = null;
 
-    public function __construct(IItemGroupRepository $repos)
+    public function __construct(IItemGroupRepository $repos, IItemCodeRepository $itemCodeRepos)
     {
         $this->itemGroupRepos = $repos;
+        $this->itemCodeRepos = $itemCodeRepos;
     }
 
     /**
@@ -114,6 +118,18 @@ class ItemGroupService extends \App\Services\BaseService implements IItemGroupSe
         try {
             #1 Create
             $record = $this->itemGroupRepos->create($param, $commandMetaInfo);
+            if (!empty($param['item_codes'])) {
+                foreach ($param['item_codes'] as $index => $item) {
+                    $row = $this->itemCodeRepos->getSingleObject($item['id'])->first();
+                    if (empty($row)) throw new RecordsNotFoundException();
+                    if ($index == 0) {
+                        $record->year = $row->year;
+                        $record->save();
+                    }
+                    $row->item_group_id = $record->id;
+                    if (!$row->save()) throw new CannotSaveToDBException();
+                }
+            }
             DB::commit();
             #2 Return
             return $record;
@@ -139,6 +155,7 @@ class ItemGroupService extends \App\Services\BaseService implements IItemGroupSe
         try {
             #1: Can edit? -> Yes: move to #2 No: return Exception with error
             $record = $this->itemGroupRepos->getSingleObject($id)->first();
+            dd($record->id,$this->itemCodeRepos->findByGroup($record->id)->get());
             if (empty($record)) {
                 throw new RecordIsNotFoundException();
             }

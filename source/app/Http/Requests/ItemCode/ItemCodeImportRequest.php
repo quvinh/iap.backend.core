@@ -36,7 +36,7 @@ class ItemCodeImportRequest extends BaseRequest
             'year' => ['required', 'integer', 'digits:4', 'min:2000'],
             'import' => ['required', 'array'],
             'import.*.product_code' => ['required', 'string'],
-            'import.*.product_exchange' => ['string'],
+            // 'import.*.product_exchange' => ['string'],
             'import.*.unit' => ['required', 'string'],
             'import.*.quantity' => ['numeric', 'min:1'],
             'import.*.price' => ['required', 'numeric', 'min:1'],

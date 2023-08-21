@@ -16,7 +16,8 @@ class ItemGroupResource extends BaseDataResource
     protected array $fields = [
         'id',
         'company_id',
-        'item_group',
+        'name',
+        'year',
         'note',
         'created_by',
         'created_at',

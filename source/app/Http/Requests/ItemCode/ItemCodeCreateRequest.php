@@ -49,7 +49,7 @@ class ItemCodeCreateRequest extends BaseRequest
                 })
             ],
             'company_id' => ['required', 'integer', 'exists:companies,id'],
-            'product_exchange' => ['required', 'string'],
+            // 'product_exchange' => ['required', 'string'],
             'product' => ['nullable', 'string'],
             'unit' => ['required', 'string', 'max:100'],
             'price' => ['required', 'numeric', 'min:0'],

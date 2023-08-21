@@ -8,6 +8,8 @@ use App\Helpers\Common\MetaInfo;
 use App\Models\ItemCode;
 use App\Repositories\BaseRepository;
 use App\Exceptions\DB\RecordIsNotFoundException as DBRecordIsNotFoundException;
+use Illuminate\Database\Eloquent\Builder;
+
 use function Spatie\SslCertificate\starts_with;
 
 class ItemCodeRepository extends BaseRepository implements IItemCodeRepository
@@ -73,5 +75,15 @@ class ItemCodeRepository extends BaseRepository implements IItemCodeRepository
             }
         }
         throw new DBRecordIsNotFoundException();
+    }
+
+    /**
+     * Find by group
+     * @param $group
+     * @return Builder
+     */
+    public function findByGroup($group): Builder | null
+    {
+        return ItemCode::query()->where('item_group_id', $group);
     }
 }

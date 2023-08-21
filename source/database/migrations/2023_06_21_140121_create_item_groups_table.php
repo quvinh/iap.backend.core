@@ -16,7 +16,8 @@ return new class extends Migration
         Schema::create('item_groups', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('company_id')->index();
-            $table->string('item_group');
+            $table->string('name');
+            $table->string('year', 4)->default(date('Y'));
             $table->string('note')->nullable();
             $table->string('created_by')->nullable();
             $table->string('updated_by')->nullable();

@@ -14,7 +14,8 @@ class ItemGroup extends BaseModel
 
     protected $fillable = [
         'company_id',
-        'item_group',
+        'name',
+        'year',
         'note',
     ];
 

@@ -32,20 +32,23 @@ class ItemGroupCreateRequest extends BaseRequest
     public function rules(): array
     {
         $company_id = $this->input('company_id');
-        $item_group = $this->input('item_group');
+        $item_group = $this->input('name');
         return [
-            'item_group' => [
+            'name' => [
                 'required',
                 'string',
                 Rule::unique('item_groups')->where(function ($query) use ($company_id, $item_group) {
                     return $query->where([
                         ['company_id', $company_id],
-                        ['item_group', $item_group],
+                        ['name', $item_group],
                     ]);
                 })
             ],
             'company_id' => ['required', 'integer', 'exists:companies,id'],
+            'item_codes' => ['array'],
+            'item_codes.*.id' => ['required', 'integer', 'exists:item_codes,id'],
             'note' => ['nullable'],
+            'year' => ['integer', 'digits:4', 'min:2000']
         ];
     }
 }
