@@ -155,7 +155,7 @@ class ItemGroupService extends \App\Services\BaseService implements IItemGroupSe
         try {
             #1: Can edit? -> Yes: move to #2 No: return Exception with error
             $record = $this->itemGroupRepos->getSingleObject($id)->first();
-            dd($record->id,$this->itemCodeRepos->findByGroup($record->id)->get());
+            // dd($record->id,$this->itemCodeRepos->findByGroup($record->id)->get());
             if (empty($record)) {
                 throw new RecordIsNotFoundException();
             }

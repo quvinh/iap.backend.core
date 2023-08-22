@@ -17,6 +17,7 @@ class ItemGroupResource extends BaseDataResource
         'id',
         'company_id',
         'name',
+        'code',
         'year',
         'note',
         'created_by',

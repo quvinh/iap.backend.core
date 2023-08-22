@@ -19,6 +19,7 @@ class ItemCode extends BaseModel
     use HasFactory, SoftDeletes;
 
     protected $fillable = [
+        'id',
         'company_id',
         'item_group_id',
         'product_code',
