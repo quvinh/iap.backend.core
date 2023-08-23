@@ -7,4 +7,5 @@ use App\Services\IService;
 
 interface IItemGroupService extends IService
 {
+    public function insert(array $param): mixed;
 }

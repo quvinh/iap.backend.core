@@ -9,6 +9,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Controllers\Traits\DefaultRestActions;
 use App\Http\Requests\ItemGroup\ItemGroupCreateRequest;
 use App\Http\Requests\ItemGroup\ItemGroupImportRequest;
+use App\Http\Requests\ItemGroup\ItemGroupInsertRequest;
 use App\Http\Requests\ItemGroup\ItemGroupSearchRequest;
 use App\Http\Requests\ItemGroup\ItemGroupUpdateRequest;
 use App\Services\IService;
@@ -44,7 +45,7 @@ class ItemGroupController extends ApiController
             Route::delete($root . '/{id}', [ItemGroupController::class, 'delete']);
             Route::delete($root . '/force/{id}', [ItemGroupController::class, 'forceDelete']);
 
-            Route::post($root . '/import', [ItemGroupController::class, 'import']);
+            Route::post($root . '/insert', [ItemGroupController::class, 'insert']);
         }
     }
 
@@ -114,6 +115,15 @@ class ItemGroupController extends ApiController
     public function forceDelete(int $id): Response
     {
         $result = $this->itemGroupService->delete($id, false);
+        return $this->getResponseHandler()->send($result);
+    }
+
+    /**
+     * Insert into group
+     */
+    public function insert(ItemGroupInsertRequest $request)
+    {
+        $result = $this->itemGroupService->insert($request->all());
         return $this->getResponseHandler()->send($result);
     }
 }

@@ -72,9 +72,24 @@ class ItemGroupService extends \App\Services\BaseService implements IItemGroupSe
     {
         try {
             $query = $this->itemGroupRepos->search();
-            if (isset($rawConditions['item_group'])) {
-                $param = StringHelper::escapeLikeQueryParameter($rawConditions['item_group']);
-                $query = $this->itemGroupRepos->queryOnAField([DB::raw("upper(item_group)"), 'LIKE BINARY', DB::raw("upper(concat('%', ? , '%'))")], positionalBindings: ['item_group' => $param]);
+            if (isset($rawConditions['name'])) {
+                $param = StringHelper::escapeLikeQueryParameter($rawConditions['name']);
+                $query = $this->itemGroupRepos->queryOnAField([DB::raw("upper(name)"), 'LIKE BINARY', DB::raw("upper(concat('%', ? , '%'))")], positionalBindings: ['name' => $param]);
+            }
+
+            if (isset($rawConditions['code'])) {
+                $param = $rawConditions['code'];
+                $query = $this->itemGroupRepos->queryOnAField(['code', 'LIKE', "%$param%"], $query);
+            }
+
+            if (isset($rawConditions['year'])) {
+                $param = $rawConditions['year'];
+                $query = $this->itemGroupRepos->queryOnAField(['year', '=', $param], $query);
+            }
+
+            if (isset($rawConditions['company_id'])) {
+                $param = $rawConditions['company_id'];
+                $query = $this->itemGroupRepos->queryOnAField(['company_id', '=', $param], $query);
             }
 
             if (isset($rawConditions['updated_date'])) {
@@ -202,6 +217,43 @@ class ItemGroupService extends \App\Services\BaseService implements IItemGroupSe
             throw new CannotDeleteDBException(
                 message: 'update: ' . json_encode(['id' => $id, 'softDelete' => $softDelete]),
                 previous: $ex
+            );
+        }
+    }
+
+    /**
+     * Insert into group
+     *
+     * @param array $param
+     * @param MetaInfo|null $commandMetaInfo
+     * @return mixed
+     * @throws CannotSaveToDBException
+     */
+    public function insert(array $param): mixed
+    {
+        DB::beginTransaction();
+        try {
+            #1 Find
+            $record = $this->itemGroupRepos->getSingleObject($param['item_group_id'])->first();
+            if (empty($record)) {
+                throw new RecordIsNotFoundException();
+            }
+            if (!empty($param['item_codes'])) {
+                foreach ($param['item_codes'] as $index => $item) {
+                    $row = $this->itemCodeRepos->getSingleObject($item['id'])->first();
+                    if (empty($row)) throw new RecordsNotFoundException();
+                    $row->item_group_id = $record->id;
+                    if (!$row->save()) throw new CannotSaveToDBException();
+                }
+            }
+            DB::commit();
+            #2 Return
+            return $record;
+        } catch (\Exception $e) {
+            DB::rollBack();
+            throw new CannotSaveToDBException(
+                message: 'insert: ' . json_encode(['param' => $param]),
+                previous: $e
             );
         }
     }

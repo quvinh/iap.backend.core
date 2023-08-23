@@ -19,7 +19,9 @@ class ItemGroupSearchRequest extends DefaultSearchRequest
     protected array $fields = [
         'id',
         'company_id',
+        'year',
         'name',
+        'code',
         'withs'
     ];
 
