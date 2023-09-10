@@ -19,6 +19,7 @@ class InvoiceTaskSearchRequest extends DefaultSearchRequest
     protected array $fields = [
         'month_of_year',
         'id',
+        'company_id',
         'withs'
     ];
 

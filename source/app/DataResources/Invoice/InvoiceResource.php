@@ -18,7 +18,7 @@ class InvoiceResource extends BaseDataResource
         'invoice_task_id',
         'type',
         'date',
-        'invoie_symbol',
+        'invoice_symbol',
         'invoice_number_form',
         'invoice_number',
         'property',
