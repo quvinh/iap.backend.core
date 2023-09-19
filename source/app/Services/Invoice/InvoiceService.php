@@ -343,6 +343,7 @@ class InvoiceService extends \App\Services\BaseService implements IInvoiceServic
             $invoiceDetail->invoice_id = $invoice->id;
             $invoiceDetail->item_code_id = $itemCode->id ?? null;
             $invoiceDetail->product = $param['product'];
+            $invoiceDetail->product_exchange = $param['product_exchange'] ?? null;
             $invoiceDetail->unit = $unit;
             $invoiceDetail->quantity = $param['quantity'];
             $invoiceDetail->price = $param['price'];
@@ -385,6 +386,7 @@ class InvoiceService extends \App\Services\BaseService implements IInvoiceServic
                     'invoice_number' => $row['invoice_number'],
                     'invoice_symbol' => $row['invoice_symbol'],
                     'product' => $row['product'],
+                    'product_exchange' => $row['product_exchange'] ?? null,
                     'unit' => $row['unit'],
                     'vat' => $row['vat'],
                     'quantity' => $row['quantity'],

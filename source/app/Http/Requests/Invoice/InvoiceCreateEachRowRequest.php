@@ -44,6 +44,7 @@ class InvoiceCreateEachRowRequest extends BaseRequest
             'invoice_number' => ['required', 'integer'],
             'invoice_symbol' => ['required', 'string'],
             'product' => ['required', 'string'],
+            'product_exchange' => ['nullable'],
             'unit' => ['required', 'string'],
             'vat' => ['required', 'integer'],
             'quantity' => ['required', 'numeric'],

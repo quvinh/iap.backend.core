@@ -20,6 +20,7 @@ class InvoiceDetailResource extends BaseDataResource
         'formula_group_name',
         'item_code_id',
         'product',
+        'product_exchange',
         'unit',
         'quantity',
         'price',

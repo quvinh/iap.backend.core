@@ -44,6 +44,7 @@ class InvoiceImportRequest extends BaseRequest
             'invoice_details.*.invoice_number_from' => ['integer'],
             'invoice_details.*.invoice_symbol' => ['required', 'string', 'max:20'],
             'invoice_details.*.product' => ['required', 'string'],
+            'invoice_details.*.product_exchange' => ['nullable'],
             'invoice_details.*.unit' => ['required', 'string'],
             'invoice_details.*.vat' => ['required', 'integer'],
             'invoice_details.*.quantity' => ['required', 'numeric'],

@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property int $invoice_id
  * @property int $item_code_id
  * @property string $product
+ * @property string $product_exchange
  * @property string $unit
  * @property float $quantity
  * @property float $price
@@ -30,6 +31,7 @@ class InvoiceDetail extends BaseModel
         'item_code_id',
         'formula_group_name',
         'product',
+        'product_exchange',
         'unit',
         'quantity',
         'price',
