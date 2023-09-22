@@ -1,7 +1,7 @@
 {
     "client": "Thunder Client",
     "collectionName": "v1",
-    "dateExported": "2023-08-20T16:14:10.032Z",
+    "dateExported": "2023-09-22T16:19:11.562Z",
     "version": "1.1",
     "folders": [
         {
@@ -164,9 +164,43 @@
             "containerId": "",
             "created": "2023-07-25T15:09:11.344Z",
             "sortNum": 185000
+        },
+        {
+            "_id": "4643dbc1-7348-4a16-810e-41980c964e87",
+            "name": "ApiCommand",
+            "containerId": "",
+            "created": "2023-09-22T14:18:52.259Z",
+            "sortNum": 195000
         }
     ],
     "requests": [
+        {
+            "_id": "31839ac0-2229-4d6e-9d63-1ed0825d3ea4",
+            "colId": "c5393553-6758-450a-8df8-d0e31dd1d34e",
+            "containerId": "4643dbc1-7348-4a16-810e-41980c964e87",
+            "name": "migrate",
+            "url": "{{iap.api.base_url}}/command/migrate",
+            "method": "POST",
+            "sortNum": 5000,
+            "created": "2023-09-22T16:16:44.700Z",
+            "modified": "2023-09-22T16:17:21.153Z",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "X-IDENTIFIER",
+                    "value": "{{app.identifier}}"
+                }
+            ],
+            "params": [],
+            "auth": {
+                "type": "bearer",
+                "bearer": "{{token.admin}}"
+            },
+            "tests": []
+        },
         {
             "_id": "77be6048-c980-44ba-834c-7d9eb071db31",
             "colId": "c5393553-6758-450a-8df8-d0e31dd1d34e",
@@ -195,6 +229,33 @@
             "tests": []
         },
         {
+            "_id": "67370340-6051-4493-9ffa-5a188663099d",
+            "colId": "c5393553-6758-450a-8df8-d0e31dd1d34e",
+            "containerId": "4643dbc1-7348-4a16-810e-41980c964e87",
+            "name": "migrateAndSeeder",
+            "url": "{{iap.api.base_url}}/command/migrate/fresh",
+            "method": "POST",
+            "sortNum": 10000,
+            "created": "2023-09-22T14:19:09.743Z",
+            "modified": "2023-09-22T16:11:34.477Z",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "X-IDENTIFIER",
+                    "value": "{{app.identifier}}"
+                }
+            ],
+            "params": [],
+            "auth": {
+                "type": "bearer",
+                "bearer": "{{token.admin}}"
+            },
+            "tests": []
+        },
+        {
             "_id": "89e80104-86ca-4e5a-a5b5-e3cada5129e9",
             "colId": "c5393553-6758-450a-8df8-d0e31dd1d34e",
             "containerId": "07a3b7ee-8e58-444e-801b-b9e0cd744e50",
@@ -203,7 +264,7 @@
             "method": "POST",
             "sortNum": 20000,
             "created": "2023-07-25T15:09:11.324Z",
-            "modified": "2023-07-25T15:09:11.324Z",
+            "modified": "2023-09-22T14:26:28.946Z",
             "headers": [
                 {
                     "name": "Accept",
@@ -217,7 +278,7 @@
             "params": [],
             "body": {
                 "type": "json",
-                "raw": "{\n  \"username\": \"admin.1\",\n  \"password\": \"5f4dcc3b5aa765d61d8327deb882cf99\"\n}",
+                "raw": "{\n  \"username\": \"admin\",\n  \"password\": \"5f4dcc3b5aa765d61d8327deb882cf99\"\n}",
                 "form": []
             },
             "auth": {
@@ -715,7 +776,7 @@
             "method": "POST",
             "sortNum": 20000,
             "created": "2023-07-25T15:09:11.341Z",
-            "modified": "2023-07-25T15:09:11.341Z",
+            "modified": "2023-09-10T05:46:22.915Z",
             "headers": [
                 {
                     "name": "Accept",
@@ -729,7 +790,7 @@
             "params": [],
             "body": {
                 "type": "json",
-                "raw": "{\n    \"pagination\":{\"page\": 1, \"per_page\": 25},\n    \"withs\": [\"company\"]\n}",
+                "raw": "{\n    \"pagination\":{\"page\": 1, \"per_page\": 25},\n    \"withs\": [\"company\"],\n    \"month_of_year\": \"08/2024\",\n    \"company_id\": 40\n}",
                 "form": []
             },
             "auth": {
@@ -779,7 +840,7 @@
             "method": "POST",
             "sortNum": 20000,
             "created": "2023-07-25T15:09:11.433Z",
-            "modified": "2023-08-09T16:13:37.913Z",
+            "modified": "2023-09-09T16:58:39.002Z",
             "headers": [
                 {
                     "name": "Accept",
@@ -793,7 +854,7 @@
             "params": [],
             "body": {
                 "type": "json",
-                "raw": "{\n    \"pagination\":{\"page\": 1, \"per_page\": 25},\n    \"withs\": [\"invoice_details\", \"company\"],\n    \"company_id\": \"39\",\n    \"date\": {\n      \"from\": \"2023-08-01\",\n      \"to\": \"2023-08-01\"\n    }\n}",
+                "raw": "{\n    \"pagination\":{\"page\": 1, \"per_page\": 25},\n    \"withs\": [\"invoice_details\", \"company\"],\n    \"id\": 600\n}",
                 "form": []
             },
             "auth": {
@@ -860,6 +921,33 @@
                 "raw": "{\n    \"pagination\":{\"page\": 1, \"per_page\": 25},\n    \"withs\": [\"company\", \"item_codes\"]\n}",
                 "form": []
             },
+            "auth": {
+                "type": "bearer",
+                "bearer": "{{token.admin}}"
+            },
+            "tests": []
+        },
+        {
+            "_id": "4a021d04-d25b-47d5-b60a-e50fa1c63d16",
+            "colId": "c5393553-6758-450a-8df8-d0e31dd1d34e",
+            "containerId": "4643dbc1-7348-4a16-810e-41980c964e87",
+            "name": "backup",
+            "url": "{{iap.api.base_url}}/command/backup",
+            "method": "POST",
+            "sortNum": 20000,
+            "created": "2023-09-22T16:17:03.068Z",
+            "modified": "2023-09-22T16:17:33.145Z",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "X-IDENTIFIER",
+                    "value": "{{app.identifier}}"
+                }
+            ],
+            "params": [],
             "auth": {
                 "type": "bearer",
                 "bearer": "{{token.admin}}"
@@ -1064,7 +1152,7 @@
             "method": "GET",
             "sortNum": 25000,
             "created": "2023-07-25T15:09:11.351Z",
-            "modified": "2023-07-25T15:09:11.351Z",
+            "modified": "2023-09-18T14:27:25.195Z",
             "headers": [
                 {
                     "name": "Accept",
@@ -1357,11 +1445,11 @@
             "colId": "c5393553-6758-450a-8df8-d0e31dd1d34e",
             "containerId": "bd82f975-534f-4229-b83c-cbcf3dfb8d5e",
             "name": "getSingleObject",
-            "url": "{{iap.api.base_url}}/invoices/1",
+            "url": "{{iap.api.base_url}}/invoices/600",
             "method": "GET",
             "sortNum": 25000,
             "created": "2023-07-25T15:09:11.434Z",
-            "modified": "2023-07-25T15:09:11.434Z",
+            "modified": "2023-09-09T16:59:02.181Z",
             "headers": [
                 {
                     "name": "Accept",
@@ -2067,7 +2155,7 @@
             "method": "POST",
             "sortNum": 30000,
             "created": "2023-07-25T15:09:11.381Z",
-            "modified": "2023-07-25T15:09:11.381Z",
+            "modified": "2023-08-22T13:40:52.022Z",
             "headers": [
                 {
                     "name": "Accept",
@@ -2081,7 +2169,7 @@
             "params": [],
             "body": {
                 "type": "json",
-                "raw": "{\n  \"company_id\": 1,\n  \"product_code\": \"Demo\",\n  \"product_exchange\": \"Demo\",\n  \"product\": \"Demo\",\n  \"unit\": \"item\",\n  \"quantity\": 1,\n  \"opening_balance_value\": 0,\n  \"year\": \"2000\"\n}",
+                "raw": "{\n  \"company_id\": 1,\n  \"product_code\": \"Demo4\",\n  \"unit\": \"item\",\n  \"quantity\": 1,\n  \"price\": 12000,\n  \"opening_balance_value\": 0,\n  \"year\": \"2000\"\n}",
                 "form": []
             },
             "auth": {
@@ -2890,7 +2978,7 @@
             "method": "PUT",
             "sortNum": 40000,
             "created": "2023-07-25T15:09:11.436Z",
-            "modified": "2023-07-25T15:09:11.436Z",
+            "modified": "2023-09-10T01:19:10.968Z",
             "headers": [
                 {
                     "name": "Accept",
@@ -2904,7 +2992,7 @@
             "params": [],
             "body": {
                 "type": "json",
-                "raw": "{\n  \"company_id\": 1,\n  \"product_code\": \"Demoo\",\n  \"product_exchange\": \"Demo\",\n  \"product\": \"Demo\",\n  \"unit\": \"item\",\n  \"quantity\": 3,\n  \"opening_balance_value\": 4,\n  \"year\": \"2000\"\n}",
+                "raw": "{\n  \"json\": {\"test\": \"demo\"}\n}",
                 "form": []
             },
             "auth": {
