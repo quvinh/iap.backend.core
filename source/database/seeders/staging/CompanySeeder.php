@@ -3,6 +3,7 @@
 namespace Database\Seeders\staging;
 
 use App\Models\Company;
+use App\Models\CompanyDetail;
 use Database\Factories\CompanyDetailFactory;
 use Database\Factories\CompanyFactory;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
@@ -288,7 +289,12 @@ class CompanySeeder extends Seeder
 
         # Insert
         foreach ($dataCompanies as $row) {
-            Company::create($row);
+            $com = Company::create($row);
+            CompanyDetail::create([
+                'company_id' => $com->id,
+                'company_type_id' => rand(1, 8),
+                'year' => date('Y'),
+            ]);
         }
     }
 }
