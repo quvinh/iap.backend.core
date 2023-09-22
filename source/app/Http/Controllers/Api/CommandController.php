@@ -23,6 +23,7 @@ class CommandController extends Controller
             Route::post($root . '/migrate', [CommandController::class, 'migrate']);
             Route::post($root . '/migrate/fresh', [CommandController::class, 'migrateFresh']);
             Route::post($root . '/backup', [CommandController::class, 'backup']);
+            Route::post($root . '/config/clear', [CommandController::class, 'configClear']);
         }
     }
 
@@ -43,5 +44,11 @@ class CommandController extends Controller
     {
         Artisan::call('backup:run');
         return ApiResponse::v1()->send(['info' => 'Backup executed', 'output' => Artisan::output()]);
+    }
+
+    public function configClear()
+    {
+        Artisan::call('config:clear');
+        return ApiResponse::v1()->send(['info' => 'Config:clear executed successfully', 'output' => Artisan::output()]);
     }
 }
