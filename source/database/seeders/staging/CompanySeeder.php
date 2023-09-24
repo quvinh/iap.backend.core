@@ -81,7 +81,7 @@ class CompanySeeder extends Seeder
                 'created_by' => 'seeder',
             ],
             [
-                'name' => '	Công Ty Tnhh Thương Mại Công Nghệ Cao MB',
+                'name' => 'Công Ty Tnhh Thương Mại Công Nghệ Cao MB',
                 'tax_code' => '0202017253',
                 'created_by' => 'seeder',
             ],
@@ -131,7 +131,7 @@ class CompanySeeder extends Seeder
                 'created_by' => 'seeder',
             ],
             [
-                'name' => '	Hợp Tác Xã Nam Phong',
+                'name' => 'Hợp Tác Xã Nam Phong',
                 'tax_code' => '0200648863',
                 'created_by' => 'seeder',
             ],
@@ -281,7 +281,7 @@ class CompanySeeder extends Seeder
                 'created_by' => 'seeder',
             ],
             [
-                'name' => '	Công ty TNHH Song Dung',
+                'name' => 'Công ty TNHH Song Dung',
                 'tax_code' => '0200573590',
                 'created_by' => 'seeder',
             ],

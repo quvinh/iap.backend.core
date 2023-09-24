@@ -135,6 +135,11 @@ class InvoiceService extends \App\Services\BaseService implements IInvoiceServic
                 $query = $this->invoiceRepos->queryOnDateRangeField($query, 'date', $rawConditions['date']);
             }
 
+            if (isset($rawConditions['year'])) {
+                $param = $rawConditions['year'];
+                $query = $this->invoiceRepos->queryOnAField([DB::raw('year(date)'), '=', $param], $query);
+            }
+
             if (isset($rawConditions['updated_date'])) {
                 $query = $this->invoiceRepos->queryOnDateRangeField($query, 'updated_at', $rawConditions['updated_date']);
             }
@@ -294,6 +299,7 @@ class InvoiceService extends \App\Services\BaseService implements IInvoiceServic
                 'type' => $type,
                 'invoice_number' => $invoice_number,
                 'invoice_symbol' => $invoice_symbol,
+                'year' => $year,
             ]);
             if (empty($invoice->first())) {
                 $invoice = new Invoice();
