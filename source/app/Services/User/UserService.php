@@ -250,6 +250,14 @@ class UserService extends \App\Services\BaseService implements IUserService
         return $this->userRepos->findByUsername($username);
     }
 
+    public function findByEmail($email): User|null
+    {
+        return $this->userRepos->findByEmail($email);
+    }
+
+    /**
+     * Change password
+     */
     public function changePassword(int $id, array $param, MetaInfo $commandMetaInfo = null): User | null
     {
         try {
@@ -272,6 +280,27 @@ class UserService extends \App\Services\BaseService implements IUserService
         } catch (\Exception $e) {
             throw new ActionFailException(
                 message: 'change password failed',
+                previous: $e
+            );
+        }
+    }
+
+    /**
+     * Forgot password
+     */
+    public function forgotPassword(string $email): mixed//User | null
+    {
+        try {
+            $random = rand(10000, 99999);
+            $newPassword = "IAP$random@";
+            $record = $this->userRepos->findByEmail($email);
+            if (empty($record)) {
+                throw new RecordIsNotFoundException();
+            }
+            dd($newPassword);
+        } catch (\Exception $e) {
+            throw new ActionFailException(
+                message: 'Email not found',
                 previous: $e
             );
         }
