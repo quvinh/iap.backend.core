@@ -25,7 +25,7 @@ return new class extends Migration
             $table->tinyInteger('invoice_number_form')->default(InvoiceNumberForms::VALUE_ADDED);
             $table->bigInteger('invoice_number')->index();
             $table->tinyInteger('property')->default(0);
-            $table->string('note')->nullable();
+            $table->text('note')->nullable();
             $table->string('partner_name')->nullable();
             $table->string('partner_tax_code', 60)->index();
             $table->string('partner_address')->nullable();
