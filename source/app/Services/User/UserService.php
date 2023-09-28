@@ -13,6 +13,7 @@ use App\Helpers\Common\MetaInfo;
 use App\Helpers\Enums\UserRoles;
 use App\Helpers\Utils\StorageHelper;
 use App\Helpers\Utils\StringHelper;
+use App\Jobs\ForgotPasswordJob;
 use App\Models\User;
 use App\Models\UserCompany;
 use App\Models\UserDetail;
@@ -24,6 +25,7 @@ use Exception;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Throwable;
 
 class UserService extends \App\Services\BaseService implements IUserService
@@ -288,19 +290,26 @@ class UserService extends \App\Services\BaseService implements IUserService
     /**
      * Forgot password
      */
-    public function forgotPassword(string $email): mixed//User | null
+    public function forgotPassword(string $email): User | null
     {
         try {
             $random = rand(10000, 99999);
             $newPassword = "IAP$random@";
             $record = $this->userRepos->findByEmail($email);
             if (empty($record)) {
-                throw new RecordIsNotFoundException();
+                throw new RecordIsNotFoundException(message: 'Email not found');
             }
-            dd($newPassword);
+            $record->password = Hash::make($newPassword);
+            if ($record->save()) {
+                Log::channel('forgot_password')->info($record->username . ' reset password', ['name' => $record->name, 'email' => $record->email]);
+                ForgotPasswordJob::dispatch($record, $newPassword)->delay(now()->addMinute(1));
+            } else {
+                throw new CannotUpdateDBException('Cannot update DB');
+            }
+            return $record;
         } catch (\Exception $e) {
             throw new ActionFailException(
-                message: 'Email not found',
+                message: $e->getMessage(),
                 previous: $e
             );
         }

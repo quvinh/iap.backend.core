@@ -26,7 +26,7 @@ class UserRepository extends BaseRepository implements IUserRepository
      * @param $email
      * @return User
      */
-    public function findByEmail($email): User
+    public function findByEmail($email): User | null
     {
         $email = strtolower('' . $email);
         return User::query()->where('email', $email)->first();
