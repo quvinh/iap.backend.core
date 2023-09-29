@@ -4,6 +4,7 @@ namespace Database\Seeders\staging;
 
 use App\Models\Company;
 use App\Models\CompanyDetail;
+use App\Models\UserCompany;
 use Database\Factories\CompanyDetailFactory;
 use Database\Factories\CompanyFactory;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
@@ -294,6 +295,10 @@ class CompanySeeder extends Seeder
                 'company_id' => $com->id,
                 'company_type_id' => rand(1, 8),
                 'year' => date('Y'),
+            ]);
+            UserCompany::create([
+                'user_id' => 1,
+                'company_id' => $com->id,
             ]);
         }
     }
