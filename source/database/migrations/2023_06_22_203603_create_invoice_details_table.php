@@ -30,8 +30,8 @@ return new class extends Migration
             $table->decimal('vat_money', 12, 2)->default(0);
             $table->decimal('total_money', 12, 2)->default(0); // price * quantity (novat)
             $table->boolean('warehouse')->default(0);
-            $table->boolean('main_entity')->default(1);
-            $table->boolean('visible')->default(1);
+            // $table->boolean('main_entity')->default(1);
+            // $table->boolean('visible')->default(1);
             $table->string('note')->nullable();
             $table->string('created_by')->nullable();
             $table->string('updated_by')->nullable();
