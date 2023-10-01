@@ -97,9 +97,9 @@ class InvoiceController extends ApiController
                 // $vRequest->validate();
                 // return $vRequest;
             case 'update':
-                // $vRequest = InvoiceUpdateRequest::createFrom($request);
-                // $vRequest->validate();
-                // return $vRequest;
+                $vRequest = InvoiceUpdateRequest::createFrom($request);
+                $vRequest->validate();
+                return $vRequest;
             case 'getSingleObject':
                 return $request;
             case 'delete':
