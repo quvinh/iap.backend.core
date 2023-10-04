@@ -130,7 +130,7 @@ class InvoiceService extends \App\Services\BaseService implements IInvoiceServic
                 $param = $rawConditions['status'];
                 $query = $this->invoiceRepos->queryOnAField(['status', '=', $param], $query);
             }
-            
+
             if (isset($rawConditions['date'])) {
                 $query = $this->invoiceRepos->queryOnDateRangeField($query, 'date', $rawConditions['date']);
             }
@@ -209,13 +209,32 @@ class InvoiceService extends \App\Services\BaseService implements IInvoiceServic
             if (empty($record)) {
                 throw new RecordIsNotFoundException();
             }
-            #2: update
+            #2: Update
             $param = array_merge($param, [
                 'id' => $record->id
             ]);
             $record = $this->invoiceRepos->update($param, $commandMetaInfo);
-            // update picture if needed
-            // code here
+
+            #3: Get invoice-details
+            if (!empty($param['invoice_details'])) {
+                # Updated invoice-detail
+                $updatedRows = array_filter($param['invoice_details'], function ($row) {
+                    return !empty($row['id']); // Check ID invoice-detail
+                });
+                $this->invoiceRepos->deleteInvoiceDetails($record->id, array_map(function ($value) {
+                    return $value['id'];
+                }, $updatedRows));
+
+
+                # Created invoice-detail
+                $createdRows = array_filter($param['invoice_details'], function ($row) {
+                    return empty($row['id']); // Check is not ID invoice-detail -> Create
+                });
+
+                // dd(array_map(function ($value) {
+                //     return $value['id'];
+                // }, $updatedRows), $createdRows);
+            }
             DB::commit();
             return $record;
         } catch (\Exception $e) {

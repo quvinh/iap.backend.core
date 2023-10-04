@@ -8,4 +8,5 @@ use App\Repositories\IRepository;
 
 interface IInvoiceRepository extends IRepository
 {
+    public function deleteInvoiceDetails(mixed $idInvoice, array $ids): bool;
 }
