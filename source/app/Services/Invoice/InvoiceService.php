@@ -18,6 +18,7 @@ use App\Models\InvoiceTask;
 use App\Models\ItemCode;
 use App\Repositories\Invoice\IInvoiceRepository;
 use App\Services\Company\ICompanyService;
+use App\Services\InvoiceDetail\IInvoiceDetailService;
 use App\Services\InvoiceTask\IInvoiceTaskService;
 use App\Services\ItemCode\IItemCodeService;
 use Carbon\Carbon;
@@ -39,13 +40,15 @@ class InvoiceService extends \App\Services\BaseService implements IInvoiceServic
         IInvoiceRepository $repos,
         ICompanyService $companyService,
         IInvoiceTaskService $invoiceTaskService,
-        IItemCodeService $itemCodeService
+        IItemCodeService $itemCodeService,
+        IInvoiceDetailService $invoiceDetailService
     ) {
         $this->invoiceRepos = $repos;
 
         $this->companyService = $companyService;
         $this->invoiceTaskService = $invoiceTaskService;
         $this->itemCodeService = $itemCodeService;
+        $this->invoiceDetailService = $invoiceDetailService;
     }
 
     /**
@@ -62,7 +65,8 @@ class InvoiceService extends \App\Services\BaseService implements IInvoiceServic
             $query = $this->invoiceRepos->queryOnAField(['id', $id]);
             $query = $this->invoiceRepos->with($withs, $query);
             $record = $query->first();
-            if (!is_null($record)) return $record;
+            if (!is_null($record))
+                return $record;
             throw new RecordIsNotFoundException();
         } catch (Exception $e) {
             throw new RecordIsNotFoundException(
@@ -217,6 +221,10 @@ class InvoiceService extends \App\Services\BaseService implements IInvoiceServic
 
             #3: Get invoice-details
             if (!empty($param['invoice_details'])) {
+                $_sumMoneyNoVat = 0;
+                $_sumMoneyVat = 0;
+                $_sumMoneyDiscount = 0;
+                $_sumMoney = 0;
                 # Updated invoice-detail
                 $updatedRows = array_filter($param['invoice_details'], function ($row) {
                     return !empty($row['id']); // Check ID invoice-detail
@@ -224,16 +232,38 @@ class InvoiceService extends \App\Services\BaseService implements IInvoiceServic
                 $this->invoiceRepos->deleteInvoiceDetails($record->id, array_map(function ($value) {
                     return $value['id'];
                 }, $updatedRows));
-
+                foreach ($updatedRows as $row) {
+                    $item = $this->invoiceDetailService->getSingleObject($row['id']);
+                    if (!empty($item)) {
+                        $_vat = empty($row['vat']) ? 0 : ($row['vat'] >= 0 ? $row['vat'] : 0);
+                        $item->product = $row['product'] ?? $item->product;
+                        $item->unit = $row['unit'] ?? $item->unit;
+                        $item->quantity = $row['quantity'] ?? $item->quantity;
+                        $item->price = $row['price'] ?? $item->price;
+                        $item->vat = $row['vat'] ?? $item->vat;
+                        $item->total_money = $row['total_money'] ?? $item->total_money;
+                        $item->warehouse = $row['warehouse'] ?? $item->warehouse;
+                        $item->vat_money = round((floatval($_vat) * floatval($item->total_money)) / 100, 2);
+                        if ($item->save()) {
+                            $_sumMoneyNoVat += floatval($item->total_money);
+                            $_sumMoneyVat += floatval($item->vat_money);
+                            // $_sumMoneyDiscount
+                        }
+                    }
+                }
 
                 # Created invoice-detail
                 $createdRows = array_filter($param['invoice_details'], function ($row) {
                     return empty($row['id']); // Check is not ID invoice-detail -> Create
                 });
 
-                // dd(array_map(function ($value) {
-                //     return $value['id'];
-                // }, $updatedRows), $createdRows);
+                # Update main invoice
+                $_sumMoney = $_sumMoneyNoVat + $_sumMoneyVat;
+                $record->sum_money_no_vat = $_sumMoneyNoVat;
+                $record->sum_money_vat = $_sumMoneyVat;
+                // $record->sum_money_discount = $_sumMoneyDiscount;
+                $record->sum_money = $_sumMoney;
+                $record->save();
             }
             DB::commit();
             return $record;
@@ -263,7 +293,7 @@ class InvoiceService extends \App\Services\BaseService implements IInvoiceServic
             if (empty($record)) {
                 throw new RecordIsNotFoundException();
             }
-            $result =  $this->invoiceRepos->delete(id: $id, soft: $softDelete, meta: $commandMetaInfo);
+            $result = $this->invoiceRepos->delete(id: $id, soft: $softDelete, meta: $commandMetaInfo);
             DB::commit();
             return $result;
         } catch (\Exception $ex) {
@@ -309,7 +339,8 @@ class InvoiceService extends \App\Services\BaseService implements IInvoiceServic
                 $task->company_id = $company_id;
                 $task->month_of_year = $task_month;
                 $task->save();
-            } else $task = $task->first();
+            } else
+                $task = $task->first();
             # 2.Check invoice
             # Need store initialize invoice -> json
             $invoice = $this->search([
@@ -359,7 +390,8 @@ class InvoiceService extends \App\Services\BaseService implements IInvoiceServic
                     $itemCode->year = $year;
                     $itemCode->setItemCode($param['quantity'] ?? 1, $param['price']);
                     $itemCode->save();
-                } else $itemCode = $itemCode->first();
+                } else
+                    $itemCode = $itemCode->first();
             } else {
                 // nothing
             }
