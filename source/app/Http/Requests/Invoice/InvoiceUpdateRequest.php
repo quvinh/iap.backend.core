@@ -35,14 +35,14 @@ class InvoiceUpdateRequest extends BaseRequest
         $id = $this->input('id');
         $company_id = $this->input('company_id');
         return [
-            'id' => ['required', 'exists:invoices,id,' . $id],
-            'company_id' => ['required', 'exists:companies,id,' . $company_id],
-            'type' => ['required', 'string', Rule::in(InvoiceTypes::getValues())],
-            'date' => ['required', 'date_format:Y-m-d'],
+            'id' => ['exists:invoices,id'],
+            'company_id' => ['exists:companies,id'],
+            'type' => ['string', Rule::in(InvoiceTypes::getValues())],
+            'date' => ['date_format:Y-m-d'],
             'partner_name' => ['string'],
-            'partner_tax_code' => ['required', 'string', 'max:100'],
-            'invoice_number' => ['required'],
-            'invoice_symbol' => ['required', 'string'],
+            'partner_tax_code' => ['string', 'max:100'],
+            'invoice_number' => ['numeric'],
+            'invoice_symbol' => ['string'],
 
             'invoice_details' => ['array'],
             'invoice_details.*.invoice_id' => ['required', 'in:' . $id],

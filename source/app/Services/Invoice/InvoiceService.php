@@ -204,7 +204,6 @@ class InvoiceService extends \App\Services\BaseService implements IInvoiceServic
     {
         DB::beginTransaction();
         try {
-            dd($param);
             #1: Can edit? -> Yes: move to #2 No: return Exception with error
             $record = $this->invoiceRepos->getSingleObject($id)->first();
             if (empty($record)) {
