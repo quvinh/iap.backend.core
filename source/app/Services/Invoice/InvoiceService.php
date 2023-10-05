@@ -256,6 +256,25 @@ class InvoiceService extends \App\Services\BaseService implements IInvoiceServic
                 $createdRows = array_filter($param['invoice_details'], function ($row) {
                     return empty($row['id']); // Check is not ID invoice-detail -> Create
                 });
+                foreach ($createdRows as $row) {
+                    if ($row['invoice_id'] == $record->id) {
+                        $item = $this->invoiceDetailService->create([
+                            'invoice_id' => $row['invoice_id'],
+                            'product' => $row['product'],
+                            'unit' => $row['unit'],
+                            'quantity' => $row['quantity'],
+                            'price' => $row['price'],
+                            'vat' => $row['vat'] ?? 0,
+                            'vat_money' => $row['vat_money'],
+                            'total_money' => $row['total_money'],
+                            'warehouse' => $row['warehouse'] ?? 0,
+                        ], $commandMetaInfo);
+                        if (!empty($item)) {
+                            $_sumMoneyNoVat += floatval($row['total_money']);
+                            $_sumMoneyVat += floatval($row['vat_money']);
+                        }
+                    }
+                }
 
                 # Update main invoice
                 $_sumMoney = $_sumMoneyNoVat + $_sumMoneyVat;
