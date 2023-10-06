@@ -47,6 +47,7 @@ class InvoiceController extends ApiController
             Route::delete($root . '/{id}', [InvoiceController::class, 'delete']);
 
             Route::post($root . '/import', [InvoiceController::class, 'import']);
+            Route::post($root . '/restore-rows/{id}', [InvoiceController::class, 'restoreRows']);
         }
     }
 
@@ -120,6 +121,14 @@ class InvoiceController extends ApiController
     public function import(InvoiceImportRequest $request): Response
     {
         $result = $this->invoiceService->import($request->all(), $this->getCurrentMetaInfo());
+        # Send response using the predefined format
+        $response = ApiResponse::v1();
+        return $response->send($result);
+    }
+
+    public function restoreRows(mixed $id): Response
+    {
+        $result = $this->invoiceService->restoreRowsInvoice($id, $this->getCurrentMetaInfo());
         # Send response using the predefined format
         $response = ApiResponse::v1();
         return $response->send($result);

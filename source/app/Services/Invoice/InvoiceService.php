@@ -487,4 +487,62 @@ class InvoiceService extends \App\Services\BaseService implements IInvoiceServic
             throw new Exception($ex);
         }
     }
+
+    /**
+     * restore invoice
+     */
+    public function restoreRowsInvoice(mixed $id, MetaInfo $commandMetaInfo = null): mixed
+    {
+        DB::beginTransaction();
+        try {
+            $record = $this->invoiceRepos->getSingleObject($id)->first();
+            if (empty($record)) {
+                throw new RecordIsNotFoundException();
+            }
+            $invoiceDetails = (object) json_decode($record->json);
+            if (empty($invoiceDetails->invoice_details)) {
+                throw new ActionFailException();
+            } else {
+                $_sumMoneyNoVat = 0;
+                $_sumMoneyVat = 0;
+                $_sumMoneyDiscount = 0;
+                $_sumMoney = 0;
+                $this->invoiceRepos->deleteInvoiceDetails($record->id, []);
+                foreach ($invoiceDetails->invoice_details as $row) {
+                    if ($row->invoice_id == $record->id) {
+                        $item = $this->invoiceDetailService->create([
+                            'invoice_id' => $row->invoice_id,
+                            'product' => $row->product,
+                            'unit' => $row->unit,
+                            'quantity' => $row->quantity,
+                            'price' => $row->price,
+                            'vat' => $row->vat ?? 0,
+                            'vat_money' => $row->vat_money,
+                            'total_money' => $row->total_money,
+                            'warehouse' => $row->warehouse ?? 0,
+                        ], $commandMetaInfo);
+                        if (!empty($item)) {
+                            $_sumMoneyNoVat += floatval($row->total_money);
+                            $_sumMoneyVat += floatval($row->vat_money);
+                        }
+                    }
+                }
+                # Update main invoice
+                $_sumMoney = $_sumMoneyNoVat + $_sumMoneyVat;
+                $record->sum_money_no_vat = $_sumMoneyNoVat;
+                $record->sum_money_vat = $_sumMoneyVat;
+                // $record->sum_money_discount = $_sumMoneyDiscount;
+                $record->sum_money = $_sumMoney;
+                $record->save();
+            }
+            DB::commit();
+            return $record;
+        } catch (\Exception $ex) {
+            DB::rollBack();
+            throw new CannotDeleteDBException(
+                message: 'restore rows: ' . json_encode(['id' => $id]),
+                previous: $ex
+            );
+        }
+    }
 }
