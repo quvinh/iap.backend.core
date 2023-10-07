@@ -46,7 +46,7 @@ return new class extends Migration
             $table->timestamps();
 
             $table->foreign('company_id')->references('id')->on('companies');
-            $table->foreign('invoice_task_id')->references('id')->on('invoice_tasks');
+            $table->foreign('invoice_task_id')->references('id')->on('invoice_tasks')->onDelete('cascade');
         });
     }
 

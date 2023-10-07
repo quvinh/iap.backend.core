@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
@@ -28,10 +29,10 @@ class InvoiceTask extends BaseModel
     }
 
     /**
-     * @return HasOne
+     * @return HasMany
      */
-    public function invoices(): HasOne
+    public function invoices(): HasMany
     {
-        return $this->hasOne(Invoice::class, 'invoice_task_id', 'id');
+        return $this->hasMany(Invoice::class, 'invoice_task_id', 'id');
     }
 }
