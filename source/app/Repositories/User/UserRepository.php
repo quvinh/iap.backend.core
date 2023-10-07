@@ -8,6 +8,8 @@ use App\Helpers\Common\MetaInfo;
 use App\Models\User;
 use App\Repositories\BaseRepository;
 use App\Exceptions\DB\RecordIsNotFoundException as DBRecordIsNotFoundException;
+use App\Models\UserCompany;
+
 use function Spatie\SslCertificate\starts_with;
 
 class UserRepository extends BaseRepository implements IUserRepository
@@ -40,6 +42,16 @@ class UserRepository extends BaseRepository implements IUserRepository
     public function findByUsername($username): User | null
     {
         return User::query()->where('username', $username)->first();
+    }
+
+    /**
+     * Find companies
+     * @param $user_id
+     * @return User
+     */
+    public function findByCompanies($user_id): mixed
+    {
+        return UserCompany::query()->where('user_id', $user_id)->get('company_id')->toArray();
     }
 
     /**

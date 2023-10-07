@@ -8,6 +8,7 @@ use App\Services\IService;
 interface IUserService extends IService
 {
     public function findByUsername($username): User | null;
+    public function findByCompanies($user_id): mixed;
     public function changePassword(int $id, array $param): User | null;
     public function forgotPassword(string $email): mixed;//User | null
 }

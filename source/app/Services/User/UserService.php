@@ -257,6 +257,11 @@ class UserService extends \App\Services\BaseService implements IUserService
         return $this->userRepos->findByEmail($email);
     }
 
+    public function findByCompanies($user_id): mixed
+    {
+        return $this->userRepos->findByCompanies($user_id);
+    }
+
     /**
      * Change password
      */

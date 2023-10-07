@@ -86,6 +86,10 @@ class AuthenticationController extends ApiController
         if (!isset($sub) || !$sub->getAuthIdentifier()) {
             throw new AuthorizationIsInvalid(ErrorCodes::ERR_INVALID_AUTHORIZATION);
         }
+        $companyIds = $this->userService->findByCompanies($sub->getAuthIdentifier());
+        $sub->companies = array_map(function ($item) {
+            return $item['company_id'];
+        }, $companyIds);
         # 3. return result
         $response = ApiResponse::v1();
         return $response->send($sub);
