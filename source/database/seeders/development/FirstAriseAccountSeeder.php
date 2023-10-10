@@ -38,7 +38,7 @@ class FirstAriseAccountSeeder extends Seeder
             ],
             [
                 'name' => 'Bán hàng',
-                'number_account' => '642',
+                'number_account' => '641',
                 'number_percent' => 1,
             ],
             [
