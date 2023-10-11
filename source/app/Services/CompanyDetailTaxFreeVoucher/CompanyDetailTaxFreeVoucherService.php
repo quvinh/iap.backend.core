@@ -70,6 +70,11 @@ class CompanyDetailTaxFreeVoucherService extends \App\Services\BaseService imple
             $query = $this->companyDetailTaxFreeVoucherRepos->search();
             $query = $this->companyDetailTaxFreeVoucherRepos->with($withs, $query);
             
+            if (isset($rawConditions['company_detail_id'])) {
+                $param = $rawConditions['company_detail_id'];
+                $query = $this->companyDetailTaxFreeVoucherRepos->queryOnAField(['company_detail_id', '=', $param], $query);
+            }
+
             if (!is_null($paging)) {
                 $this->applyPagination($query, $paging);
             }

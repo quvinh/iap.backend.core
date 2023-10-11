@@ -11,10 +11,13 @@ class CompanyDetailTaxFreeVoucherSearchRequest extends DefaultSearchRequest
      * Available relations to retrieve
      * @var string[]
      */
-    protected array $relations = [];
+    protected array $relations = [
+        'tax_free_voucher',
+    ];
 
     protected array $fields = [
-        'withs'
+        'withs',
+        'company_detail_id',
     ];
 
     /**
