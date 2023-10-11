@@ -21,6 +21,10 @@ return new class extends Migration
             $table->string('task_import', 20)->default(TaskStatus::IN_PROGRESS);
             $table->string('task_progress', 20)->default(TaskStatus::NOT_YET_STARTED);
             $table->string('note')->nullable();
+            $table->decimal('opening_balance_value', 12, 2)->default(0);
+            $table->decimal('total_money_sold', 12, 2)->default(0);
+            $table->decimal('total_money_purchase', 12, 2)->default(0);
+            // $table->decimal('ending_balance_value', 12, 2)->default(0);
             $table->string('created_by')->nullable();
             $table->string('updated_by')->nullable();
             $table->softDeletes();
