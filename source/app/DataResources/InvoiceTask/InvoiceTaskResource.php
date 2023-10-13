@@ -19,6 +19,9 @@ class InvoiceTaskResource extends BaseDataResource
         'task_import',
         'task_progress',
         'note',
+        'opening_balance_value',
+        'total_money_sold',
+        'total_money_purchase',
         'created_at'
     ];
 

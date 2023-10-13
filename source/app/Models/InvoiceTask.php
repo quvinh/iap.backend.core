@@ -18,6 +18,9 @@ class InvoiceTask extends BaseModel
         'task_import',
         'task_progress',
         'note',
+        'opening_balance_value',
+        'total_money_sold',
+        'total_money_purchase',
     ];
 
     /**
