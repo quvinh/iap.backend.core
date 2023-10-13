@@ -42,6 +42,8 @@ use App\Repositories\Role\IRoleRepository;
 use App\Repositories\Role\RoleRepository;
 use App\Repositories\TaxFreeVoucher\ITaxFreeVoucherRepository;
 use App\Repositories\TaxFreeVoucher\TaxFreeVoucherRepository;
+use App\Repositories\TaxFreeVoucherRecord\ITaxFreeVoucherRecordRepository;
+use App\Repositories\TaxFreeVoucherRecord\TaxFreeVoucherRecordRepository;
 use App\Repositories\User\IUserRepository;
 use App\Repositories\User\UserRepository;
 
@@ -74,5 +76,6 @@ class RepositoryRegistration
         $app->singleton(IInvoiceRepository::class, InvoiceRepository::class);
         $app->singleton(IInvoiceDetailRepository::class, InvoiceDetailRepository::class);
         $app->singleton(IItemGroupRepository::class, ItemGroupRepository::class);
+        $app->singleton(ITaxFreeVoucherRecordRepository::class, TaxFreeVoucherRecordRepository::class);
     }
 }
