@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class TaxFreeVoucherRecord extends Model
+class TaxFreeVoucherRecord extends BaseModel
 {
     use HasFactory, SoftDeletes;
 

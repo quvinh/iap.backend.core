@@ -24,6 +24,7 @@ use App\Http\Controllers\Api\MediaStorageController;
 use App\Http\Controllers\Api\PermissionController;
 use App\Http\Controllers\Api\RoleController;
 use App\Http\Controllers\Api\TaxFreeVoucherController;
+use App\Http\Controllers\Api\TaxFreeVoucherRecordController;
 use App\Http\Controllers\Api\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -65,6 +66,7 @@ function registerResourceRoutes(string $group = UserRoles::ADMINISTRATOR): void
     InvoiceController::registerRoutes($group);
     InvoiceDetailController::registerRoutes($group);
     ItemGroupController::registerRoutes($group);
+    TaxFreeVoucherRecordController::registerRoutes($group);
 
     CommandController::registerRoutes($group);
 }

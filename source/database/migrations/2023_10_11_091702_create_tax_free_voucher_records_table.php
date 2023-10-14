@@ -18,9 +18,9 @@ return new class extends Migration
             $table->unsignedBigInteger('tax_free_voucher_id');
             $table->unsignedBigInteger('company_detail_id');
             $table->unsignedBigInteger('user_id');
-            $table->integer('count_mouth')->default(0);
-            $table->integer('start_mouth');
-            $table->integer('end_mouth');
+            $table->integer('count_month')->default(0);
+            $table->integer('start_month');
+            $table->integer('end_month');
             $table->json('json')->nullable();
             $table->string('created_by')->nullable();
             $table->string('updated_by')->nullable();

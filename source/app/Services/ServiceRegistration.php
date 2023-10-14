@@ -44,6 +44,8 @@ use App\Services\Role\IRoleService;
 use App\Services\Role\RoleService;
 use App\Services\TaxFreeVoucher\ITaxFreeVoucherService;
 use App\Services\TaxFreeVoucher\TaxFreeVoucherService;
+use App\Services\TaxFreeVoucherRecord\ITaxFreeVoucherRecordService;
+use App\Services\TaxFreeVoucherRecord\TaxFreeVoucherRecordService;
 use App\Services\User\IUserService;
 use App\Services\User\UserService;
 
@@ -77,5 +79,6 @@ class ServiceRegistration
         $app->singleton(IInvoiceService::class, InvoiceService::class);
         $app->singleton(IInvoiceDetailService::class, InvoiceDetailService::class);
         $app->singleton(IItemGroupService::class, ItemGroupService::class);
+        $app->singleton(ITaxFreeVoucherRecordService::class, TaxFreeVoucherRecordService::class);
     }
 }
