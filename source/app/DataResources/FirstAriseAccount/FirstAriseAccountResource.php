@@ -15,6 +15,7 @@ class FirstAriseAccountResource extends BaseDataResource
         'name',
         'number_account',
         'number_percent',
+        'method',
         'status',
         'note'
     ];

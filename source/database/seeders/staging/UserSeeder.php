@@ -25,9 +25,18 @@ class UserSeeder extends Seeder
             'name' => 'Administrator',
             'created_by' => 'seeder'
         ], ['id']);
+        Role::upsert([
+            'id' => UserRoles::MODERATOR,
+            'name' => 'Dev',
+            'created_by' => 'seeder'
+        ], ['id']);
         # TODO:Need add permission
         $users = UserFactory::new()->forRole(UserRoles::ADMINISTRATOR)->make();
         $users->username = "admin";
+
+        $dev = UserFactory::new()->forRole(UserRoles::ADMINISTRATOR)->make();
+        $dev->username = "dev";
         DB::table('users')->insert($users->getAttributes());
+        DB::table('users')->insert($dev->getAttributes());
     }
 }

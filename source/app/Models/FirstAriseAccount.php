@@ -14,6 +14,7 @@ class FirstAriseAccount extends BaseModel
         'name',
         'number_account',
         'number_percent',
+        'method',
         'note',
         'status'
     ];

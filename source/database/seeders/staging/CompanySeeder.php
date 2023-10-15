@@ -300,6 +300,10 @@ class CompanySeeder extends Seeder
                 'user_id' => 1,
                 'company_id' => $com->id,
             ]);
+            UserCompany::create([
+                'user_id' => 2,
+                'company_id' => $com->id,
+            ]);
         }
     }
 }
