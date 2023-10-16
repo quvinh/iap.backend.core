@@ -161,13 +161,14 @@ class InvoiceTaskService extends \App\Services\BaseService implements IInvoiceTa
             if (empty($record)) {
                 throw new RecordIsNotFoundException();
             }
-            #2: update
+            #2: Update
             $param = array_merge($param, [
                 'id' => $record->id
             ]);
             $record = $this->invoiceTaskRepos->update($param, $commandMetaInfo);
-            // update picture if needed
-            // code here
+            #3: Update opening-balance-value
+            // if (!empty($param['total_money_sold']) && !empty($param['total_money_purchase'])) {
+            // }
             DB::commit();
             return $record;
         } catch (\Exception $e) {

@@ -50,7 +50,9 @@ class InvoiceTaskUpdateRequest extends BaseRequest
             ],
             'task_import' => ['string', Rule::in(TaskStatus::getValues())],
             'task_progress' => ['string', Rule::in(TaskStatus::getValues())],
-            'month_of_year' => ['required', 'string', 'max:7'],
+            'month_of_year' => ['string', 'max:7'],
+            'total_money_sold' => ['numeric'],
+            'total_money_purchase' => ['numeric'],
         ];
     }
 }
