@@ -41,6 +41,7 @@ class Invoice extends BaseModel
         'rounding',
         'payment_method',
         'verification_code',
+        'verification_code_status',
         'json',
         'status',
     ];

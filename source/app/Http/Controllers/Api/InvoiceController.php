@@ -47,6 +47,7 @@ class InvoiceController extends ApiController
             Route::delete($root . '/{id}', [InvoiceController::class, 'delete']);
 
             Route::post($root . '/import', [InvoiceController::class, 'import']);
+            Route::post($root . '/import-pdf', [InvoiceController::class, 'importPDF']);
             Route::post($root . '/restore-rows/{id}', [InvoiceController::class, 'restoreRows']);
         }
     }
@@ -132,5 +133,13 @@ class InvoiceController extends ApiController
         # Send response using the predefined format
         $response = ApiResponse::v1();
         return $response->send($result);
+    }
+
+    public function importPDF(Request $request): Response
+    {
+        dd($request->all());
+        # Send response using the predefined format
+        $response = ApiResponse::v1();
+        return $response->send();
     }
 }

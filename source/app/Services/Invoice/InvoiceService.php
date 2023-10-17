@@ -381,6 +381,7 @@ class InvoiceService extends \App\Services\BaseService implements IInvoiceServic
                 $invoice->invoice_symbol = $invoice_symbol;
                 $invoice->date = $param['date'];
                 $invoice->invoice_number_form = $param['invoice_number_form'] ?? 1; # Warning
+                $invoice->verification_code_status = $param['verification_code_status'] ?? 1; # Co ma co quan thue
                 $invoice->created_by = auth()->user()->id . '|' . auth()->user()->name;
                 $invoice->save();
             } else {
@@ -467,6 +468,7 @@ class InvoiceService extends \App\Services\BaseService implements IInvoiceServic
                     'vat' => $row['vat'],
                     'quantity' => $row['quantity'],
                     'price' => $row['price'],
+                    'verification_code_status' => $param['verification_code_status'] ?? 1, # Co ma co quan thue
                 ], $commandMetaInfo);
                 if (empty($record)) {
                     $index += 1;

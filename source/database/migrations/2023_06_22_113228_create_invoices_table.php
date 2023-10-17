@@ -38,9 +38,9 @@ return new class extends Migration
             $table->boolean('rounding')->default(1);
             $table->string('payment_method', 30)->default('TM/CK');
             $table->string('verification_code')->nullable();
-            $table->boolean('verification_code_status')->default(1);
+            $table->boolean('verification_code_status')->default(1); # default -> co ma co quan thue
             $table->json('json')->nullable();
-            $table->tinyInteger('status')->default(0); // 0 - chua xu ly; 1 - da xu ly
+            $table->tinyInteger('status')->default(0); # 0 - chua xu ly; 1 - da xu ly
             $table->string('created_by')->nullable();
             $table->string('updated_by')->nullable();
             $table->softDeletes();

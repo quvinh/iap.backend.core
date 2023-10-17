@@ -35,6 +35,7 @@ class InvoiceResource extends BaseDataResource
         'rounding',
         'payment_method',
         'verification_code',
+        'verification_code_status',
         'json',
         'status',
         'created_by',
