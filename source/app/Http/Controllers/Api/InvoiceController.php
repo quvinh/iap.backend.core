@@ -137,7 +137,13 @@ class InvoiceController extends ApiController
 
     public function importPDF(Request $request): Response
     {
-        dd($request->all());
+        if ($request->hasFile('file')) {
+            $filenameWithExt = $request->file('file')->getClientOriginalName();
+            $filename        = pathinfo($filenameWithExt, PATHINFO_FILENAME);
+            $extension       = $request->file('file')->getClientOriginalExtension();
+            $fileNameToStore = $filename . '_' . time() . '.' . $extension;
+            dd($fileNameToStore, $request->company_id);
+        }
         # Send response using the predefined format
         $response = ApiResponse::v1();
         return $response->send();
