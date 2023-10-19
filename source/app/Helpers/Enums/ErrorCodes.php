@@ -34,7 +34,7 @@ final class ErrorCodes extends Enum
 
     # 3xxx Action response
     const ERR_ACTION_FAIL = 3001;
-    const ERROR_CANNOT_UPLOAD_IMAGE_FILE = 3002;
+    const ERROR_CANNOT_UPLOAD_FILE = 3002;
     const ERROR_CANNOT_EXPORT_PDF = 3003;
     const ERR_FILE_NOT_FOUND = 3004;
     # 4xxx Authorization

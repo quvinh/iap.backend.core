@@ -17,6 +17,7 @@ use App\Http\Controllers\Api\FormulaController;
 use App\Http\Controllers\Api\FormulaMaterialController;
 use App\Http\Controllers\Api\InvoiceController;
 use App\Http\Controllers\Api\InvoiceDetailController;
+use App\Http\Controllers\Api\InvoiceMediaController;
 use App\Http\Controllers\Api\InvoiceTaskController;
 use App\Http\Controllers\Api\ItemCodeController;
 use App\Http\Controllers\Api\ItemGroupController;
@@ -67,6 +68,7 @@ function registerResourceRoutes(string $group = UserRoles::ADMINISTRATOR): void
     InvoiceDetailController::registerRoutes($group);
     ItemGroupController::registerRoutes($group);
     TaxFreeVoucherRecordController::registerRoutes($group);
+    InvoiceMediaController::registerRoutes($group);
 
     CommandController::registerRoutes($group);
 }

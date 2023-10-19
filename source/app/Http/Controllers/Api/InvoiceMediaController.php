@@ -3,8 +3,12 @@
 namespace App\Http\Controllers\Api;
 
 use App\DataResources\InvoiceMedia\InvoiceMediaResource;
+use App\Exceptions\Business\ActionFailException;
 use App\Helpers\Common\MetaInfo;
+use App\Helpers\Enums\ErrorCodes;
 use App\Helpers\Enums\UserRoles;
+use App\Helpers\Responses\ApiResponse;
+use App\Helpers\Utils\StorageHelper;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\Traits\DefaultRestActions;
 use App\Http\Requests\InvoiceMedia\InvoiceMediaCreateRequest;
@@ -12,13 +16,17 @@ use App\Http\Requests\InvoiceMedia\InvoiceMediaSearchRequest;
 use App\Http\Requests\InvoiceMedia\InvoiceMediaUpdateRequest;
 use App\Services\IService;
 use App\Services\InvoiceMedia\IInvoiceMediaService;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Storage;
 
 class InvoiceMediaController extends ApiController
 {
     use DefaultRestActions;
 
+    private const DEFAULT_FOLDER_UPLOAD_FILE = 'upload/pdf';
     private IInvoiceMediaService $invoiceMediaService;
 
     public function __construct(IInvoiceMediaService $service)
@@ -40,6 +48,8 @@ class InvoiceMediaController extends ApiController
             Route::post($root, [InvoiceMediaController::class, 'create']);
             Route::put($root . '/{id}', [InvoiceMediaController::class, 'update']);
             Route::delete($root . '/{id}', [InvoiceMediaController::class, 'delete']);
+
+            Route::post($root . '/import-pdf', [InvoiceMediaController::class, 'importPDF']);
         }
     }
 
@@ -100,5 +110,37 @@ class InvoiceMediaController extends ApiController
             default:
                 return $request;
         }
+    }
+
+    public function importPDF(InvoiceMediaCreateRequest $request): mixed
+    {
+
+        # Send response using the predefined format
+        $response = ApiResponse::v1();
+
+        if ($request->hasFile('file')) {
+            // $id = preg_replace('/-/', '', uuid_create());
+            // $id = $id.'.'.$request->file('file')->extension();
+            // $path = Carbon::now()->format('Ymd');
+            // if ($file = $request->file('file')->storePubliclyAs($path, $id, StorageHelper::CLOUD_DISK_NAME)) {
+            //     $url = Storage::disk(StorageHelper::CLOUD_DISK_NAME)->url($file);
+            //     $url = preg_replace('/\/'.$path.'\//', '/', $url);
+            //     return $response->send($id);
+            // }
+            // throw new ActionFailException(code: ErrorCodes::ERROR_CANNOT_UPLOAD_FILE);
+            $filenameWithExt = $request->file('file')->getClientOriginalName();
+            $filename        = pathinfo($filenameWithExt, PATHINFO_FILENAME);
+            $extension       = $request->file('file')->getClientOriginalExtension();
+            $fileNameToStore = uuid_create() . '.' . $extension;
+
+            $storage = Storage::disk(StorageHelper::CLOUD_DISK_NAME);
+            $checkDirectory = $storage->exists(self::DEFAULT_FOLDER_UPLOAD_FILE);
+            if (!$checkDirectory) {
+                $storage->makeDirectory(self::DEFAULT_FOLDER_UPLOAD_FILE);
+            }
+            $result = $storage->put(self::DEFAULT_FOLDER_UPLOAD_FILE . '/' . $fileNameToStore, $request->file('file'), 'public');
+        }
+        
+        return $response->send($result);
     }
 }
