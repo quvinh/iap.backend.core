@@ -30,10 +30,12 @@ class InvoiceMediaCreateRequest extends BaseRequest
      */
     public function rules(): array
     {
+        $maxSizeUpload = config('upload.file.max_size_upload');
         return [
             'company_id' => ['required', 'integer', 'exists:companies,id'],
             'invoice_id' => ['integer', 'exists:invoices,id'],
             'year' => ['required'],
+            'file' => ['required', 'mimes:pdf,png,jpg,jpeg', "max:$maxSizeUpload"],
         ];
     }
 }
