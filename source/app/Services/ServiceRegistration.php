@@ -32,6 +32,8 @@ use App\Services\Invoice\IInvoiceService;
 use App\Services\Invoice\InvoiceService;
 use App\Services\InvoiceDetail\IInvoiceDetailService;
 use App\Services\InvoiceDetail\InvoiceDetailService;
+use App\Services\InvoiceMedia\IInvoiceMediaService;
+use App\Services\InvoiceMedia\InvoiceMediaService;
 use App\Services\InvoiceTask\IInvoiceTaskService;
 use App\Services\InvoiceTask\InvoiceTaskService;
 use App\Services\ItemCode\IItemCodeService;
@@ -80,5 +82,6 @@ class ServiceRegistration
         $app->singleton(IInvoiceDetailService::class, InvoiceDetailService::class);
         $app->singleton(IItemGroupService::class, ItemGroupService::class);
         $app->singleton(ITaxFreeVoucherRecordService::class, TaxFreeVoucherRecordService::class);
+        $app->singleton(IInvoiceMediaService::class, InvoiceMediaService::class);
     }
 }

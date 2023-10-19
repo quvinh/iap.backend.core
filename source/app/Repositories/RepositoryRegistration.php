@@ -30,6 +30,8 @@ use App\Repositories\Invoice\IInvoiceRepository;
 use App\Repositories\Invoice\InvoiceRepository;
 use App\Repositories\InvoiceDetail\IInvoiceDetailRepository;
 use App\Repositories\InvoiceDetail\InvoiceDetailRepository;
+use App\Repositories\InvoiceMedia\IInvoiceMediaRepository;
+use App\Repositories\InvoiceMedia\InvoiceMediaRepository;
 use App\Repositories\InvoiceTask\IInvoiceTaskRepository;
 use App\Repositories\InvoiceTask\InvoiceTaskRepository;
 use App\Repositories\ItemCode\IItemCodeRepository;
@@ -77,5 +79,6 @@ class RepositoryRegistration
         $app->singleton(IInvoiceDetailRepository::class, InvoiceDetailRepository::class);
         $app->singleton(IItemGroupRepository::class, ItemGroupRepository::class);
         $app->singleton(ITaxFreeVoucherRecordRepository::class, TaxFreeVoucherRecordRepository::class);
+        $app->singleton(IInvoiceMediaRepository::class, InvoiceMediaRepository::class);
     }
 }

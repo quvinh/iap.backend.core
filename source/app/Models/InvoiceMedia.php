@@ -14,7 +14,6 @@ class InvoiceMedia extends BaseModel
         'company_id',
         'invoice_id',
         'path',
-        'tax_code',
         'year',
         'note',
     ];
