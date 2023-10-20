@@ -18,8 +18,10 @@ return new class extends Migration
             $table->unsignedBigInteger('company_id');
             $table->unsignedBigInteger('invoice_id')->nullable();
             $table->string('path');
-            $table->string('year', 10);
-            $table->text('note');
+            $table->string('year', 4);
+            $table->text('note')->nullable();
+            $table->string('created_by')->nullable();
+            $table->string('updated_by')->nullable();
             $table->timestamps();
             $table->softDeletes();
 

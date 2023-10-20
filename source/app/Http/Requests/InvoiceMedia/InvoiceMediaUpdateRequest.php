@@ -33,7 +33,7 @@ class InvoiceMediaUpdateRequest extends BaseRequest
         return [
             'company_id' => ['required', 'integer', 'exists:companies,id'],
             'invoice_id' => ['integer', 'exists:invoices,id'],
-            'year' => ['required'],
+            'year' => ['required', 'max:4'],
         ];
     }
 }

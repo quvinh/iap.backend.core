@@ -14,6 +14,7 @@ use App\Http\Controllers\Traits\DefaultRestActions;
 use App\Http\Requests\InvoiceMedia\InvoiceMediaCreateRequest;
 use App\Http\Requests\InvoiceMedia\InvoiceMediaSearchRequest;
 use App\Http\Requests\InvoiceMedia\InvoiceMediaUpdateRequest;
+use App\Services\Company\ICompanyService;
 use App\Services\IService;
 use App\Services\InvoiceMedia\IInvoiceMediaService;
 use Carbon\Carbon;
@@ -28,10 +29,12 @@ class InvoiceMediaController extends ApiController
 
     private const DEFAULT_FOLDER_UPLOAD_FILE = 'upload/pdf';
     private IInvoiceMediaService $invoiceMediaService;
+    private ICompanyService $companyService;
 
-    public function __construct(IInvoiceMediaService $service)
+    public function __construct(IInvoiceMediaService $service, ICompanyService $companyService)
     {
         $this->invoiceMediaService = $service;
+        $this->companyService = $companyService;
     }
 
     /**
@@ -114,33 +117,37 @@ class InvoiceMediaController extends ApiController
 
     public function importPDF(InvoiceMediaCreateRequest $request): mixed
     {
-
+        $root = self::DEFAULT_FOLDER_UPLOAD_FILE;
+        $company_id = $request->company_id;
+        $year = $request->year;
         # Send response using the predefined format
         $response = ApiResponse::v1();
 
         if ($request->hasFile('file')) {
-            // $id = preg_replace('/-/', '', uuid_create());
-            // $id = $id.'.'.$request->file('file')->extension();
-            // $path = Carbon::now()->format('Ymd');
-            // if ($file = $request->file('file')->storePubliclyAs($path, $id, StorageHelper::CLOUD_DISK_NAME)) {
-            //     $url = Storage::disk(StorageHelper::CLOUD_DISK_NAME)->url($file);
-            //     $url = preg_replace('/\/'.$path.'\//', '/', $url);
-            //     return $response->send($id);
-            // }
-            // throw new ActionFailException(code: ErrorCodes::ERROR_CANNOT_UPLOAD_FILE);
-            $filenameWithExt = $request->file('file')->getClientOriginalName();
-            $filename        = pathinfo($filenameWithExt, PATHINFO_FILENAME);
-            $extension       = $request->file('file')->getClientOriginalExtension();
-            $fileNameToStore = uuid_create() . '.' . $extension;
+            # Check company
+            $com = $this->companyService->getSingleObject($company_id);
+            if (empty($com)) throw new ActionFailException(code: ErrorCodes::ERR_RECORD_NOT_FOUND);
+            $company_taxcode = $com->tax_code;
 
+            # Upload
             $storage = Storage::disk(StorageHelper::CLOUD_DISK_NAME);
-            $checkDirectory = $storage->exists(self::DEFAULT_FOLDER_UPLOAD_FILE);
+            $checkDirectory = $storage->exists($root);
             if (!$checkDirectory) {
-                $storage->makeDirectory(self::DEFAULT_FOLDER_UPLOAD_FILE);
+                $storage->makeDirectory($root);
             }
-            $result = $storage->put(self::DEFAULT_FOLDER_UPLOAD_FILE . '/' . $fileNameToStore, $request->file('file'), 'public');
+            $result = $storage->put("$root/$year/$company_taxcode", $request->file('file'), 'public');
+            if (!empty($result)) {
+                $params = [
+                  'company_id' => $com->id,  
+                  'year' => $year,  
+                  'path' => $result,  
+                ];
+                
+                $record = $this->invoiceMediaService->create($params, $this->getCurrentMetaInfo());
+                return $response->send($record);
+            }
+            throw new ActionFailException(code: ErrorCodes::ERROR_CANNOT_UPLOAD_FILE);
         }
-        
-        return $response->send($result);
+        throw new ActionFailException(code: ErrorCodes::ERROR_CANNOT_UPLOAD_FILE);
     }
 }
