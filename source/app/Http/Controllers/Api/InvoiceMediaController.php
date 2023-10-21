@@ -19,6 +19,8 @@ use App\Services\IService;
 use App\Services\InvoiceMedia\IInvoiceMediaService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response as HttpResponse;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
@@ -53,6 +55,7 @@ class InvoiceMediaController extends ApiController
             Route::delete($root . '/{id}', [InvoiceMediaController::class, 'delete']);
 
             Route::post($root . '/import-pdf', [InvoiceMediaController::class, 'importPDF']);
+            Route::get($root . '/file/{slug}', [InvoiceMediaController::class, 'getFile'])->where('slug', '.*');
         }
     }
 
@@ -115,6 +118,9 @@ class InvoiceMediaController extends ApiController
         }
     }
 
+    /**
+     * Import files
+     */
     public function importPDF(InvoiceMediaCreateRequest $request): mixed
     {
         $root = self::DEFAULT_FOLDER_UPLOAD_FILE;
@@ -138,16 +144,42 @@ class InvoiceMediaController extends ApiController
             $result = $storage->put("$root/$year/$company_taxcode", $request->file('file'), 'public');
             if (!empty($result)) {
                 $params = [
-                  'company_id' => $com->id,  
-                  'year' => $year,  
-                  'path' => $result,  
+                    'company_id' => $com->id,
+                    'year' => $year,
+                    'path' => $result,
                 ];
-                
+
                 $record = $this->invoiceMediaService->create($params, $this->getCurrentMetaInfo());
                 return $response->send($record);
             }
             throw new ActionFailException(code: ErrorCodes::ERROR_CANNOT_UPLOAD_FILE);
         }
         throw new ActionFailException(code: ErrorCodes::ERROR_CANNOT_UPLOAD_FILE);
+    }
+
+    /**
+     * Get the system file
+     * @param string $slug
+     * @return \Illuminate\Http\Response
+     */
+    public function getFile(string $slug): HttpResponse
+    {
+        $disk = Storage::disk(StorageHelper::TMP_DISK_NAME);
+        
+        if (!$disk->exists($slug)) {
+            $filePath = null;
+        } else {
+            $filePath = $disk->path($slug);
+        }
+
+        $filePath = $filePath ?? resource_path() . '/images/default/default-thumbnail.jpg';
+
+        $file = File::get($filePath);
+        $type = File::mimeType($filePath);
+
+        $response = Response::make($file, 200);
+        $response->header("Content-Type", $type);
+
+        return $response;
     }
 }
