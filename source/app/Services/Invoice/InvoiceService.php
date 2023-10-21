@@ -35,6 +35,7 @@ class InvoiceService extends \App\Services\BaseService implements IInvoiceServic
     private ?ICompanyService $companyService = null;
     private ?IInvoiceTaskService $invoiceTaskService = null;
     private ?IItemCodeService $itemCodeService = null;
+    private ?IInvoiceDetailService $invoiceDetailService = null;
 
     public function __construct(
         IInvoiceRepository $repos,
