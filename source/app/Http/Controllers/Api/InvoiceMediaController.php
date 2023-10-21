@@ -130,7 +130,7 @@ class InvoiceMediaController extends ApiController
             $company_taxcode = $com->tax_code;
 
             # Upload
-            $storage = Storage::disk(StorageHelper::CLOUD_DISK_NAME);
+            $storage = Storage::disk(StorageHelper::TMP_DISK_NAME);
             $checkDirectory = $storage->exists($root);
             if (!$checkDirectory) {
                 $storage->makeDirectory($root);
