@@ -38,6 +38,8 @@ use App\Repositories\ItemCode\IItemCodeRepository;
 use App\Repositories\ItemCode\ItemCodeRepository;
 use App\Repositories\ItemGroup\IItemGroupRepository;
 use App\Repositories\ItemGroup\ItemGroupRepository;
+use App\Repositories\PdfTableKey\IPdfTableKeyRepository;
+use App\Repositories\PdfTableKey\PdfTableKeyRepository;
 use App\Repositories\Permission\IPermissionRepository;
 use App\Repositories\Permission\PermissionRepository;
 use App\Repositories\Role\IRoleRepository;
@@ -80,5 +82,6 @@ class RepositoryRegistration
         $app->singleton(IItemGroupRepository::class, ItemGroupRepository::class);
         $app->singleton(ITaxFreeVoucherRecordRepository::class, TaxFreeVoucherRecordRepository::class);
         $app->singleton(IInvoiceMediaRepository::class, InvoiceMediaRepository::class);
+        $app->singleton(IPdfTableKeyRepository::class, PdfTableKeyRepository::class);
     }
 }

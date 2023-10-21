@@ -40,6 +40,8 @@ use App\Services\ItemCode\IItemCodeService;
 use App\Services\ItemCode\ItemCodeService;
 use App\Services\ItemGroup\IItemGroupService;
 use App\Services\ItemGroup\ItemGroupService;
+use App\Services\PdfTableKey\IPdfTableKeyService;
+use App\Services\PdfTableKey\PdfTableKeyService;
 use App\Services\Permission\IPermissionService;
 use App\Services\Permission\PermissionService;
 use App\Services\Role\IRoleService;
@@ -83,5 +85,6 @@ class ServiceRegistration
         $app->singleton(IItemGroupService::class, ItemGroupService::class);
         $app->singleton(ITaxFreeVoucherRecordService::class, TaxFreeVoucherRecordService::class);
         $app->singleton(IInvoiceMediaService::class, InvoiceMediaService::class);
+        $app->singleton(IPdfTableKeyService::class, PdfTableKeyService::class);
     }
 }
