@@ -20,6 +20,7 @@ class InvoiceTaskSearchRequest extends DefaultSearchRequest
         'month_of_year',
         'id',
         'company_id',
+        'year',
         'withs'
     ];
 

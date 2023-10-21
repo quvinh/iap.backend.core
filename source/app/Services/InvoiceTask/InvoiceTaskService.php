@@ -92,6 +92,11 @@ class InvoiceTaskService extends \App\Services\BaseService implements IInvoiceTa
                 $query = $this->invoiceTaskRepos->queryOnAField(['month_of_year', '=', $param], $query);
             }
 
+            if (isset($rawConditions['year'])) {
+                $param = $rawConditions['year'];
+                $query = $this->invoiceTaskRepos->queryOnAField(['month_of_year', 'LIKE', "%$param"], $query);
+            }
+
             if (isset($rawConditions['updated_date'])) {
                 $query = $this->invoiceTaskRepos->queryOnDateRangeField($query, 'updated_at', $rawConditions['updated_date']);
             }
