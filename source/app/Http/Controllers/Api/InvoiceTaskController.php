@@ -11,6 +11,7 @@ use App\Http\Requests\InvoiceTask\InvoiceTaskCreateRequest;
 use App\Http\Requests\InvoiceTask\InvoiceTaskHandleFormulaRequest;
 use App\Http\Requests\InvoiceTask\InvoiceTaskSearchRequest;
 use App\Http\Requests\InvoiceTask\InvoiceTaskUpdateRequest;
+use App\Http\Requests\InvoiceTask\InvoiceTaskGetMoneyRequest;
 use App\Services\IService;
 use App\Services\InvoiceTask\IInvoiceTaskService;
 use Illuminate\Http\Request;
@@ -45,6 +46,7 @@ class InvoiceTaskController extends ApiController
             Route::delete($root . '/force/{id}', [InvoiceTaskController::class, 'forceDelete']);
 
             Route::put($root . '/formula/update', [InvoiceTaskController::class, 'updateHandleFormula']);
+            Route::post($root . '/money-of-months', [InvoiceTaskController::class, 'getMoneyOfMonths']);
         }
     }
 
@@ -120,6 +122,12 @@ class InvoiceTaskController extends ApiController
     public function updateHandleFormula(InvoiceTaskHandleFormulaRequest $request): Response
     {
         $result = $this->invoiceTaskService->updateHandleFormula($request->all());
+        return $this->getResponseHandler()->send($result);
+    }
+
+    public function getMoneyOfMonths(InvoiceTaskGetMoneyRequest $request): Response
+    {
+        $result = $this->invoiceTaskService->getMoneyOfMonths($request->all());
         return $this->getResponseHandler()->send($result);
     }
 }

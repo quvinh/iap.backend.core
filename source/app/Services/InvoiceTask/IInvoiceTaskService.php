@@ -8,4 +8,5 @@ use App\Services\IService;
 interface IInvoiceTaskService extends IService
 {
     public function updateHandleFormula(array $params): mixed;
+    public function getMoneyOfMonths(array $params): mixed;
 }

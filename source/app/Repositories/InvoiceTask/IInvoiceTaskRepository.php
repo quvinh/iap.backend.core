@@ -8,4 +8,5 @@ use App\Repositories\IRepository;
 
 interface IInvoiceTaskRepository extends IRepository
 {
+    function getMoneyOfMonths(int $company_id, int $year): array;
 }

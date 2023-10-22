@@ -292,4 +292,24 @@ class InvoiceTaskService extends \App\Services\BaseService implements IInvoiceTa
             );
         }
     }
+
+    /**
+     * Get money of months
+     * @param $params
+     */
+    public function getMoneyOfMonths(array $params): mixed
+    {
+        DB::beginTransaction();
+        try {
+            $result = $this->invoiceTaskRepos->getMoneyOfMonths($params['company_id'], $params['year']);
+            DB::commit();
+            return $result;
+        } catch (\Exception $ex) {
+            DB::rollBack();
+            throw new ActionFailException(
+                message: 'action failed',
+                previous: $ex
+            );
+        }
+    }
 }
