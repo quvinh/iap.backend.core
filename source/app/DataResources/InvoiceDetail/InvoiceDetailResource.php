@@ -4,6 +4,7 @@ namespace App\DataResources\InvoiceDetail;
 
 use App\DataResources\BaseDataResource;
 use App\Models\InvoiceDetail;
+use App\DataResources\ItemCode\ItemCodeResource;
 
 class InvoiceDetailResource extends BaseDataResource
 {
@@ -51,5 +52,10 @@ class InvoiceDetailResource extends BaseDataResource
     public function load(mixed $obj): void
     {
         parent::copy($obj, $this->fields);
+
+        if (in_array('item_code', $this->fields)) {
+            $this->withField('item_code');
+            $this->item_code = new ItemCodeResource($obj->item_code);
+        }
     }
 }

@@ -60,7 +60,7 @@ class InvoiceResource extends BaseDataResource
         parent::copy($obj, $this->fields);
 
         if (in_array('invoice_details', $this->fields)) {
-            $this->invoice_details = BaseDataResource::generateResources($obj->invoice_details, InvoiceDetailResource::class);
+            $this->invoice_details = BaseDataResource::generateResources($obj->invoice_details, InvoiceDetailResource::class, ['item_code']);
         }
 
         if (in_array('company', $this->fields)) {

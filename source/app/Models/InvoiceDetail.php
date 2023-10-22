@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
@@ -61,5 +62,13 @@ class InvoiceDetail extends BaseModel
         } catch (\Exception) {
             return 0;
         }
+    }
+
+    /**
+     * @return HasOne
+     */
+    public function item_code(): HasOne
+    {
+        return $this->hasOne(ItemCode::class, 'id', 'item_code_id');
     }
 }
