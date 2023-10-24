@@ -19,6 +19,7 @@ class InvoiceMediaSearchRequest extends DefaultSearchRequest
         'withs',
         'company_id',
         'year',
+        'status',
     ];
 
     /**

@@ -16,5 +16,6 @@ class InvoiceMedia extends BaseModel
         'path',
         'year',
         'note',
+        'status',
     ];
 }

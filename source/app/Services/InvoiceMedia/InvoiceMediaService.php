@@ -83,6 +83,11 @@ class InvoiceMediaService extends \App\Services\BaseService implements IInvoiceM
                 $query = $this->invoiceMediaRepos->queryOnAField(['year', '=', $param], $query);
             }
 
+            if (isset($rawConditions['status'])) {
+                $param = $rawConditions['status'];
+                $query = $this->invoiceMediaRepos->queryOnAField(['status', '=', $param], $query);
+            }
+
             if (isset($rawConditions['updated_date'])) {
                 $query = $this->invoiceMediaRepos->queryOnDateRangeField($query, 'updated_at', $rawConditions['updated_date']);
             }

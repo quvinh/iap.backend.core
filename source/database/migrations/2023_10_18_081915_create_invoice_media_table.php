@@ -20,6 +20,7 @@ return new class extends Migration
             $table->string('path');
             $table->string('year', 4);
             $table->text('note')->nullable();
+            $table->tinyInteger('status')->default(0);
             $table->string('created_by')->nullable();
             $table->string('updated_by')->nullable();
             $table->timestamps();

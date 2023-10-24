@@ -17,6 +17,7 @@ class InvoiceMediaResource extends BaseDataResource
         'year',
         'path',
         'note',
+        'status',
         'created_by',
         'created_at',
     ];
