@@ -73,6 +73,16 @@ class InvoiceMediaService extends \App\Services\BaseService implements IInvoiceM
                 $query = $this->invoiceMediaRepos->queryOnAField([DB::raw("upper(name)"), 'LIKE BINARY', DB::raw("upper(concat('%', ? , '%'))")], positionalBindings: ['name' => $param]);
             }
 
+            if (isset($rawConditions['company_id'])) {
+                $param = $rawConditions['company_id'];
+                $query = $this->invoiceMediaRepos->queryOnAField(['company_id', '=', $param], $query);
+            }
+
+            if (isset($rawConditions['year'])) {
+                $param = $rawConditions['year'];
+                $query = $this->invoiceMediaRepos->queryOnAField(['year', '=', $param], $query);
+            }
+
             if (isset($rawConditions['updated_date'])) {
                 $query = $this->invoiceMediaRepos->queryOnDateRangeField($query, 'updated_at', $rawConditions['updated_date']);
             }

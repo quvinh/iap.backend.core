@@ -16,7 +16,9 @@ class InvoiceMediaSearchRequest extends DefaultSearchRequest
     ];
 
     protected array $fields = [
-        'withs'
+        'withs',
+        'company_id',
+        'year',
     ];
 
     /**
