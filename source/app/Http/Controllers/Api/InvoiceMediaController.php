@@ -162,7 +162,7 @@ class InvoiceMediaController extends ApiController
      * @param string $slug
      * @return \Illuminate\Http\Response
      */
-    public function getFile(string $slug): HttpResponse
+    public function getFile(string $slug): mixed//HttpResponse
     {
         $disk = Storage::disk(StorageHelper::TMP_DISK_NAME);
         
@@ -177,9 +177,12 @@ class InvoiceMediaController extends ApiController
         $file = File::get($filePath);
         $type = File::mimeType($filePath);
 
-        $response = Response::make($file, 200);
-        $response->header("Content-Type", $type);
-
-        return $response;
+        // $response = Response::make($file, 200);
+        // $response->header("Content-Type", $type);
+        
+        # TODO: convert data:base64
+        $fileBase64Data = base64_encode($file);
+        $fileBase64Uri = "data:$type;base64,$fileBase64Data";
+        return $this->getResponseHandler()->send($fileBase64Uri);
     }
 }
