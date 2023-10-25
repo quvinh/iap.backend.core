@@ -12,6 +12,7 @@ use App\Helpers\Utils\StorageHelper;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\Traits\DefaultRestActions;
 use App\Http\Requests\InvoiceMedia\InvoiceMediaCreateRequest;
+use App\Http\Requests\InvoiceMedia\InvoiceMediaReadRequest;
 use App\Http\Requests\InvoiceMedia\InvoiceMediaSearchRequest;
 use App\Http\Requests\InvoiceMedia\InvoiceMediaUpdateRequest;
 use App\Services\Company\ICompanyService;
@@ -20,6 +21,7 @@ use App\Services\InvoiceMedia\IInvoiceMediaService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response as HttpResponse;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Response;
@@ -58,7 +60,7 @@ class InvoiceMediaController extends ApiController
 
             Route::post($root . '/import-pdf', [InvoiceMediaController::class, 'importPDF']);
             Route::get($root . '/file/{slug}', [InvoiceMediaController::class, 'getFile'])->where('slug', '.*');
-            Route::get($root . '/pdf/{id}', [InvoiceMediaController::class, 'readPdf']);
+            Route::post($root . '/read-pdf', [InvoiceMediaController::class, 'readPdf']);
         }
     }
 
@@ -168,7 +170,7 @@ class InvoiceMediaController extends ApiController
     public function getFile(string $slug): HttpResponse
     {
         $disk = Storage::disk(StorageHelper::TMP_DISK_NAME);
-        
+
         if (!$disk->exists($slug)) {
             $filePath = null;
         } else {
@@ -182,7 +184,7 @@ class InvoiceMediaController extends ApiController
 
         // $response = Response::make($file, 200);
         // $response->header("Content-Type", $type);
-        
+
         # TODO: convert data:base64
         $fileBase64Data = base64_encode($file);
         $fileBase64Uri = "data:$type;base64,$fileBase64Data";
@@ -197,14 +199,15 @@ class InvoiceMediaController extends ApiController
      * @param string $id
      * @return \Illuminate\Http\Response
      */
-    public function readPDF(string $id): HttpResponse
+    public function readPDF(InvoiceMediaReadRequest $request): HttpResponse
     {
-        $key = 'juymva83bp2d';
-        $format = 'html';
+        $id = $request->id;
+        $key = $request->key;
+        $format = $request->format ?? 'html';
         $record = $this->invoiceMediaService->getSingleObject($id);
         $slug = $record->path ?? 'xxx';
         $disk = Storage::disk(StorageHelper::TMP_DISK_NAME);
-        
+
         if (!$disk->exists($slug)) {
             $filePath = null;
         } else {
@@ -216,20 +219,21 @@ class InvoiceMediaController extends ApiController
         $file = File::get($filePath);
         $type = File::mimeType($filePath);
         $extension = File::extension($filePath);
-        
+
         # Fetch api post pdf-table
-        $params = [
-            'key' => $key,
-            'format' => $format,
-        ];
-        $headers = [
-            // "Content-Type" => "application/json"
-        ];
+        $headers = [];
         $response = Http::withHeaders($headers)
-            ->withUrlParameters($params)
             ->attach('file', $file, "filename.$extension")
-            ->post(self::ENDPOINT_PDF_TABLE);
-        
-        return $this->getResponseHandler()->send([$response]);
+            ->post("https://pdftables.com/api?key=$key&format=$format");
+
+        # Handle body
+        if ($response->status() == 200) {
+            // $html = str_get_html($response->body());
+        }
+
+        return $this->getResponseHandler()->send([
+            'status' => $response->status(),
+            'body' => $response->body(),
+        ]);
     }
 }
