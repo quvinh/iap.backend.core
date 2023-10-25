@@ -21,6 +21,7 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response as HttpResponse;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
@@ -30,6 +31,7 @@ class InvoiceMediaController extends ApiController
     use DefaultRestActions;
 
     private const DEFAULT_FOLDER_UPLOAD_FILE = 'upload/pdf';
+    private const ENDPOINT_PDF_TABLE = 'https://pdftables.com/api';
     private IInvoiceMediaService $invoiceMediaService;
     private ICompanyService $companyService;
 
@@ -56,6 +58,7 @@ class InvoiceMediaController extends ApiController
 
             Route::post($root . '/import-pdf', [InvoiceMediaController::class, 'importPDF']);
             Route::get($root . '/file/{slug}', [InvoiceMediaController::class, 'getFile'])->where('slug', '.*');
+            Route::get($root . '/pdf/{id}', [InvoiceMediaController::class, 'readPdf']);
         }
     }
 
@@ -162,7 +165,7 @@ class InvoiceMediaController extends ApiController
      * @param string $slug
      * @return \Illuminate\Http\Response
      */
-    public function getFile(string $slug): mixed//HttpResponse
+    public function getFile(string $slug): HttpResponse
     {
         $disk = Storage::disk(StorageHelper::TMP_DISK_NAME);
         
@@ -183,6 +186,50 @@ class InvoiceMediaController extends ApiController
         # TODO: convert data:base64
         $fileBase64Data = base64_encode($file);
         $fileBase64Uri = "data:$type;base64,$fileBase64Data";
-        return $this->getResponseHandler()->send($fileBase64Uri);
+        return $this->getResponseHandler()->send([
+            'type' => $type,
+            'uri' => $fileBase64Uri,
+        ]);
+    }
+
+    /**
+     * Read file pdf with api pdf-table
+     * @param string $id
+     * @return \Illuminate\Http\Response
+     */
+    public function readPDF(string $id): HttpResponse
+    {
+        $key = 'juymva83bp2d';
+        $format = 'html';
+        $record = $this->invoiceMediaService->getSingleObject($id);
+        $slug = $record->path ?? 'xxx';
+        $disk = Storage::disk(StorageHelper::TMP_DISK_NAME);
+        
+        if (!$disk->exists($slug)) {
+            $filePath = null;
+        } else {
+            $filePath = $disk->path($slug);
+        }
+
+        $filePath = $filePath ?? resource_path() . '/images/default/default-thumbnail.jpg';
+
+        $file = File::get($filePath);
+        $type = File::mimeType($filePath);
+        $extension = File::extension($filePath);
+        
+        # Fetch api post pdf-table
+        $params = [
+            'key' => $key,
+            'format' => $format,
+        ];
+        $headers = [
+            // "Content-Type" => "application/json"
+        ];
+        $response = Http::withHeaders($headers)
+            ->withUrlParameters($params)
+            ->attach('file', $file, "filename.$extension")
+            ->post(self::ENDPOINT_PDF_TABLE);
+        
+        return $this->getResponseHandler()->send([$response]);
     }
 }
