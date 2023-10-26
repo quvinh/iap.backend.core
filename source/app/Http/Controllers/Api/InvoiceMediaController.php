@@ -201,6 +201,7 @@ class InvoiceMediaController extends ApiController
      */
     public function readPDF(InvoiceMediaReadRequest $request): HttpResponse
     {
+        $uri = self::ENDPOINT_PDF_TABLE;
         $id = $request->id;
         $key = $request->key;
         $format = $request->format ?? 'html';
@@ -224,10 +225,11 @@ class InvoiceMediaController extends ApiController
         $headers = [];
         $response = Http::withHeaders($headers)
             ->attach('file', $file, "filename.$extension")
-            ->post("https://pdftables.com/api?key=$key&format=$format");
+            ->post("$uri?key=$key&format=$format");
 
         # Handle body
         $listItem = array();
+        $remaining = array();
         if ($response->status() == 200) {
             $html = str_get_html($response->body());
             $numberPage = count($html->find('table'));
@@ -249,7 +251,7 @@ class InvoiceMediaController extends ApiController
                 $idxPrice = 4;
                 $idxTotal = 5;
 
-                foreach ((array)$rowData as $key => $row) {
+                foreach ((array)$rowData as $row) {
                     if (is_numeric($row[0]) && $row[1] != '2') {
                         $checkPrice = explode(' ', str_replace('.', '', $row[intval($idxPrice)]));
                         $checkTotal = str_replace('.', '', $row[intval($idxTotal)]);
@@ -272,11 +274,15 @@ class InvoiceMediaController extends ApiController
                     }
                 }
             }
+
+            # Get remaining
+            $remaining = $this->countRemainingPdfTable($key);
         }
 
         return $this->getResponseHandler()->send([
             'status' => $response->status(),
             'rows' => $listItem,
+            'remaining' => $remaining,
         ]);
     }
 
@@ -284,5 +290,21 @@ class InvoiceMediaController extends ApiController
     {
         $num = str_replace('.', '', $number);
         return str_replace(',', '.', $num);
+    }
+
+    /**
+     * Get remaining api pdf-table
+     * @param string $id
+     * @return array
+     */
+    public function countRemainingPdfTable(string $key): array//HttpResponse
+    {
+        $uri = self::ENDPOINT_PDF_TABLE;
+        # Fetch api get remaining pdf-table
+        $response = Http::get("$uri/remaining?key=$key");
+        return [
+            'status' => $response->status(),
+            'count' => json_decode($response->body()),
+        ];
     }
 }
