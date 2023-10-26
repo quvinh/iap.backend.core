@@ -227,13 +227,62 @@ class InvoiceMediaController extends ApiController
             ->post("https://pdftables.com/api?key=$key&format=$format");
 
         # Handle body
+        $listItem = array();
         if ($response->status() == 200) {
-            // $html = str_get_html($response->body());
+            $html = str_get_html($response->body());
+            $numberPage = count($html->find('table'));
+            for ($i = 0; $i < $numberPage; $i++) {
+                $table = $html->find('table', $i);
+                $rowData = array();
+
+                foreach ($table->find('tr') as $row) {
+                    $keeper = array();
+                    foreach ($row->find('td, th') as $cell) {
+                        if (trim($cell->plaintext) != '') $keeper[] = $cell->plaintext;
+                    }
+                    $rowData[] = $keeper;
+                }
+                # Index position column
+                $idxItem = 1;
+                $idxUnit = 2;
+                $idxAmount = 3;
+                $idxPrice = 4;
+                $idxTotal = 5;
+
+                foreach ((array)$rowData as $key => $row) {
+                    if (is_numeric($row[0]) && $row[1] != '2') {
+                        $checkPrice = explode(' ', str_replace('.', '', $row[intval($idxPrice)]));
+                        $checkTotal = str_replace('.', '', $row[intval($idxTotal)]);
+                        if (is_numeric(str_replace(',', '.', $checkTotal))) {
+                            $price = $this->filterNumber($row[intval($idxPrice)]);
+                            $total = $this->filterNumber($row[intval($idxTotal)]);
+                            if (count($checkPrice) > 1) {
+                                $price = $this->filterNumber($checkPrice[0]);
+                                $total = $this->filterNumber($checkPrice[1]);
+                            }
+                            $value = [
+                                'product' => $row[intval($idxItem)],
+                                'unit' => $row[intval($idxUnit)],
+                                'amount' => $this->filterNumber($row[intval($idxAmount)]),
+                                'price' => $price,
+                                'total' => $total,
+                            ];
+                            array_push($listItem, $value);
+                        }
+                    }
+                }
+            }
         }
 
         return $this->getResponseHandler()->send([
             'status' => $response->status(),
-            'body' => $response->body(),
+            'rows' => $listItem,
         ]);
+    }
+
+    function filterNumber($number)
+    {
+        $num = str_replace('.', '', $number);
+        return str_replace(',', '.', $num);
     }
 }
