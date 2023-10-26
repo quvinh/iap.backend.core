@@ -20,4 +20,14 @@ class PdfTableKeyRepository extends BaseRepository implements IPdfTableKeyReposi
     {
         return PdfTableKey::class;
     }
+
+    /**
+     * Find record
+     * @param $key
+     * @return PdfTableKey
+     */
+    public function findByKey(string $key): PdfTableKey | null
+    {
+        return PdfTableKey::query()->where('key', $key)->first();
+    }
 }

@@ -7,4 +7,5 @@ use App\Services\IService;
 
 interface IPdfTableKeyService extends IService
 {
+    public function findByKey(string $key): PdfTableKey|null;
 }

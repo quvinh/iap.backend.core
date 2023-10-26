@@ -18,6 +18,7 @@ use App\Http\Requests\InvoiceMedia\InvoiceMediaUpdateRequest;
 use App\Services\Company\ICompanyService;
 use App\Services\IService;
 use App\Services\InvoiceMedia\IInvoiceMediaService;
+use App\Services\PdfTableKey\IPdfTableKeyService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response as HttpResponse;
@@ -36,11 +37,13 @@ class InvoiceMediaController extends ApiController
     private const ENDPOINT_PDF_TABLE = 'https://pdftables.com/api';
     private IInvoiceMediaService $invoiceMediaService;
     private ICompanyService $companyService;
+    private IPdfTableKeyService $pdfTableService;
 
-    public function __construct(IInvoiceMediaService $service, ICompanyService $companyService)
+    public function __construct(IInvoiceMediaService $service, ICompanyService $companyService, IPdfTableKeyService $pdfTableService)
     {
         $this->invoiceMediaService = $service;
         $this->companyService = $companyService;
+        $this->pdfTableService = $pdfTableService;
     }
 
     /**
@@ -277,6 +280,18 @@ class InvoiceMediaController extends ApiController
 
             # Get remaining
             $remaining = $this->countRemainingPdfTable($key);
+            # Update record pdf_table_keys
+            $recordKey = $this->pdfTableService->findByKey($key);
+            if (!empty($recordKey) && $remaining['status'] == 200) {
+                # Check remaining if equal 0 -> delete record
+                if ($remaining['amount'] == 0) {
+                    $recordKey->delete();
+                } else {
+                    $recordKey->update([
+                        'amount' => $remaining['amount']
+                    ]);
+                }
+            }
         }
 
         return $this->getResponseHandler()->send([
@@ -304,7 +319,7 @@ class InvoiceMediaController extends ApiController
         $response = Http::get("$uri/remaining?key=$key");
         return [
             'status' => $response->status(),
-            'count' => json_decode($response->body()),
+            'amount' => json_decode($response->body()),
         ];
     }
 }
