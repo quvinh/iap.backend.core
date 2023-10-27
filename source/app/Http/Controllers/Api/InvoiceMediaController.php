@@ -252,11 +252,11 @@ class InvoiceMediaController extends ApiController
                     $rowData[] = $keeper;
                 }
                 # Index position column
-                $idxItem = 1;
-                $idxUnit = 2;
-                $idxAmount = 3;
-                $idxPrice = 4;
-                $idxTotal = 5;
+                $idxItem = $request->idx_item ?? 1;
+                $idxUnit = $request->idx_unit ?? 2;
+                $idxAmount = $request->idx_amount ?? 3;
+                $idxPrice = $request->idx_price ?? 4;
+                $idxTotal = $request->idx_total ?? 5;
 
                 foreach ((array)$rowData as $row) {
                     if (is_numeric($row[0]) && $row[1] != '2') {

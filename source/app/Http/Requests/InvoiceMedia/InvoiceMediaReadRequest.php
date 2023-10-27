@@ -34,6 +34,11 @@ class InvoiceMediaReadRequest extends BaseRequest
             'id' => ['required', 'numeric'],
             // 'key' => ['required', 'string'],
             'format' => ['string'],
+            'idx_item' => ['required', 'numeric'],
+            'idx_unit' => ['required', 'numeric'],
+            'idx_amount' => ['required', 'numeric'],
+            'idx_price' => ['required', 'numeric'],
+            'idx_total' => ['required', 'numeric'],
         ];
     }
 }
