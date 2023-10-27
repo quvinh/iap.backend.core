@@ -9,4 +9,5 @@ use App\Repositories\IRepository;
 interface IPdfTableKeyRepository extends IRepository
 {
     public function findByKey(string $key): PdfTableKey | null;
+    public function getKey(): PdfTableKey | null;
 }

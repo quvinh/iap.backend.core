@@ -30,4 +30,13 @@ class PdfTableKeyRepository extends BaseRepository implements IPdfTableKeyReposi
     {
         return PdfTableKey::query()->where('key', $key)->first();
     }
+
+    /**
+     * Get api key
+     * @return PdfTableKey
+     */
+    public function getKey(): PdfTableKey | null
+    {
+        return PdfTableKey::query()->where('amount', '>', 0)->first();
+    }
 }

@@ -32,7 +32,7 @@ class InvoiceMediaReadRequest extends BaseRequest
     {
         return [
             'id' => ['required', 'numeric'],
-            'key' => ['required', 'string'],
+            // 'key' => ['required', 'string'],
             'format' => ['string'],
         ];
     }

@@ -199,14 +199,13 @@ class InvoiceMediaController extends ApiController
 
     /**
      * Read file pdf with api pdf-table
-     * @param string $id
      * @return \Illuminate\Http\Response
      */
     public function readPDF(InvoiceMediaReadRequest $request): HttpResponse
     {
         $uri = self::ENDPOINT_PDF_TABLE;
         $id = $request->id;
-        $key = $request->key;
+        // $key = $request->key;
         $format = $request->format ?? 'html';
         $record = $this->invoiceMediaService->getSingleObject($id);
         $slug = $record->path ?? 'xxx';
@@ -223,6 +222,11 @@ class InvoiceMediaController extends ApiController
         $file = File::get($filePath);
         $type = File::mimeType($filePath);
         $extension = File::extension($filePath);
+
+        # Get key from db
+        $entity = $this->pdfTableService->getKey();
+        if (empty($entity)) return $this->getResponseHandler()->send(['status' => 404, 'error' => 'Key not found']);
+        $key = $entity->key;
 
         # Fetch api post pdf-table
         $headers = [];
@@ -291,13 +295,20 @@ class InvoiceMediaController extends ApiController
                         'amount' => $remaining['amount']
                     ]);
                 }
+                return $this->getResponseHandler()->send([
+                    'status' => $response->status(),
+                    'rows' => $listItem,
+                    'remaining' => $remaining['amount'],
+                ]);
             }
+            return $this->getResponseHandler()->send([
+                'status' => $remaining['status'],
+                'error' => 'Error: record key not found or remaining',
+            ]);
         }
-
         return $this->getResponseHandler()->send([
             'status' => $response->status(),
-            'rows' => $listItem,
-            'remaining' => $remaining,
+            'error' => $response->body(),
         ]);
     }
 

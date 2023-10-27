@@ -193,4 +193,9 @@ class PdfTableKeyService extends \App\Services\BaseService implements IPdfTableK
     {
         return $this->pdfTableKeyRepos->findByKey($key);
     }
+
+    public function getKey(): PdfTableKey|null
+    {
+        return $this->pdfTableKeyRepos->getKey();
+    }
 }
