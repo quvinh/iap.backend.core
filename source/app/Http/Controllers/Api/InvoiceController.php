@@ -11,6 +11,7 @@ use App\Http\Controllers\Traits\DefaultRestActions;
 use App\Http\Requests\Invoice\InvoiceCreateEachRowRequest;
 use App\Http\Requests\Invoice\InvoiceCreateRequest;
 use App\Http\Requests\Invoice\InvoiceImportRequest;
+use App\Http\Requests\Invoice\InvoiceSearchPartnerRequest;
 use App\Http\Requests\Invoice\InvoiceSearchRequest;
 use App\Http\Requests\Invoice\InvoiceUpdateRequest;
 use App\Services\IService;
@@ -49,6 +50,7 @@ class InvoiceController extends ApiController
             Route::post($root . '/import', [InvoiceController::class, 'import']);
             Route::post($root . '/import-pdf', [InvoiceController::class, 'importPDF']);
             Route::post($root . '/restore-rows/{id}', [InvoiceController::class, 'restoreRows']);
+            Route::post($root . '/partners', [InvoiceController::class, 'partners']);
         }
     }
 
@@ -147,5 +149,13 @@ class InvoiceController extends ApiController
         # Send response using the predefined format
         $response = ApiResponse::v1();
         return $response->send();
+    }
+
+    public function partners(InvoiceSearchPartnerRequest $request): Response
+    {
+        $result = $this->invoiceService->findPartnersByCompanyId($request->company_id, $request->year);
+        # Send response using the predefined format
+        $response = ApiResponse::v1();
+        return $response->send($result);
     }
 }

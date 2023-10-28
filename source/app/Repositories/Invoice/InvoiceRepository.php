@@ -43,13 +43,15 @@ class InvoiceRepository extends BaseRepository implements IInvoiceRepository
     /**
      * Find partners by company_id
      */
-    public function findPartnersByCompanyId(mixed $company_id, string $year): mixed
+    public function findPartnersByCompanyId(mixed $company_id, mixed $year): mixed
     {
         $partners = (new Invoice())->query()
             ->where('company_id', $company_id)
             ->whereYear('date', $year)
             ->groupBy('partner_tax_code')
             ->orderByDesc('id')
+            ->select('id', 'partner_name', 'partner_tax_code', 'partner_address')
             ->get();
+        return $partners;
     }
 }

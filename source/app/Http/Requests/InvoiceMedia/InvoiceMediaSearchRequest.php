@@ -12,7 +12,8 @@ class InvoiceMediaSearchRequest extends DefaultSearchRequest
      * @var string[]
      */
     protected array $relations = [
-        'permissions'
+        'invoice',
+        'company',
     ];
 
     protected array $fields = [

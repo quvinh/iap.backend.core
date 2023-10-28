@@ -377,6 +377,7 @@ class InvoiceService extends \App\Services\BaseService implements IInvoiceServic
                 $invoice->invoice_task_id = $task->id;
                 $invoice->partner_tax_code = $partner_tax_code;
                 $invoice->partner_name = $param['partner_name'] ?? null;
+                $invoice->partner_address = $param['partner_address'] ?? null;
                 $invoice->type = $type;
                 $invoice->invoice_number = $invoice_number;
                 $invoice->invoice_symbol = $invoice_symbol;
@@ -450,7 +451,7 @@ class InvoiceService extends \App\Services\BaseService implements IInvoiceServic
      * @param MetaInfo|null $commandMetaInfo
      * @throws ActionFailException
      */
-    public function import(array $param, MetaInfo $commandMetaInfo = null): array
+    public function import(array $param, MetaInfo $commandMetaInfo = null): mixed
     {
         DB::beginTransaction();
         try {
@@ -460,8 +461,10 @@ class InvoiceService extends \App\Services\BaseService implements IInvoiceServic
                     'type' => $param['type'],
                     'date' => $row['date'],
                     'partner_name' => $row['partner_name'],
+                    'partner_address' => $row['partner_address'] ?? null,
                     'partner_tax_code' => $row['partner_tax_code'],
                     'invoice_number' => $row['invoice_number'],
+                    'invoice_number_form' => $row['invoice_number_form'] ?? 1,
                     'invoice_symbol' => $row['invoice_symbol'],
                     'product' => $row['product'],
                     'product_exchange' => $row['product_exchange'] ?? null,
@@ -478,7 +481,7 @@ class InvoiceService extends \App\Services\BaseService implements IInvoiceServic
             }
 
             DB::commit();
-            return ['status' => true];
+            return $record;
         } catch (\Exception $ex) {
             DB::rollBack();
             if ($ex instanceof ActionFailException) {
@@ -547,5 +550,13 @@ class InvoiceService extends \App\Services\BaseService implements IInvoiceServic
                 previous: $ex
             );
         }
+    }
+
+    /**
+     * Find partners by company_id
+     */
+    public function findPartnersByCompanyId(mixed $company_id, mixed $year): mixed
+    {
+        return $this->invoiceRepos->findPartnersByCompanyId($company_id, $year);
     }
 }
