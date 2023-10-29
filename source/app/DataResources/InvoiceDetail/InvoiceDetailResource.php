@@ -56,6 +56,10 @@ class InvoiceDetailResource extends BaseDataResource
         if (in_array('item_code', $this->fields)) {
             $this->withField('item_code');
             $this->item_code = new ItemCodeResource($obj->item_code);
+            if (!empty($this->item_code->id)) {
+                $this->withField('item_code_path');
+                $this->item_code_path = "{$this->item_code->id}|{$this->item_code->product_code}|{$this->item_code->product}";
+            }
         }
     }
 }

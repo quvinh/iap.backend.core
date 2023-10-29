@@ -15,6 +15,7 @@ use App\Helpers\Utils\StringHelper;
 use App\Models\InvoiceTask;
 use App\Repositories\InvoiceTask\IInvoiceTaskRepository;
 use App\Services\InvoiceDetail\IInvoiceDetailService;
+use App\Services\ItemCode\IItemCodeService;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Database\RecordsNotFoundException;
@@ -27,11 +28,16 @@ class InvoiceTaskService extends \App\Services\BaseService implements IInvoiceTa
 {
     private ?IInvoiceTaskRepository $invoiceTaskRepos = null;
     private ?IInvoiceDetailService $invoiceDetailService = null;
+    private ?IItemCodeService $itemCodeService = null;
 
-    public function __construct(IInvoiceTaskRepository $repos, IInvoiceDetailService $invoiceDetailService)
+    public function __construct(
+        IInvoiceTaskRepository $repos, 
+        IInvoiceDetailService $invoiceDetailService,
+        IItemCodeService $itemCodeService)
     {
         $this->invoiceTaskRepos = $repos;
         $this->invoiceDetailService = $invoiceDetailService;
+        $this->itemCodeService = $itemCodeService;
     }
 
     /**
@@ -274,6 +280,15 @@ class InvoiceTaskService extends \App\Services\BaseService implements IInvoiceTa
                         $record = $this->invoiceDetailService->getSingleObject($row['id']);
                         if (empty($record)) throw new RecordsNotFoundException();
                         $record->warehouse = $row['value'];
+                        if (!$record->save()) throw new CannotUpdateDBException();
+                    }
+                    $result = true;
+                    break;
+                case 'item_code_id':
+                    foreach ($entities as $row) {
+                        $record = $this->invoiceDetailService->getSingleObject($row['id']);
+                        if (empty($record)) throw new RecordsNotFoundException();
+                        $record->item_code_id = $row['value'];
                         if (!$record->save()) throw new CannotUpdateDBException();
                     }
                     $result = true;

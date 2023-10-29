@@ -261,14 +261,14 @@ class ItemCodeService extends \App\Services\BaseService implements IItemCodeServ
                         'id' => $entity->id,
                         'quantity' => $item['quantity'] ?? $entity->quantity,
                     ]);
-                    # Check with product_exchange
-                    if (empty($item['product_exchange'])) {
+                    # Check with product
+                    if (empty($item['product'])) {
                         # Update by code
                         $this->itemCodeRepos->update($item, $commandMetaInfo);
-                    } elseif ($entity->product_exchange == $item['product_exchange']) {
+                    } elseif ($entity->product == $item['product']) {
                         # Update by code
                         $this->itemCodeRepos->update($item, $commandMetaInfo);
-                    } else throw new ActionFailException(message: "product exchange not match at row " . ($index + 1));
+                    } else throw new ActionFailException(message: "product not match at row " . ($index + 1));
                 }
             }
             DB::commit();
