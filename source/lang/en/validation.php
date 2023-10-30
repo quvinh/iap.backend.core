@@ -166,6 +166,17 @@ return [
         'attribute-name' => [
             'rule-name' => 'custom-message',
         ],
+
+        # Formula
+        'name' => [
+            'required' => 'The :attribute field is required.',
+        ],
+        'company_detail_id' => [
+            'required' => 'The :attribute field is required.',
+        ],
+        'company_type_id' => [
+            'required' => 'The :attribute field is required.',
+        ],
     ],
 
     /*
