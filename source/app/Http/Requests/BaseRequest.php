@@ -76,7 +76,7 @@ class BaseRequest extends FormRequest
     public function validate(): array
     {
         $this->prepareForValidation();
-        return parent::validate($this->rules());
+        return parent::validate($this->rules(), $this->messages(), $this->attributes());
     }
 
     public function addField(string $field)

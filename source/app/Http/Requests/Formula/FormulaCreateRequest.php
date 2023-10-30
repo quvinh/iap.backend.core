@@ -50,12 +50,21 @@ class FormulaCreateRequest extends BaseRequest
         ];
     }
 
-    public function messages()
+    public function attributes(): array
     {
         return [
-            'name' => 'Vui lòng nhập tên công thức',
-            'company_detail_id' => 'Vui lòng chọn doanh nghiệp',
-            'company_type_id' => 'Vui lòng chọn loại hình',
+            'name' => 'Tên công thức',
+            'company_detail_id' => 'Doanh nghiệp',
+            'company_type_id' => 'Loại hình',
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'name.required' => 'Vui lòng nhập :attribute',
+            'company_detail_id.required' => 'Vui lòng chọn :attribute',
+            'company_type_id.required' => 'Vui lòng chọn :attribute',
         ];
     }
 }
