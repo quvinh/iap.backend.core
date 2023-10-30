@@ -49,4 +49,13 @@ class FormulaCreateRequest extends BaseRequest
             'note' => ['nullable', 'string']
         ];
     }
+
+    public function messages()
+    {
+        return [
+            'name' => 'Vui lòng nhập tên công thức',
+            'company_detail_id' => 'Vui lòng chọn doanh nghiệp',
+            'company_type_id' => 'Vui lòng chọn loại hình',
+        ];
+    }
 }
