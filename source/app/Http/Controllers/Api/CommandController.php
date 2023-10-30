@@ -7,6 +7,7 @@ use App\Helpers\Responses\ApiResponse;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
 
 class CommandController extends Controller
@@ -23,18 +24,20 @@ class CommandController extends Controller
             Route::post($root . '/migrate', [CommandController::class, 'migrate']);
             Route::post($root . '/migrate/fresh', [CommandController::class, 'migrateFresh']);
             Route::post($root . '/backup', [CommandController::class, 'backup']);
-            Route::post($root . '/config/clear', [CommandController::class, 'configClear']);
+            Route::post($root . '/cache/clear', [CommandController::class, 'cacheClear']);
         }
     }
 
     public function migrate()
     {
+        Log::info('migrate');
         Artisan::call('migrate');
         return ApiResponse::v1()->send(['info' => 'Migrate executed successfully', 'output' => Artisan::output()]);
     }
 
     public function migrateFresh()
     {
+        Log::info('migrate:fresh');
         Artisan::call('migrate:fresh');
         Artisan::call('db:seed');
         return ApiResponse::v1()->send(['info' => 'Migrate:fresh executed successfully', 'output' => Artisan::output()]);
@@ -42,13 +45,15 @@ class CommandController extends Controller
 
     public function backup()
     {
+        Log::info('backup:run');
         Artisan::call('backup:run');
         return ApiResponse::v1()->send(['info' => 'Backup executed', 'output' => Artisan::output()]);
     }
 
-    public function configClear()
+    public function cacheClear()
     {
-        Artisan::call('config:clear');
-        return ApiResponse::v1()->send(['info' => 'Config:clear executed successfully', 'output' => Artisan::output()]);
+        Log::info('cache:clear');
+        Artisan::call('cache:clear');
+        return ApiResponse::v1()->send(['info' => 'Cache:clear executed successfully', 'output' => Artisan::output()]);
     }
 }
