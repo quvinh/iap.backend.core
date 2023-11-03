@@ -58,4 +58,13 @@ class FormulaCreateRequest extends BaseRequest
             'company_type_id' => 'Loại hình',
         ];
     }
+
+    public function messages()
+    {
+        return [
+            'name.required' => 'Trường :attribute là bắt buộc.',
+            'company_detail_id.required' => 'Trường :attribute là bắt buộc.',
+            'company_type_id.required' => 'Trường :attribute là bắt buộc.',
+        ];
+    }
 }
