@@ -52,7 +52,10 @@ class InvoiceTaskRepository extends BaseRepository implements IInvoiceTaskReposi
                     'total_money_purchase' => 0,
                 ];
             } else {
-                $result[] = array_values($arr)[0];
+                # TODO: Add field meta -> get formulas's money
+                $result[] = array_merge(array_values($arr)[0], [
+                    'meta' => [],
+                ]);
             }
         }
 
