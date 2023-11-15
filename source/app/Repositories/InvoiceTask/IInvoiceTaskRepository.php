@@ -11,4 +11,5 @@ interface IInvoiceTaskRepository extends IRepository
 {
     public function getMoneyOfMonths(int $company_id, int $year): array;
     public function getTaskNotProcess(): Collection;
+    public function monthlyTask(): array;
 }

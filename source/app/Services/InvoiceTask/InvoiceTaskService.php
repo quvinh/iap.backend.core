@@ -335,4 +335,12 @@ class InvoiceTaskService extends \App\Services\BaseService implements IInvoiceTa
     {
         return $this->invoiceTaskRepos->getTaskNotProcess();
     }
+
+    /**
+     * Monthly task
+     */
+    public function monthlyTask(): array
+    {
+        return $this->invoiceTaskRepos->monthlyTask();
+    }
 }

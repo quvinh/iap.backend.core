@@ -96,8 +96,9 @@ class DashboardController extends Controller
      */
     public function monthlyTask()
     {
+        $record = $this->inoviceTaskService->monthlyTask();
         # Send response using the predefined format
         $response = ApiResponse::v1();
-        return $response->send(false);
+        return $response->send($record);
     }
 }

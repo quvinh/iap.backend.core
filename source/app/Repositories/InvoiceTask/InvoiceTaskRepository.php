@@ -11,6 +11,7 @@ use App\Exceptions\DB\RecordIsNotFoundException as DBRecordIsNotFoundException;
 use function Spatie\SslCertificate\starts_with;
 use App\Helpers\Enums\TaskStatus;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 
 class InvoiceTaskRepository extends BaseRepository implements IInvoiceTaskRepository
 {
@@ -73,5 +74,37 @@ class InvoiceTaskRepository extends BaseRepository implements IInvoiceTaskReposi
             ['month_of_year', '=', date('m/Y')]
         ])->get();
         return $tasks;
+    }
+
+    /**
+     * Get monthly task
+     */
+    public function monthlyTask(): array
+    {
+        # Get current year
+        $year = date('Y');
+        $record = (new InvoiceTask())->query()->where([
+            ['month_of_year', 'like', "%$year"],
+            ['task_progress', '<>', TaskStatus::NOT_YET_STARTED]
+        ])->select(DB::raw('COUNT(id) as amount'),'month_of_year')
+            ->groupBy('month_of_year')
+            ->get()->toArray();
+        $result = array();
+        for ($i = 1; $i <= 12; $i++) {
+            $month = str_pad($i, 2, '0', STR_PAD_LEFT);
+            $arr = array_filter($record, function ($value) use ($month, $year) {
+                return $value['month_of_year'] == "$month/$year";
+            });
+            if (empty($arr)) {
+                $result[] = [
+                    'month_of_year' => "$month/$year",
+                    'amount' => 0,
+                ];
+            } else {
+                $result[] = array_values($arr)[0];
+            }
+        }
+
+        return $result;
     }
 }
