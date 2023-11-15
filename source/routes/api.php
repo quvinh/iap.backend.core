@@ -9,6 +9,7 @@ use App\Http\Controllers\Api\CompanyController;
 use App\Http\Controllers\Api\CompanyDetailController;
 use App\Http\Controllers\Api\CompanyDetailTaxFreeVoucherController;
 use App\Http\Controllers\Api\CompanyTypeController;
+use App\Http\Controllers\Api\DashboardController;
 use App\Http\Controllers\Api\FirstAriseAccountController;
 use App\Http\Controllers\Api\FormulaCategoryPurchaseController;
 use App\Http\Controllers\Api\FormulaCategorySoldController;
@@ -71,6 +72,7 @@ function registerResourceRoutes(string $group = UserRoles::ADMINISTRATOR): void
     TaxFreeVoucherRecordController::registerRoutes($group);
     InvoiceMediaController::registerRoutes($group);
     PdfTableKeyController::registerRoutes($group);
+    DashboardController::registerRoutes($group);
 
     CommandController::registerRoutes($group);
 }

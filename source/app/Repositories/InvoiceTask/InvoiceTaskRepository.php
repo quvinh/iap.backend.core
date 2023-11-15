@@ -10,6 +10,7 @@ use App\Repositories\BaseRepository;
 use App\Exceptions\DB\RecordIsNotFoundException as DBRecordIsNotFoundException;
 use function Spatie\SslCertificate\starts_with;
 use App\Helpers\Enums\TaskStatus;
+use Illuminate\Support\Collection;
 
 class InvoiceTaskRepository extends BaseRepository implements IInvoiceTaskRepository
 {
@@ -28,7 +29,7 @@ class InvoiceTaskRepository extends BaseRepository implements IInvoiceTaskReposi
      * @param $year
      * @param $opening_balance_value
      */
-    function getMoneyOfMonths(int $company_id, int $year): array
+    public function getMoneyOfMonths(int $company_id, int $year): array
     {
         $record = (new InvoiceTask())->query()->where([
             ['company_id', '=', $company_id],
@@ -60,5 +61,17 @@ class InvoiceTaskRepository extends BaseRepository implements IInvoiceTaskReposi
         }
 
         return $result;
+    }
+
+    /**
+     * Get task not process in this month
+     */
+    public function getTaskNotProcess(): Collection
+    {
+        $tasks = InvoiceTask::query()->where([
+            ['task_progress', '=', TaskStatus::NOT_YET_STARTED],
+            ['month_of_year', '=', date('m/Y')]
+        ])->get();
+        return $tasks;
     }
 }

@@ -327,4 +327,12 @@ class InvoiceTaskService extends \App\Services\BaseService implements IInvoiceTa
             );
         }
     }
+
+    /**
+     * Get task not process in this month
+     */
+    public function getTaskNotProcess(): Collection
+    {
+        return $this->invoiceTaskRepos->getTaskNotProcess();
+    }
 }

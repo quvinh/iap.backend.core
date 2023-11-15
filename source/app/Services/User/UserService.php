@@ -319,4 +319,12 @@ class UserService extends \App\Services\BaseService implements IUserService
             );
         }
     }
+
+    /**
+     * Amount users
+     */
+    public function getAllUsers(): Collection
+    {
+        return $this->userRepos->getAllUsers();
+    }
 }
