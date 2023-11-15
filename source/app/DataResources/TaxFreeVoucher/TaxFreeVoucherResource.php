@@ -15,6 +15,7 @@ class TaxFreeVoucherResource extends BaseDataResource
         'name',
         'number_account',
         'note',
+        'priority',
         'status',
         'created_at',
         'created_by',

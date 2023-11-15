@@ -14,6 +14,7 @@ class TaxFreeVoucher extends BaseModel
         'name',
         'number_account',
         'note',
+        'priority',
         'status'
     ];
 }
