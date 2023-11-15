@@ -192,11 +192,15 @@ class AuthenticationController extends ApiController
         if ($getAuthIdentifier) {
             $user = auth()->user();
             $role = Role::find(auth()->user()->role_id ?? null);
+            $companyIds = $this->userService->findByCompanies($getAuthIdentifier);
             $ret = array_merge($ret, [
                 'name' => $user->name,
                 'username' => $user->username,
                 'role' => $role->name,
-                'permissions' => $role->getIdOfPermissions()
+                'permissions' => $role->getIdOfPermissions(),
+                'companies' => array_map(function ($item) {
+                    return $item['company_id'];
+                }, $companyIds),
             ]);
         }
         # 3. return result
