@@ -13,7 +13,7 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::table('tax_free_vourchers', function (Blueprint $table) {
+        Schema::table('tax_free_vouchers', function (Blueprint $table) {
             $table->bigInteger('priority')->default(100);
         });
     }
@@ -25,7 +25,7 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::table('tax_free_vourchers', function (Blueprint $table) {
+        Schema::table('tax_free_vouchers', function (Blueprint $table) {
             $table->dropColumn('priority');
         });
     }
