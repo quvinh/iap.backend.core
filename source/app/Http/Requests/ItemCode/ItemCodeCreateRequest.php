@@ -58,4 +58,33 @@ class ItemCodeCreateRequest extends BaseRequest
             'year' => ['required', 'integer', 'digits:4', 'min:2000']
         ];
     }
+
+    public function attributes(): array
+    {
+        return [
+            'product_code' => 'Mã hàng hoá',
+            'company_id' => 'Tên công ty',
+            'product' => 'Hàng hoá',
+            'unit' => 'Đơn vị tính',
+            'price' => 'Đơn giá',
+            'quantity' => 'Số lượng',
+            'opening_balance_value' => 'Giá trị tồn kho',
+            'year' => 'Năm',
+        ];
+    }
+
+    public function messages()
+    {
+        return [
+            'product_code.required' => 'Trường :attribute là bắt buộc.',
+            'product_code.unique' => ':attribute đã tồn tại trên hệ thống.',
+            'company_id.required' => 'Trường :attribute là bắt buộc.',
+            'product.required' => 'Trường :attribute là bắt buộc.',
+            'unit.required' => 'Trường :attribute là bắt buộc.',
+            'price.required' => 'Trường :attribute là bắt buộc.',
+            'quantity.required' => 'Trường :attribute là bắt buộc.',
+            'opening_balance_value.required' => 'Trường :attribute là bắt buộc.',
+            'year.required' => 'Trường :attribute là bắt buộc.',
+        ];
+    }
 }
