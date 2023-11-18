@@ -12,5 +12,6 @@ interface IUserService extends IService
     public function findByCompanies($user_id): mixed;
     public function changePassword(int $id, array $param): User | null;
     public function forgotPassword(string $email): mixed;//User | null
+    public function resetPassword(array $param): User | null;
     public function getAllUsers(): Collection;
 }

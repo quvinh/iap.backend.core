@@ -21,6 +21,7 @@ use App\Repositories\Company\ICompanyRepository;
 use App\Repositories\User\IUserDetailRepository;
 use App\Repositories\User\IUserRepository;
 use Carbon\Carbon;
+use DateTime;
 use Exception;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
@@ -298,20 +299,54 @@ class UserService extends \App\Services\BaseService implements IUserService
     public function forgotPassword(string $email): User | null
     {
         try {
-            $random = rand(10000, 99999);
-            $newPassword = "IAP$random@";
+            $otp = rand(10000, 99999);
             $record = $this->userRepos->findByEmail($email);
             if (empty($record)) {
                 throw new RecordIsNotFoundException(message: 'Email not found');
             }
-            $record->password = Hash::make($newPassword);
+            # Expire
+            $currentDateTime = new DateTime('now');
+            $currentDateTime->modify("+5 minutes");
+            $expire = $currentDateTime->format('Y-m-d H:i:s');
+            # Update record
+            $record->request_otp = $otp;
+            $record->request_timestamp = $expire;
             if ($record->save()) {
-                Log::channel('forgot_password')->info($record->username . ' reset password', ['name' => $record->name, 'email' => $record->email]);
-                ForgotPasswordJob::dispatch($record, $newPassword)->delay(now()->addMinute(1));
+                Log::channel('forgot_password')->info("User:{$record->username} forgot password", ['name' => $record->name, 'email' => $record->email]);
+                ForgotPasswordJob::dispatch($record, $otp)->delay(now()->addMinute(1));
             } else {
                 throw new CannotUpdateDBException('Cannot update DB');
             }
             return $record;
+        } catch (\Exception $e) {
+            throw new ActionFailException(
+                message: $e->getMessage(),
+                previous: $e
+            );
+        }
+    }
+
+    /**
+     * Reset password
+     */
+    public function resetPassword(array $param): User | null
+    {
+        try {
+            $record = $this->userRepos->findByEmail($param['email']);
+            if (empty($record)) {
+                throw new RecordIsNotFoundException(message: 'Email not found');
+            }
+            # Check OTP and timestamp
+            if ($record->request_otp == $param['otp'] && strtotime($record->request_timestamp) > time()) {
+                $record->password = Hash::make($param['password']);
+                if (!$record->save()) {
+                    Log::channel('forgot_password')->info("User:{$record->username} reset password successfully", ['name' => $record->name, 'email' => $record->email]);
+                } else {
+                    throw new CannotUpdateDBException('Cannot update DB');
+                }
+                return $record;
+            }
+            throw new ActionFailException(message: 'OTP or timestamp invalid');
         } catch (\Exception $e) {
             throw new ActionFailException(
                 message: $e->getMessage(),

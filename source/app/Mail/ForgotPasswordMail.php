@@ -20,12 +20,12 @@ class ForgotPasswordMail extends Mailable
      * @return void
      */
     protected User $user;
-    protected string $newPassword;
+    protected string $otp;
 
-    public function __construct(User $user, string $newPassword)
+    public function __construct(User $user, string $otp)
     {
         $this->user = $user;
-        $this->newPassword = $newPassword;
+        $this->otp = $otp;
     }
 
     /**
@@ -48,7 +48,7 @@ class ForgotPasswordMail extends Mailable
     public function content()
     {
         $data = array_merge($this->user->toArray(), [
-            'new_password' => $this->newPassword
+            'otp' => $this->otp
         ]);
 
         return new Content(

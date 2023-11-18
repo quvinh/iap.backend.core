@@ -12,6 +12,7 @@ use App\Helpers\Utils\RequestHelper;
 use App\Http\Controllers\Traits\ResponseHandlerTrait;
 use App\Http\Requests\Auth\ForgotPasswordRequest;
 use App\Http\Requests\Auth\LoginRequest;
+use App\Http\Requests\Auth\ResetPasswordRequest;
 use App\Http\Requests\Auth\SignupRequest;
 use App\Http\Requests\User\UserChangePasswordRequest;
 use App\Http\Requests\User\UserUpdateRequest;
@@ -46,6 +47,7 @@ class AuthenticationController extends ApiController
             Route::get($root . '/handshake', [AuthenticationController::class, 'handshake']);
             Route::post($root . '/login', [AuthenticationController::class, 'login']);
             Route::post($root . '/forgot-password', [AuthenticationController::class, 'forgotPassword']);
+            Route::post($root . '/reset-password', [AuthenticationController::class, 'resetPassword']);
         } else {
             Route::get($root . '/profile', [AuthenticationController::class, 'profile']);
             Route::put($root . '/profile', [AuthenticationController::class, 'updateProfile']);
@@ -140,6 +142,29 @@ class AuthenticationController extends ApiController
 
         # Forgot password
         $this->userService->forgotPassword($request->email);
+        # Return result
+        $response = ApiResponse::v1();
+        return $response->send(['status' => true]);
+    }
+
+    /**
+     * Reset password
+     */
+    public function resetPassword(ResetPasswordRequest $request): Response
+    {
+        # Handshake
+        $claims = RequestHelper::getClaims();
+        $meta = RequestHelper::getMetaInfo();
+        $hook = RequestHelper::findHanshakeHook($claims->getByClaimName('cnidh')->getValue());
+        if (is_null($hook)) return response('Handshake failed', 404);
+        $identifier = $meta->identifier;
+        $currentConnectionHash = Hash::make($hook['value'] . $identifier);
+        $handshake = $this->authService->handshake($currentConnectionHash, $meta);
+
+        if (is_null($handshake)) return response('Handshake failed', 404);
+
+        # Reset password
+        $this->userService->resetPassword($request->all());
         # Return result
         $response = ApiResponse::v1();
         return $response->send(['status' => true]);

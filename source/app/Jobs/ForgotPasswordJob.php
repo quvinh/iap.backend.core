@@ -22,12 +22,12 @@ class ForgotPasswordJob implements ShouldQueue
      * @return void
      */
     protected User $user;
-    protected string $newPassword;
+    protected string $otp;
 
-    public function __construct(User $user, string $newPassword)
+    public function __construct(User $user, string $otp)
     {
         $this->user = $user;
-        $this->newPassword = $newPassword;
+        $this->otp = $otp;
     }
 
     /**
@@ -38,7 +38,7 @@ class ForgotPasswordJob implements ShouldQueue
     public function handle()
     {
         $user = $this->user;
-        $newPassword = $this->newPassword;
-        Mail::to($user->email)->send(new ForgotPasswordMail($user, $newPassword));
+        $otp = $this->otp;
+        Mail::to($user->email)->send(new ForgotPasswordMail($user, $otp));
     }
 }
