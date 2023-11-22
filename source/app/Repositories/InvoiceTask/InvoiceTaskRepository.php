@@ -54,9 +54,17 @@ class InvoiceTaskRepository extends BaseRepository implements IInvoiceTaskReposi
                     'total_money_purchase' => 0,
                 ];
             } else {
-                # TODO: Add field meta -> get formulas's money
+                # TODO: Add field meta -> get formulas's money (not finished yet)
                 $result[] = array_merge(array_values($arr)[0], [
-                    'meta' => [],
+                    'meta' => [
+                        [
+                            'formula_id' => 1,
+                            'formula_name' => 'Demo',
+                            'opening_balance_of_month' => 12300,
+                            'opening_balance' => 11100, # Need auto computed
+                            'opening_balance_vat' => 1200, # ?
+                        ]
+                    ],
                 ]);
             }
         }
