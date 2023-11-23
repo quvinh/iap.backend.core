@@ -4,6 +4,7 @@ namespace App\Http\Requests\OpeningBalanceVat;
 
 use App\Http\Requests\BaseRequest;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class OpeningBalanceVatFindRequest extends BaseRequest
 {
@@ -34,6 +35,7 @@ class OpeningBalanceVatFindRequest extends BaseRequest
             'company_detail_id' => ['required', 'exists:company_details,id'],
             'start_month' => ['required', 'integer', 'min:1', 'max:12'],
             'end_month' => ['required', 'integer', 'required_with:start_month', 'gte:start_month', 'min:1', 'max:12'],
+            'reset' => ['required', 'integer', Rule::in([0, 1])],
         ];
     }
 }
