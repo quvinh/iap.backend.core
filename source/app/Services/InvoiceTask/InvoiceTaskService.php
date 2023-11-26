@@ -322,7 +322,7 @@ class InvoiceTaskService extends \App\Services\BaseService implements IInvoiceTa
         } catch (\Exception $ex) {
             DB::rollBack();
             throw new ActionFailException(
-                message: 'action failed',
+                message: $ex->getMessage(),
                 previous: $ex
             );
         }

@@ -22,6 +22,7 @@ class InvoiceTaskResource extends BaseDataResource
         'opening_balance_value',
         'total_money_sold',
         'total_money_purchase',
+        'meta',
         'created_at'
     ];
 

@@ -38,7 +38,18 @@ class InvoiceTaskRepository extends BaseRepository implements IInvoiceTaskReposi
             ['task_progress', '<>', TaskStatus::NOT_YET_STARTED]
         ])->orderBy('month_of_year')
             ->get()->toArray();
-
+        
+        $cRecord = $record;
+        $firstMonthOfTheYear = array_shift($cRecord);
+        $firstMeta = (object) array();
+        if (!empty($firstMonthOfTheYear['meta'])) {
+            $obj = (array) json_decode($firstMonthOfTheYear['meta']);
+            foreach ($obj as $row) {
+                $field = "f_{$row->formula_id}";
+                # Ending balance value: Cuoi ky = Mua vao + Ton - Gia von
+                $firstMeta->{$field} = $row->purchase_money + $row->opening_balance_value - ($row->sold_money * $row->sum_avg * 0.01);
+            }
+        }
         $result = array();
         for ($i = 1; $i <= 12; $i++) {
             $month = str_pad($i, 2, '0', STR_PAD_LEFT);
@@ -55,17 +66,22 @@ class InvoiceTaskRepository extends BaseRepository implements IInvoiceTaskReposi
                 ];
             } else {
                 # TODO: Add field meta -> get formulas's money (not finished yet)
-                $result[] = array_merge(array_values($arr)[0], [
-                    'meta' => [
-                        [
-                            'formula_id' => 1,
-                            'formula_name' => 'Demo',
-                            'opening_balance_of_month' => 12300,
-                            'opening_balance' => 11100, # Need auto computed
-                            'opening_balance_vat' => 1200, # ?
-                        ]
-                    ],
-                ]);
+                $entity = array_values($arr)[0];
+                $meta = json_decode($entity['meta'] ?? "[]");
+                if ($entity['id'] != $firstMonthOfTheYear['id']) {
+                    // $new_meta = array();
+                    // foreach ($meta as $row) {
+                        
+                    // }
+                    $result[] = array_merge($entity, [
+                        'meta' => $meta,
+                        'new' => $firstMeta,
+                    ]);
+                } else {
+                    $result[] = array_merge($entity, [
+                        'meta' => $meta,
+                    ]);
+                }
             }
         }
 

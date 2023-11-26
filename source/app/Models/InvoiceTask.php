@@ -21,6 +21,7 @@ class InvoiceTask extends BaseModel
         'opening_balance_value',
         'total_money_sold',
         'total_money_purchase',
+        'meta',
     ];
 
     /**
