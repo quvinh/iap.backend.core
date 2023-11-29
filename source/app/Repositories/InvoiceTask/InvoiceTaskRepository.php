@@ -41,16 +41,21 @@ class InvoiceTaskRepository extends BaseRepository implements IInvoiceTaskReposi
         
         $cRecord = $record;
         $firstMonthOfTheYear = array_shift($cRecord);
-        $firstMeta = (object) array();
+        $initMeta = (object) array();
+        $mutateMeta = (object) array();
         if (!empty($firstMonthOfTheYear['meta'])) {
             $obj = (array) json_decode($firstMonthOfTheYear['meta']);
             foreach ($obj as $row) {
                 $field = "f_{$row->formula_id}";
                 # Ending balance value: Cuoi ky = Mua vao + Ton - Gia von
-                $firstMeta->{$field} = (object) [
+                $end = $row->purchase_money + $row->opening_balance_value - ($row->sold_money * $row->sum_avg * 0.01);
+                $r = (object) [
+                    'month' => $firstMonthOfTheYear['month_of_year'],
                     'start' => $row->opening_balance_value,
-                    'end' => $row->purchase_money + $row->opening_balance_value - ($row->sold_money * $row->sum_avg * 0.01),
+                    'end' => $end,
                 ];
+                $mutateMeta->{$field} = $r;
+                $initMeta->{$field} = $r;
             }
         }
         $result = array();
@@ -76,13 +81,14 @@ class InvoiceTaskRepository extends BaseRepository implements IInvoiceTaskReposi
                     foreach ($meta as $row) {
                         $field = "f_{$row->formula_id}";
                         # Get opening balance of last month
-                        $openingBalanceValue = $firstMeta->{$field}->end ?? 0;
+                        $openingBalanceValue = $mutateMeta->{$field}->end ?? 0;
                         $newMeta->{$field} = (object) [
+                            'month' => $entity['month_of_year'],
                             'start' => $openingBalanceValue,
                             'end' => $row->purchase_money + $openingBalanceValue - ($row->sold_money * $row->sum_avg * 0.01),
                         ];
                         # Update value
-                        $firstMeta = $newMeta;
+                        $mutateMeta->{$field} = $newMeta->{$field};
                     }
                     $result[] = array_merge($entity, [
                         'meta' => $meta,
@@ -91,7 +97,7 @@ class InvoiceTaskRepository extends BaseRepository implements IInvoiceTaskReposi
                 } else {
                     $result[] = array_merge($entity, [
                         'meta' => $meta,
-                        'property' => $firstMeta,
+                        'property' => $initMeta,
                     ]);
                 }
             }
