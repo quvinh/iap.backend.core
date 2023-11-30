@@ -43,9 +43,10 @@ class InvoiceTaskRepository extends BaseRepository implements IInvoiceTaskReposi
         $firstMonthOfTheYear = array_shift($cRecord);
         $initMeta = (object) array();
         $mutateMeta = (object) array();
+        $dataInYear = (object) array();
         if (!empty($firstMonthOfTheYear['meta'])) {
-            $obj = (array) json_decode($firstMonthOfTheYear['meta']);
-            foreach ($obj as $row) {
+            $arrMetaFirstMonth = (array) json_decode($firstMonthOfTheYear['meta']);
+            foreach ($arrMetaFirstMonth as $row) {
                 $field = "f_{$row->formula_id}";
                 # Ending balance value: Cuoi ky = Mua vao + Ton - Gia von
                 $end = $row->purchase_money + $row->opening_balance_value - ($row->sold_money * $row->sum_avg * 0.01);
@@ -56,6 +57,17 @@ class InvoiceTaskRepository extends BaseRepository implements IInvoiceTaskReposi
                 ];
                 $mutateMeta->{$field} = $r;
                 $initMeta->{$field} = $r;
+
+                # Data in year
+                $dataInYear->{$field} = (object) [
+                    'year' => $year,
+                    'start' => $row->opening_balance_value,
+                    'purchase' => $row->purchase_money,
+                    'sold' => $row->sold_money,
+                    'cost_price_sold' => 0,
+                    'percent_avg' => 0,
+                    'end' => $end,
+                ];
             }
         }
         $result = array();
@@ -82,13 +94,36 @@ class InvoiceTaskRepository extends BaseRepository implements IInvoiceTaskReposi
                         $field = "f_{$row->formula_id}";
                         # Get opening balance of last month
                         $openingBalanceValue = $mutateMeta->{$field}->end ?? 0;
+                        $end_money = $row->purchase_money + $openingBalanceValue - ($row->sold_money * $row->sum_avg * 0.01);
                         $newMeta->{$field} = (object) [
                             'month' => $entity['month_of_year'],
                             'start' => $openingBalanceValue,
-                            'end' => $row->purchase_money + $openingBalanceValue - ($row->sold_money * $row->sum_avg * 0.01),
+                            'end' => $end_money,
                         ];
                         # Update value
                         $mutateMeta->{$field} = $newMeta->{$field};
+
+                        if (!empty($dataInYear->{$field})) {
+                            $dataInYear->{$field}->purchase += $row->purchase_money;
+                            $dataInYear->{$field}->sold += $row->sold_money;
+                            $dataInYear->{$field}->cost_price_sold += $row->sold_money * $row->sum_avg * 0.01;
+                            $dataInYear->{$field}->percent_avg += $row->sum_avg;
+                            $dataInYear->{$field}->end = $end_money;
+                        }
+                    }
+
+                    # Load meta again
+                    if (!empty($arrMetaFirstMonth)) {
+                        foreach ($arrMetaFirstMonth as $row) {
+                            $field = "f_{$row->formula_id}";
+                            if (empty($newMeta->{$field})) {
+                                $newMeta->{$field} = (object) [
+                                    'month' => $entity['month_of_year'],
+                                    'start' => $mutateMeta->{$field}->end ?? 0,
+                                    'end' => $mutateMeta->{$field}->end ?? 0,
+                                ];
+                            }
+                        }
                     }
                     $result[] = array_merge($entity, [
                         'meta' => $meta,
@@ -103,7 +138,10 @@ class InvoiceTaskRepository extends BaseRepository implements IInvoiceTaskReposi
             }
         }
 
-        return $result;
+        return [
+            'monthly' => $result,
+            'year' => $dataInYear,
+        ];
     }
 
     /**
