@@ -13,13 +13,13 @@ class TaxFreeVoucherRecordResource extends BaseDataResource
      */
     protected array $fields = [
         'id',
-        'tax_free_voucher_id',
+        // 'tax_free_voucher_id',
         'company_detail_id',
-        'user_id',
+        // 'user_id',
         'count_month',
         'start_month',
         'end_month',
-        'json',
+        'meta',
         'created_at',
         'created_by',
     ];
@@ -41,9 +41,9 @@ class TaxFreeVoucherRecordResource extends BaseDataResource
     {
         parent::copy($obj, $this->fields);
 
-        if (in_array('user', $this->fields)) {
-            $this->withField('user');
-            $this->user = new UserResource($obj->user);
-        }
+        // if (in_array('user', $this->fields)) {
+        //     $this->withField('user');
+        //     $this->user = new UserResource($obj->user);
+        // }
     }
 }

@@ -12,20 +12,20 @@ class TaxFreeVoucherRecord extends BaseModel
     use HasFactory, SoftDeletes;
 
     protected $fillable = [
-        'tax_free_voucher_id',
+        // 'tax_free_voucher_id',
         'company_detail_id',
-        'user_id',
+        // 'user_id',
         'count_month',
         'start_month',
         'end_month',
-        'json',
+        'meta',
     ];
 
     /**
      * @return HasOne
      */
-    public function user(): HasOne
-    {
-        return $this->hasOne(User::class, 'id', 'user_id');
-    }
+    // public function user(): HasOne
+    // {
+    //     return $this->hasOne(User::class, 'id', 'user_id');
+    // }
 }

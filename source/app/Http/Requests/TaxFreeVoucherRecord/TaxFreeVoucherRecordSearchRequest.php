@@ -12,7 +12,7 @@ class TaxFreeVoucherRecordSearchRequest extends DefaultSearchRequest
      * @var string[]
      */
     protected array $relations = [
-        'user',
+        // 'user',
     ];
 
     protected array $fields = [
