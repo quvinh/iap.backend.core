@@ -3,10 +3,10 @@
 namespace App\Http\Requests\TaxFreeVoucherRecord;
 
 use App\Http\Requests\BaseRequest;
-use App\Rules\IsBase64Image;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
-class TaxFreeVoucherRecordUpdateRequest extends BaseRequest
+class TaxFreeVoucherRecordFindRequest extends BaseRequest
 {
     /**
      * Available relations to retrieve
@@ -32,12 +32,10 @@ class TaxFreeVoucherRecordUpdateRequest extends BaseRequest
     public function rules(): array
     {
         return [
-            // 'tax_free_voucher_id' => ['required', 'integer', 'exists:tax_free_vouchers,id'],
-            // 'company_detail_id' => ['required', 'integer', 'exists:company_details,id'],
-            // 'user_id' => ['required', 'integer', 'exists:users,id'],
-            // 'count_month' => ['required', 'numeric'],
-            // 'start_month' => ['required', 'numeric'],
-            // 'end_month' => ['required', 'numeric'],
+            'company_detail_id' => ['required', 'exists:company_details,id'],
+            'start_month' => ['required', 'integer', 'min:1', 'max:12'],
+            'end_month' => ['required', 'integer', 'required_with:start_month', 'gte:start_month', 'min:1', 'max:12'],
+            'reset' => ['required', 'integer', Rule::in([0, 1])],
         ];
     }
 }

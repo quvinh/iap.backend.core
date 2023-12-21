@@ -25,6 +25,12 @@ class TaxFreeVoucherRecordRepository extends BaseRepository implements ITaxFreeV
 
     /**
      * Find tax free voucher records by month
+     * meta: {
+     *  year: 2023,
+     *  data: [ // tax_free_voucher_records table
+     *      { id:number, account_number:string, name:string, value:number },
+     *  ]
+     * }
      * @param array $params
      * @return mixed
      */
@@ -41,14 +47,19 @@ class TaxFreeVoucherRecordRepository extends BaseRepository implements ITaxFreeV
             ])->first();
         if (empty($record) || $reset) {
             $count_month = $params['end_month'] - $params['start_month'];
+            $meta_mutate = self::computeMeta([], $com->year);
             if ($count_month < 0) throw new \Exception(message: "Count month must be greater than 0");
-            if ($count_month == 0) {
-                # Not finished yet
-                $entities = null;
-            }
+            // if ($count_month == 0) {}
             if ($count_month > 0) {
-                # Not finished yet
-                $entities = null;
+                # Search entities
+                $entities = TaxFreeVoucherRecord::query()
+                    ->where([
+                        ['company_detail_id', '=', $com->id],
+                        ['count_month', '=', 0],
+                        ['start_month', '>=', $params['start_month']],
+                        ['end_month', '<=', $params['end_month']],
+                    ])->get();
+                $meta_mutate = self::computeMeta($entities, $com->year);
             }
             if (empty($record)) {
                 # Create new record
@@ -57,22 +68,50 @@ class TaxFreeVoucherRecordRepository extends BaseRepository implements ITaxFreeV
                 $result->count_month = $count_month;
                 $result->start_month = $params['start_month'];
                 $result->end_month = $params['end_month'];
-                $result->meta = json_encode([
-                    'year' => $com->year,
-                    # Todo: add payload tax_free_voucher {id, account_number, value}
-                ]);
-                if ($result->save()) {
-                    $result->entities = $entities;
-                    return $result;
-                }
+                $result->meta = json_encode($meta_mutate);
+                if ($result->save()) return $result;
             } else {
-                if ($record->save()) {
-                    $record->entities = $entities;
-                    return $record;
-                }
+                if ($reset) $record->meta = json_encode($meta_mutate);
+                if ($record->save()) return $record;
             }
         }
         # Return
         return $record;
+    }
+
+    /**
+     * Compute meta
+     */
+    function computeMeta($entities, $year): array
+    {
+        $meta_initialize = [
+            'year' => $year ?? date('Y'),
+        ];
+        # Get meta
+        if (count($entities) == 0) return $meta_initialize;
+        $data = array();
+        foreach ($entities as $entity) {
+            $meta = json_decode($entity->meta);
+            if (!empty($meta->data) && count($meta->data) > 0) {
+                foreach ($meta->data as $row) {
+                    if (empty($row->id)) continue;
+                    $idCheck = $row->id;
+                    $filter = array_filter($data, function ($item) use ($idCheck) {
+                        return $item->id == $idCheck;
+                    });
+                    if (empty($filter)) {
+                        $data[] = $row;
+                    } else {
+                        $postion = array_search($idCheck, array_column($data, 'id'));
+                        $data[$postion] = (object)array_merge((array) $row, [
+                            'value' => floatval($data[$postion]->value + $row->value),
+                        ]);
+                    }
+                }
+            }
+        }
+        if (count($data) > 0) $meta_initialize['data'] = $data;
+        # Return
+        return $meta_initialize;
     }
 }

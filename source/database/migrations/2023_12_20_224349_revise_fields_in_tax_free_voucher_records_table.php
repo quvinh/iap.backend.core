@@ -45,7 +45,7 @@ return new class extends Migration
         });
         Schema::table('tax_free_voucher_records', function (Blueprint $table) {
             # Rollback delete foreign keys
-            $table->foreign('tax_free_voucher_id')->references('id')->on('users')->onDelete('cascade');
+            $table->foreign('tax_free_voucher_id')->references('id')->on('tax_free_vouchers')->onDelete('cascade');
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
         });
     }

@@ -9,11 +9,13 @@ use App\Helpers\Responses\ApiResponse;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\Traits\DefaultRestActions;
 use App\Http\Requests\TaxFreeVoucherRecord\TaxFreeVoucherRecordCreateRequest;
+use App\Http\Requests\TaxFreeVoucherRecord\TaxFreeVoucherRecordFindRequest;
 use App\Http\Requests\TaxFreeVoucherRecord\TaxFreeVoucherRecordSearchRequest;
 use App\Http\Requests\TaxFreeVoucherRecord\TaxFreeVoucherRecordUpdateRequest;
 use App\Services\IService;
 use App\Services\TaxFreeVoucherRecord\ITaxFreeVoucherRecordService;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Route;
 
 class TaxFreeVoucherRecordController extends ApiController
@@ -36,11 +38,12 @@ class TaxFreeVoucherRecordController extends ApiController
     {
         $root = 'tax-free-voucher-records';
         if ($role == UserRoles::ADMINISTRATOR) {
-            Route::post($root . '/search', [TaxFreeVoucherRecordController::class, 'search']);
-            Route::get($root . '/{id}', [TaxFreeVoucherRecordController::class, 'getSingleObject']);
-            Route::post($root, [TaxFreeVoucherRecordController::class, 'create']);
+            // Route::post($root . '/search', [TaxFreeVoucherRecordController::class, 'search']);
+            // Route::get($root . '/{id}', [TaxFreeVoucherRecordController::class, 'getSingleObject']);
+            // Route::post($root, [TaxFreeVoucherRecordController::class, 'create']);
             Route::put($root . '/{id}', [TaxFreeVoucherRecordController::class, 'update']);
-            Route::delete($root . '/{id}', [TaxFreeVoucherRecordController::class, 'delete']);
+            // Route::delete($root . '/{id}', [TaxFreeVoucherRecordController::class, 'delete']);
+            Route::post($root . '/find', [TaxFreeVoucherRecordController::class, 'find']);
         }
     }
 
@@ -101,5 +104,14 @@ class TaxFreeVoucherRecordController extends ApiController
             default:
                 return $request;
         }
+    }
+
+    /**
+     * @return Response
+     */
+    public function find(TaxFreeVoucherRecordFindRequest $request): Response
+    {
+        $result = $this->taxFreeVoucherRecordService->find($request->all());
+        return $this->getResponseHandler()->send($result);
     }
 }

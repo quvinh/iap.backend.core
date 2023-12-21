@@ -57,7 +57,7 @@ class TaxFreeVoucherRecordService extends \App\Services\BaseService implements I
     /**
      * Search list of items
      *
-     * @param array<string> $rawConditions
+     * @param array $rawConditions
      * @param PaginationInfo|null $paging
      * @param array<string> $withs
      * @return Collection<int,TaxFreeVoucherRecord>
@@ -187,5 +187,10 @@ class TaxFreeVoucherRecordService extends \App\Services\BaseService implements I
                 previous: $ex
             );
         }
+    }
+
+    public function find(array $params): mixed
+    {
+        return $this->taxFreeVoucherRecordRepos->find($params);
     }
 }

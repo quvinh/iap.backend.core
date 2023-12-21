@@ -8,4 +8,5 @@ use App\Repositories\IRepository;
 
 interface ITaxFreeVoucherRecordRepository extends IRepository
 {
+    public function find(array $params): mixed;
 }

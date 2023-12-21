@@ -7,4 +7,5 @@ use App\Services\IService;
 
 interface ITaxFreeVoucherRecordService extends IService
 {
+    public function find(array $params): mixed;
 }
