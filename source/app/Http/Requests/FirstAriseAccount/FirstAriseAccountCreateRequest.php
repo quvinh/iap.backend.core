@@ -2,8 +2,10 @@
 
 namespace App\Http\Requests\FirstAriseAccount;
 
+use App\Helpers\Enums\AriseAccountTypes;
 use App\Http\Requests\BaseRequest;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class FirstAriseAccountCreateRequest extends BaseRequest
 {
@@ -33,6 +35,7 @@ class FirstAriseAccountCreateRequest extends BaseRequest
         return [
             'name' => ['required', 'string', 'unique:first_arise_accounts,name'],
             'number_account' => ['nullable', 'string'],
+            'is_tracking' => ['numeric', Rule::in(AriseAccountTypes::getValues())],
         ];
     }
 }

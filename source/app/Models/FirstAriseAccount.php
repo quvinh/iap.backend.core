@@ -16,6 +16,7 @@ class FirstAriseAccount extends BaseModel
         'number_percent',
         'method',
         'note',
-        'status'
+        'status',
+        'is_tracking',
     ];
 }

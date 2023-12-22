@@ -16,6 +16,7 @@ class FirstAriseAccountAllResource extends BaseDataResource
         'number_account',
         'number_percent',
         'method',
+        'is_tracking',
     ];
 
     /**

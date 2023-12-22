@@ -17,7 +17,8 @@ class FirstAriseAccountResource extends BaseDataResource
         'number_percent',
         'method',
         'status',
-        'note'
+        'note',
+        'is_tracking',
     ];
 
     /**

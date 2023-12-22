@@ -14,7 +14,8 @@ class FirstAriseAccountSearchRequest extends DefaultSearchRequest
     protected array $relations = [];
 
     protected array $fields = [
-        'withs'
+        'withs',
+        'is_tracking',
     ];
 
     /**
