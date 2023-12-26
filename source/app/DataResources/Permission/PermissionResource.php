@@ -12,7 +12,8 @@ class PermissionResource extends BaseDataResource
      */
     protected array $fields = [
         'id',
-        'name'
+        'slug',
+        'name',
     ];
 
     /**

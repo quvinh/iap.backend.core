@@ -11,6 +11,7 @@ class Permission extends BaseModel
 
     protected $fillable = [
         'id',
-        'name'
+        'slug',
+        'name',
     ];
 }
