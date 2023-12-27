@@ -97,7 +97,7 @@ class TaxFreeVoucherRecordRepository extends BaseRepository implements ITaxFreeV
                     if (empty($row->id)) continue;
                     $idCheck = $row->id;
                     $filter = array_filter($data, function ($item) use ($idCheck) {
-                        return $item->id == $idCheck;
+                        return !empty($item->id) && $item->id == $idCheck;
                     });
                     if (empty($filter)) {
                         $data[] = $row;

@@ -25,6 +25,7 @@ use Illuminate\Http\Response as HttpResponse;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
@@ -203,113 +204,122 @@ class InvoiceMediaController extends ApiController
      */
     public function readPDF(InvoiceMediaReadRequest $request): HttpResponse
     {
-        $uri = self::ENDPOINT_PDF_TABLE;
-        $id = $request->id;
-        // $key = $request->key;
-        $format = $request->format ?? 'html';
-        $record = $this->invoiceMediaService->getSingleObject($id);
-        $slug = $record->path ?? 'xxx';
-        $disk = Storage::disk(StorageHelper::TMP_DISK_NAME);
+        try {
+            $uri = self::ENDPOINT_PDF_TABLE;
+            $id = $request->id;
+            // $key = $request->key;
+            $format = $request->format ?? 'html';
+            $record = $this->invoiceMediaService->getSingleObject($id);
+            $slug = $record->path ?? 'xxx';
+            $disk = Storage::disk(StorageHelper::TMP_DISK_NAME);
 
-        if (!$disk->exists($slug)) {
-            $filePath = null;
-        } else {
-            $filePath = $disk->path($slug);
-        }
+            if (!$disk->exists($slug)) {
+                $filePath = null;
+            } else {
+                $filePath = $disk->path($slug);
+            }
 
-        $filePath = $filePath ?? resource_path() . '/images/default/default-thumbnail.jpg';
+            $filePath = $filePath ?? resource_path() . '/images/default/default-thumbnail.jpg';
 
-        $file = File::get($filePath);
-        $type = File::mimeType($filePath);
-        $extension = File::extension($filePath);
+            $file = File::get($filePath);
+            $type = File::mimeType($filePath);
+            $extension = File::extension($filePath);
 
-        # Get key from db
-        $entity = $this->pdfTableService->getKey();
-        if (empty($entity)) return $this->getResponseHandler()->send(['status' => 404, 'error' => 'Key not found']);
-        $key = $entity->key;
+            # Get key from db
+            $entity = $this->pdfTableService->getKey();
+            if (empty($entity)) return $this->getResponseHandler()->send(['status' => 404, 'error' => 'Key not found']);
+            $key = $entity->key;
 
-        # Fetch api post pdf-table
-        $headers = [];
-        $response = Http::withHeaders($headers)
-            ->attach('file', $file, "filename.$extension")
-            ->post("$uri?key=$key&format=$format");
+            # Fetch api post pdf-table
+            $headers = [];
+            $response = Http::withHeaders($headers)
+                ->attach('file', $file, "filename.$extension")
+                ->post("$uri?key=$key&format=$format");
 
-        # Handle body
-        $listItem = array();
-        $remaining = array();
-        if ($response->status() == 200) {
-            $html = str_get_html($response->body());
-            $numberPage = count($html->find('table'));
-            for ($i = 0; $i < $numberPage; $i++) {
-                $table = $html->find('table', $i);
-                $rowData = array();
+            # Handle body
+            $listItem = array();
+            $remaining = array();
+            if ($response->status() == 200) {
+                $html = str_get_html($response->body());
+                $numberPage = count($html->find('table'));
+                for ($i = 0; $i < $numberPage; $i++) {
+                    $table = $html->find('table', $i);
+                    $rowData = array();
 
-                foreach ($table->find('tr') as $row) {
-                    $keeper = array();
-                    foreach ($row->find('td, th') as $cell) {
-                        if (trim($cell->plaintext) != '') $keeper[] = $cell->plaintext;
+                    foreach ($table->find('tr') as $row) {
+                        $keeper = array();
+                        foreach ($row->find('td, th') as $cell) {
+                            if (trim($cell->plaintext) != '') $keeper[] = $cell->plaintext;
+                        }
+                        $rowData[] = $keeper;
                     }
-                    $rowData[] = $keeper;
-                }
-                # Index position column
-                $idxItem = $request->idx_item ?? 1;
-                $idxUnit = $request->idx_unit ?? 2;
-                $idxAmount = $request->idx_amount ?? 3;
-                $idxPrice = $request->idx_price ?? 4;
-                $idxTotal = $request->idx_total ?? 5;
+                    # Index position column
+                    $idxItem = $request->idx_item ?? 1;
+                    $idxUnit = $request->idx_unit ?? 2;
+                    $idxAmount = $request->idx_amount ?? 3;
+                    $idxPrice = $request->idx_price ?? 4;
+                    $idxTotal = $request->idx_total ?? 5;
 
-                foreach ((array)$rowData as $row) {
-                    if (is_numeric($row[0]) && $row[1] != '2') {
-                        $checkPrice = explode(' ', str_replace('.', '', $row[intval($idxPrice)]));
-                        $checkTotal = str_replace('.', '', $row[intval($idxTotal)]);
-                        if (is_numeric(str_replace(',', '.', $checkTotal))) {
-                            $price = $this->filterNumber($row[intval($idxPrice)]);
-                            $total = $this->filterNumber($row[intval($idxTotal)]);
-                            if (count($checkPrice) > 1) {
-                                $price = $this->filterNumber($checkPrice[0]);
-                                $total = $this->filterNumber($checkPrice[1]);
+                    foreach ((array)$rowData as $row) {
+                        if (is_numeric($row[0]) && $row[1] != '2') {
+                            Log::info('idxPrice', ['idxPrice' => $row]);
+                            $checkPrice = explode(' ', str_replace('.', '', $row[intval($idxPrice)]));
+                            $checkTotal = str_replace('.', '', $row[intval($idxTotal)]);
+                            if (is_numeric(str_replace(',', '.', $checkTotal))) {
+                                $price = $this->filterNumber($row[intval($idxPrice)]);
+                                $total = $this->filterNumber($row[intval($idxTotal)]);
+                                if (count($checkPrice) > 1) {
+                                    $price = $this->filterNumber($checkPrice[0]);
+                                    $total = $this->filterNumber($checkPrice[1]);
+                                }
+                                $value = [
+                                    'product' => $row[intval($idxItem)],
+                                    'unit' => $row[intval($idxUnit)],
+                                    'amount' => $this->filterNumber($row[intval($idxAmount)]),
+                                    'price' => $price,
+                                    'total' => $total,
+                                ];
+                                array_push($listItem, $value);
                             }
-                            $value = [
-                                'product' => $row[intval($idxItem)],
-                                'unit' => $row[intval($idxUnit)],
-                                'amount' => $this->filterNumber($row[intval($idxAmount)]),
-                                'price' => $price,
-                                'total' => $total,
-                            ];
-                            array_push($listItem, $value);
                         }
                     }
                 }
-            }
 
-            # Get remaining
-            $remaining = $this->countRemainingPdfTable($key);
-            # Update record pdf_table_keys
-            $recordKey = $this->pdfTableService->findByKey($key);
-            if (!empty($recordKey) && $remaining['status'] == 200) {
-                # Check remaining if equal 0 -> delete record
-                if ($remaining['amount'] == 0) {
-                    $recordKey->delete();
-                } else {
-                    $recordKey->update([
-                        'amount' => $remaining['amount']
+                # Get remaining
+                $remaining = $this->countRemainingPdfTable($key);
+                # Update record pdf_table_keys
+                $recordKey = $this->pdfTableService->findByKey($key);
+                if (!empty($recordKey) && $remaining['status'] == 200) {
+                    # Check remaining if equal 0 -> delete record
+                    if ($remaining['amount'] == 0) {
+                        $recordKey->delete();
+                    } else {
+                        $recordKey->update([
+                            'amount' => $remaining['amount']
+                        ]);
+                    }
+                    return $this->getResponseHandler()->send([
+                        'status' => $response->status(),
+                        'rows' => $listItem,
+                        'remaining' => $remaining['amount'],
                     ]);
                 }
                 return $this->getResponseHandler()->send([
-                    'status' => $response->status(),
-                    'rows' => $listItem,
-                    'remaining' => $remaining['amount'],
+                    'status' => $remaining['status'],
+                    'error' => 'Error: record key not found or remaining',
                 ]);
             }
             return $this->getResponseHandler()->send([
-                'status' => $remaining['status'],
-                'error' => 'Error: record key not found or remaining',
+                'status' => $response->status(),
+                'error' => $response->body(),
+            ]);
+        } catch (\Exception $ex) {
+            Log::error($ex->getMessage(), ['error' => $ex]);
+            return $this->getResponseHandler()->fail([
+                'status' => 500,
+                'error' => $ex->getMessage(),
             ]);
         }
-        return $this->getResponseHandler()->send([
-            'status' => $response->status(),
-            'error' => $response->body(),
-        ]);
     }
 
     function filterNumber($number)
@@ -323,7 +333,7 @@ class InvoiceMediaController extends ApiController
      * @param string $id
      * @return array
      */
-    public function countRemainingPdfTable(string $key): array//HttpResponse
+    public function countRemainingPdfTable(string $key): array //HttpResponse
     {
         $uri = self::ENDPOINT_PDF_TABLE;
         # Fetch api get remaining pdf-table
