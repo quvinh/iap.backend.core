@@ -131,6 +131,11 @@ class InvoiceService extends \App\Services\BaseService implements IInvoiceServic
                 $query = $this->invoiceRepos->queryOnAField(['invoice_symbol', '=', $param], $query);
             }
 
+            if (isset($rawConditions['verification_code_status'])) {
+                $param = $rawConditions['verification_code_status'];
+                $query = $this->invoiceRepos->queryOnAField(['verification_code_status', '=', $param], $query);
+            }
+
             if (isset($rawConditions['status'])) {
                 $param = $rawConditions['status'];
                 $query = $this->invoiceRepos->queryOnAField(['status', '=', $param], $query);
