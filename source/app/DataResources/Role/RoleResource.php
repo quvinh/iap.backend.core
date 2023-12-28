@@ -4,6 +4,7 @@ namespace App\DataResources\Role;
 
 use App\DataResources\BaseDataResource;
 use App\DataResources\Permission\PermissionResource;
+use App\DataResources\PermissionGroup\PermissionGroupResource;
 use App\Models\Role;
 
 class RoleResource extends BaseDataResource
@@ -33,8 +34,12 @@ class RoleResource extends BaseDataResource
     public function load(mixed $obj): void
     {
         parent::copy($obj, $this->fields);
+        // if (in_array('permissions', $this->fields)) {
+        //     $this->permissions = BaseDataResource::generateResources($obj->permissions, PermissionResource::class);
+        // }
+
         if (in_array('permissions', $this->fields)) {
-            $this->permissions = BaseDataResource::generateResources($obj->permissions, PermissionResource::class);
+            $this->permissions = BaseDataResource::generateResources($obj->permissions, PermissionGroupResource::class, ['permission']);
         }
     }
 }

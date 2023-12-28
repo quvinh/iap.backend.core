@@ -20,22 +20,22 @@ class Role extends BaseModel
     /**
      * @return HasManyThrougn
      */
-    public function permissions(): HasManyThrough
-    {
-        return $this->hasManyThrough(
-            Permission::class,
-            PermissionGroup::class,
-            'role_id',
-            'id',
-            'id',
-            'permission_id'
-        );
-    }
+    // public function permissions(): HasManyThrough
+    // {
+    //     return $this->hasManyThrough(
+    //         Permission::class,
+    //         PermissionGroup::class,
+    //         'role_id',
+    //         'id',
+    //         'id',
+    //         'permission_id'
+    //     );
+    // }
 
     /**
      * @return HasMany
      */
-    public function permissionGroup(): HasMany
+    public function permissions(): HasMany
     {
         return $this->hasMany(PermissionGroup::class, 'role_id', 'id');
     }

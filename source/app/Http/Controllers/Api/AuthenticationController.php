@@ -222,7 +222,7 @@ class AuthenticationController extends ApiController
                 'name' => $user->name,
                 'username' => $user->username,
                 'role' => $role->name,
-                'permissions' => $role->getIdOfPermissions(),
+                'permissions' => [],
                 'companies' => array_map(function ($item) {
                     return $item['company_id'];
                 }, $companyIds),
