@@ -14,9 +14,18 @@ class InvoiceBasicResource extends BaseDataResource
      */
     protected array $fields = [
         'id',
-        'company_id',
-        'invoice_task_id',
         'type',
+        'date',
+        'invoice_symbol',
+        'invoice_number_form',
+        'invoice_number',
+        'partner_name',
+        'partner_tax_code',
+        'partner_address',
+        'currency',
+        'currency_price',
+        'payment_method',
+        'verification_code_status',
         'status',
     ];
 
@@ -36,5 +45,13 @@ class InvoiceBasicResource extends BaseDataResource
     public function load(mixed $obj): void
     {
         parent::copy($obj, $this->fields);
+
+        if (in_array('invoice_details', $this->fields)) {
+            $this->invoice_details = BaseDataResource::generateResources($obj->invoice_details, InvoiceDetailResource::class, ['item_code']);
+        }
+
+        if (in_array('company', $this->fields)) {
+            $this->company = BaseDataResource::generateResources($obj->company()->get(), CompanyResource::class);
+        }
     }
 }

@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\DataResources\BaseDataResource;
+use App\DataResources\Invoice\InvoiceBasicResource;
 use App\DataResources\Invoice\InvoiceResource;
 use App\Helpers\Common\MetaInfo;
 use App\Helpers\Enums\UserRoles;
@@ -41,6 +43,7 @@ class InvoiceController extends ApiController
         $root = 'invoices';
         if ($role == UserRoles::ADMINISTRATOR) {
             Route::post($root . '/search', [InvoiceController::class, 'search']);
+            Route::post($root . '/search-export', [InvoiceController::class, 'searchForExport']);
             Route::get($root . '/{id}', [InvoiceController::class, 'getSingleObject']);
             Route::post($root, [InvoiceController::class, 'create']);
             // Route::post($root . '/each', [InvoiceController::class, 'createEachRow']);
@@ -77,6 +80,11 @@ class InvoiceController extends ApiController
     public function getDataResourceClass(): string
     {
         return InvoiceResource::class;
+    }
+
+    public function getDataBasicResourceClass(): string
+    {
+        return InvoiceBasicResource::class;
     }
 
     public function getDataResourceExtraFields(string $actionName): array
@@ -156,6 +164,40 @@ class InvoiceController extends ApiController
         $result = $this->invoiceService->findPartnersByCompanyId($request->company_id, $request->year);
         # Send response using the predefined format
         $response = ApiResponse::v1();
+        return $response->send($result);
+    }
+
+    /**
+     * Search list of inovices
+     * @param Request $request
+     * @return Response
+     * @throws InvalidPaginationInfoException
+     */
+    public function searchForExport(InvoiceSearchRequest $request): Response
+    {
+        # 1. get payload
+        $payload = $request->input();
+        $meta = $this->getCurrentMetaInfo();
+        $requireToTranslate = false;
+        $withs = $payload['withs']?? [];
+        # 2. get pagination if any
+        $paging = $request->getPaginationInfo();
+
+        # 3. Call business processes
+        $result = $this->getService()->search($payload, paging: $paging, withs: $withs);
+
+        # 4. Translate if required
+        if ($requireToTranslate) {
+            foreach ($result as $item) $item->translate($meta->lang);
+        }
+
+        # 5. Convert result to output resource
+        $resourceClass = $this->getDataBasicResourceClass();
+        $result = BaseDataResource::generateResources($result, $resourceClass, $withs);
+
+        # 6. Send response using the predefined format
+        $response = $this->getResponseHandler();
+        if (!is_null($paging)) $response = $response->withTotalPages($paging->lastPage, $paging->total);
         return $response->send($result);
     }
 }
