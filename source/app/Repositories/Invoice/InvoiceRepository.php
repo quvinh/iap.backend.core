@@ -8,6 +8,7 @@ use App\Helpers\Common\MetaInfo;
 use App\Models\Invoice;
 use App\Repositories\BaseRepository;
 use App\Exceptions\DB\RecordIsNotFoundException as DBRecordIsNotFoundException;
+use App\Helpers\Enums\InvoiceTypes;
 use App\Models\InvoiceDetail;
 
 use function Spatie\SslCertificate\starts_with;
@@ -53,5 +54,34 @@ class InvoiceRepository extends BaseRepository implements IInvoiceRepository
             ->select('id', 'partner_name', 'partner_tax_code', 'partner_address')
             ->get();
         return $partners;
+    }
+
+    /**
+     * Sum sold money
+     * Sum purchase money
+     * Sum invoices have verification_code_status = 0
+     * Sum invoices aren't used
+     */
+    public function info(array $params): mixed
+    {
+        # Get params
+        $company_id = $params['company_id'] ?? null;
+        if (empty($company_id)) {
+            # Get all invoices
+            $invoices = Invoice::all();
+        } else {
+            $invoices = Invoice::query()->where('company_id', $company_id)->get();
+        }
+
+        if (empty($invoices) || !($invoices instanceof Invoice)) return null;
+        $sumSold = $sumPurchase = $sumInvoiceNotVerificated = $sumInvoiceNotUse = 0;
+        foreach ($invoices as $invoice) {
+            $type = $invoice->type;
+            $verification_code_status = $invoice->verification_code_status; 
+            if ($type == InvoiceTypes::SOLD) $sumSold++;
+            if ($type == InvoiceTypes::PURCHASE) $sumPurchase++;
+            if ($verification_code_status == 0) $sumInvoiceNotVerificated++;
+            // locked
+        }
     }
 }
