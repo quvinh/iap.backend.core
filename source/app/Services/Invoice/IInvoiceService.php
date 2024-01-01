@@ -13,4 +13,5 @@ interface IInvoiceService extends IService
     public function import(array $param, MetaInfo $commandMetaInfo = null): mixed;
     public function restoreRowsInvoice(mixed $id, MetaInfo $commandMetaInfo = null): mixed;
     public function findPartnersByCompanyId(mixed $company_id, mixed $year): mixed;
+    public function info(array $params): array;
 }

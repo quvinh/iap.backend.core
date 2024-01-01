@@ -10,4 +10,5 @@ interface IInvoiceRepository extends IRepository
 {
     public function deleteInvoiceDetails(mixed $idInvoice, array $ids): bool;
     public function findPartnersByCompanyId(mixed $company_id, mixed $year): mixed;
+    public function info(array $params): array;
 }

@@ -44,6 +44,7 @@ class Invoice extends BaseModel
         'verification_code_status',
         'json',
         'status',
+        'locked',
     ];
 
     public function plusMoneyInvoice(float $total_money_no_vat, int $vat, float $discount = 0): void

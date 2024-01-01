@@ -80,7 +80,7 @@ class InvoiceService extends \App\Services\BaseService implements IInvoiceServic
     /**
      * Search list of items
      *
-     * @param array<string> $rawConditions
+     * @param array $rawConditions
      * @param PaginationInfo|null $paging
      * @param array<string> $withs
      * @return Collection<int,Invoice>
@@ -91,6 +91,10 @@ class InvoiceService extends \App\Services\BaseService implements IInvoiceServic
     {
         try {
             $query = $this->invoiceRepos->search();
+
+            # Sort
+            $query = $query->orderByDesc('date')->orderByDesc('invoice_number');
+
             if (isset($rawConditions['name'])) {
                 $param = StringHelper::escapeLikeQueryParameter($rawConditions['name']);
                 $query = $this->invoiceRepos->queryOnAField([DB::raw("upper(name)"), 'LIKE BINARY', DB::raw("upper(concat('%', ? , '%'))")], positionalBindings: ['name' => $param]);
@@ -139,6 +143,11 @@ class InvoiceService extends \App\Services\BaseService implements IInvoiceServic
             if (isset($rawConditions['status'])) {
                 $param = $rawConditions['status'];
                 $query = $this->invoiceRepos->queryOnAField(['status', '=', $param], $query);
+            }
+
+            if (isset($rawConditions['locked'])) {
+                $param = $rawConditions['locked'];
+                $query = $this->invoiceRepos->queryOnAField(['locked', '=', $param], $query);
             }
 
             if (isset($rawConditions['date'])) {
@@ -564,5 +573,13 @@ class InvoiceService extends \App\Services\BaseService implements IInvoiceServic
     public function findPartnersByCompanyId(mixed $company_id, mixed $year): mixed
     {
         return $this->invoiceRepos->findPartnersByCompanyId($company_id, $year);
+    }
+
+    /**
+     * Info invoices
+     */
+    public function info(array $params): array
+    {
+        return $this->invoiceRepos->info($params);
     }
 }

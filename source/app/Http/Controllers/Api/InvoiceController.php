@@ -54,6 +54,7 @@ class InvoiceController extends ApiController
             Route::post($root . '/import-pdf', [InvoiceController::class, 'importPDF']);
             Route::post($root . '/restore-rows/{id}', [InvoiceController::class, 'restoreRows']);
             Route::post($root . '/partners', [InvoiceController::class, 'partners']);
+            Route::post($root . '/info', [InvoiceController::class, 'info']);
         }
     }
 
@@ -198,6 +199,17 @@ class InvoiceController extends ApiController
         # 6. Send response using the predefined format
         $response = $this->getResponseHandler();
         if (!is_null($paging)) $response = $response->withTotalPages($paging->lastPage, $paging->total);
+        return $response->send($result);
+    }
+
+    /**
+     * Info list inovices
+     */
+    public function info(Request $request): Response
+    {
+        $result = $this->invoiceService->info($request->all());
+        # Send response using the predefined format
+        $response = $this->getResponseHandler();
         return $response->send($result);
     }
 }

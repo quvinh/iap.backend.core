@@ -31,12 +31,12 @@ class InvoiceRepository extends BaseRepository implements IInvoiceRepository
     public function deleteInvoiceDetails(mixed $idInvoice, array $ids): bool
     {
         $list = (new InvoiceDetail())->query()->where('invoice_id', $idInvoice)->get(['id'])->toArray();
-        
+
         $needDelete = array_filter($list, function ($item) use ($ids) {
             return !in_array($item['id'], $ids);
         });
         foreach ($needDelete as $item) {
-            (new InvoiceDetail())->query()->where('id', $item['id'])->forceDelete();         
+            (new InvoiceDetail())->query()->where('id', $item['id'])->forceDelete();
         }
         return true;
     }
@@ -62,7 +62,7 @@ class InvoiceRepository extends BaseRepository implements IInvoiceRepository
      * Sum invoices have verification_code_status = 0
      * Sum invoices aren't used
      */
-    public function info(array $params): mixed
+    public function info(array $params): array
     {
         # Get params
         $company_id = $params['company_id'] ?? null;
@@ -73,15 +73,22 @@ class InvoiceRepository extends BaseRepository implements IInvoiceRepository
             $invoices = Invoice::query()->where('company_id', $company_id)->get();
         }
 
-        if (empty($invoices) || !($invoices instanceof Invoice)) return null;
+        // if (empty($invoices)) return [];
         $sumSold = $sumPurchase = $sumInvoiceNotVerificated = $sumInvoiceNotUse = 0;
         foreach ($invoices as $invoice) {
             $type = $invoice->type;
-            $verification_code_status = $invoice->verification_code_status; 
+            $verification_code_status = $invoice->verification_code_status;
+            $locked = $invoice->locked; # Locked: HD khong duoc su dung de hoach toan 
             if ($type == InvoiceTypes::SOLD) $sumSold++;
             if ($type == InvoiceTypes::PURCHASE) $sumPurchase++;
             if ($verification_code_status == 0) $sumInvoiceNotVerificated++;
-            // locked
+            if ($locked == 1) $sumInvoiceNotUse++;
         }
+        return [
+            'sum_sold' => $sumSold,
+            'sum_purchase' => $sumPurchase,
+            'no_verification_code' => $sumInvoiceNotVerificated,
+            'locked' => $sumInvoiceNotUse,
+        ];
     }
 }

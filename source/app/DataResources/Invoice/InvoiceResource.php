@@ -38,6 +38,7 @@ class InvoiceResource extends BaseDataResource
         'verification_code_status',
         'json',
         'status',
+        'locked',
         'created_by',
         'created_at',
     ];
