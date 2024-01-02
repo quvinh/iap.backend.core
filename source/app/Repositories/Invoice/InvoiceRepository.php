@@ -64,14 +64,29 @@ class InvoiceRepository extends BaseRepository implements IInvoiceRepository
      */
     public function info(array $params): array
     {
-        # Get params
-        $company_id = $params['company_id'] ?? null;
-        if (empty($company_id)) {
-            # Get all invoices
-            $invoices = Invoice::all();
-        } else {
-            $invoices = Invoice::query()->where('company_id', $company_id)->get();
+        $query = Invoice::query();
+        if (isset($params['company_id'])) {
+            $query->where('company_id', '=', $params['company_id']);
         }
+        if (isset($params['invoice_number'])) {
+            $query->where('invoice_number', '=', $params['invoice_number']);
+        }
+        if (isset($params['status'])) {
+            $query->where('status', '=', $params['status']);
+        }
+        if (isset($params['type'])) {
+            $query->where('type', '=', $params['type']);
+        }
+        if (isset($params['verification_code_status'])) {
+            $query->where('verification_code_status', '=', $params['verification_code_status']);
+        }
+        if (isset($params['locked'])) {
+            $query->where('locked', '=', $params['locked']);
+        }
+        if (isset($params['date']) && isset($params['date']['from']) && isset($params['date']['to'])) {
+            $query->whereDate('date', '>=', $params['date']['from'])->whereDate('date', '<=', $params['date']['to']);
+        }
+        $invoices = $query->get();
 
         // if (empty($invoices)) return [];
         $sumSold = $sumPurchase = $sumInvoiceNotVerificated = $sumInvoiceNotUse = 0;

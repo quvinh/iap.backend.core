@@ -481,7 +481,7 @@ class InvoiceService extends \App\Services\BaseService implements IInvoiceServic
                     'invoice_number_form' => $row['invoice_number_form'] ?? 1,
                     'invoice_symbol' => $row['invoice_symbol'],
                     'product' => $row['product'],
-                    'product_code' => $row['product_code'],
+                    'product_code' => $row['product_code'] ?? null,
                     'product_exchange' => $row['product_exchange'] ?? null,
                     'unit' => $row['unit'],
                     'vat' => $row['vat'],
