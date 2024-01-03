@@ -57,7 +57,7 @@ class PdfTableKeyService extends \App\Services\BaseService implements IPdfTableK
     /**
      * Search list of items
      *
-     * @param array<string> $rawConditions
+     * @param array $rawConditions
      * @param PaginationInfo|null $paging
      * @param array<string> $withs
      * @return Collection<int,PdfTableKey>

@@ -20,6 +20,7 @@ use App\Services\IService;
 use App\Services\InvoiceMedia\IInvoiceMediaService;
 use App\Services\PdfTableKey\IPdfTableKeyService;
 use Carbon\Carbon;
+use Illuminate\Database\RecordsNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response as HttpResponse;
 use Illuminate\Http\UploadedFile;
@@ -210,6 +211,7 @@ class InvoiceMediaController extends ApiController
             // $key = $request->key;
             $format = $request->format ?? 'html';
             $record = $this->invoiceMediaService->getSingleObject($id);
+            if (empty($record)) throw new RecordsNotFoundException(message: "Record with ID:$id not found!");
             $slug = $record->path ?? 'xxx';
             $disk = Storage::disk(StorageHelper::TMP_DISK_NAME);
 
@@ -262,7 +264,7 @@ class InvoiceMediaController extends ApiController
 
                     foreach ((array)$rowData as $row) {
                         if (is_numeric($row[0]) && $row[1] != '2') {
-                            Log::info('idxPrice', ['idxPrice' => $row]);
+                            if (empty($row[intval($idxPrice)])) continue;
                             $checkPrice = explode(' ', str_replace('.', '', $row[intval($idxPrice)]));
                             $checkTotal = str_replace('.', '', $row[intval($idxTotal)]);
                             if (is_numeric(str_replace(',', '.', $checkTotal))) {
