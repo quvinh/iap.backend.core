@@ -26,6 +26,10 @@ class InvoiceBasicResource extends BaseDataResource
         'currency_price',
         'payment_method',
         'verification_code_status',
+        'sum_money_no_vat',
+        'sum_money_vat',
+        'sum_money_discount',
+        'sum_money',
         'status',
     ];
 
