@@ -26,6 +26,7 @@ use Exception;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Throwable;
 
@@ -93,7 +94,7 @@ class InvoiceService extends \App\Services\BaseService implements IInvoiceServic
             $query = $this->invoiceRepos->search();
 
             # Sort
-            $query = $query->orderByDesc('date')->orderByDesc('invoice_number');
+            // $query = $query->orderByDesc('date')->orderByDesc('invoice_number');
 
             if (isset($rawConditions['name'])) {
                 $param = StringHelper::escapeLikeQueryParameter($rawConditions['name']);
@@ -175,6 +176,10 @@ class InvoiceService extends \App\Services\BaseService implements IInvoiceServic
 
             if (isset($rawConditions['sort'])) {
                 $sort = SortInfo::parse($rawConditions['sort']);
+                if (isset($rawConditions['sort_p2'])) {
+                    $sort2 = SortInfo::parse($rawConditions['sort_p2']);
+                    return $this->invoiceRepos->sort($query, $sort)->orderBy($sort2->column ?? 'id', $sort2->type ?? 'desc')->get();
+                }
                 return $this->invoiceRepos->sort($query, $sort)->get();
             }
             return $query->get();
@@ -403,7 +408,7 @@ class InvoiceService extends \App\Services\BaseService implements IInvoiceServic
             } else {
                 $invoice = $invoice->first();
                 if ($invoice->invoice_task_id != $task->id) {
-                    throw new ActionFailException();
+                    throw new ActionFailException(message: "Invoice task ID:{$invoice->invoice_task_id} not match with task ID: {$task->id}");
                 }
             }
             # 3.Check item code
@@ -499,6 +504,7 @@ class InvoiceService extends \App\Services\BaseService implements IInvoiceServic
             return $record;
         } catch (\Exception $ex) {
             DB::rollBack();
+            Log::error(message: $ex->getMessage());
             if ($ex instanceof ActionFailException) {
                 return [
                     'status' => false,

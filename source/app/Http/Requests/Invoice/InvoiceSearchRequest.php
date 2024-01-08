@@ -30,6 +30,7 @@ class InvoiceSearchRequest extends DefaultSearchRequest
         'year',
         'verification_code_status',
         'locked',
+        'sort_p2',
     ];
 
     /**
