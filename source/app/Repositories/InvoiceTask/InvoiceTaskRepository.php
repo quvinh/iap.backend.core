@@ -10,6 +10,7 @@ use App\Repositories\BaseRepository;
 use App\Exceptions\DB\RecordIsNotFoundException as DBRecordIsNotFoundException;
 use function Spatie\SslCertificate\starts_with;
 use App\Helpers\Enums\TaskStatus;
+use App\Models\Invoice;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
@@ -193,5 +194,17 @@ class InvoiceTaskRepository extends BaseRepository implements IInvoiceTaskReposi
         }
 
         return $result;
+    }
+
+    /**
+     * Force delete inovices with task
+     */
+    public function forceDeleteInvoiceWithTask(int $task_id, string $invoice_type): bool
+    {
+        Invoice::query()->where([
+            ['invoice_task_id', '=', $task_id],
+            ['type', '=', $invoice_type],
+        ])->forceDelete();
+        return true;
     }
 }

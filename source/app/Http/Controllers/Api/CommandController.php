@@ -26,6 +26,7 @@ class CommandController extends Controller
             Route::post($root . '/backup', [CommandController::class, 'backup']);
             Route::post($root . '/cache/clear', [CommandController::class, 'cacheClear']);
             Route::post($root . '/user/fresh', [CommandController::class, 'userFresh']);
+            Route::post($root . '/user/companies', [CommandController::class, 'userCompanies']);
         }
     }
 
@@ -63,5 +64,12 @@ class CommandController extends Controller
         Log::info('user:fresh');
         Artisan::call('user:fresh');
         return ApiResponse::v1()->send(['info' => 'User:fresh executed successfully', 'output' => Artisan::output()]);
+    }
+
+    public function userCompanies()
+    {
+        Log::info('user:companies');
+        Artisan::call('user:companies');
+        return ApiResponse::v1()->send(['info' => 'User:companies executed', 'output' => Artisan::output()]);
     }
 }

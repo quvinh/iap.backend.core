@@ -12,4 +12,5 @@ interface IInvoiceTaskService extends IService
     public function getMoneyOfMonths(array $params): mixed;
     public function getTaskNotProcess(): Collection;
     public function monthlyTask(): array;
+    public function forceDeleteInvoiceWithTask(array $params): mixed;
 }

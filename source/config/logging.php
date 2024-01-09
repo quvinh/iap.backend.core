@@ -124,6 +124,11 @@ return [
             'level' => env('LOG_LEVEL', 'debug'),
         ],
 
+        'invoice_task' => [
+            'driver' => 'single',
+            'path' => storage_path('logs/invoice_task.log'),
+            'level' => env('LOG_LEVEL', 'debug'),
+        ],
     ],
 
 ];

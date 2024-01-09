@@ -12,6 +12,7 @@ use App\Http\Requests\InvoiceTask\InvoiceTaskHandleFormulaRequest;
 use App\Http\Requests\InvoiceTask\InvoiceTaskSearchRequest;
 use App\Http\Requests\InvoiceTask\InvoiceTaskUpdateRequest;
 use App\Http\Requests\InvoiceTask\InvoiceTaskGetMoneyRequest;
+use App\Http\Requests\InvoiceTask\InvoiceTaskWithTypeRequest;
 use App\Services\IService;
 use App\Services\InvoiceTask\IInvoiceTaskService;
 use Illuminate\Http\Request;
@@ -47,6 +48,7 @@ class InvoiceTaskController extends ApiController
 
             Route::put($root . '/formula/update', [InvoiceTaskController::class, 'updateHandleFormula']);
             Route::post($root . '/money-of-months', [InvoiceTaskController::class, 'getMoneyOfMonths']);
+            Route::post($root . '/delete-with-type', [InvoiceTaskController::class, 'forceDeleteInvoiceWithTask']);
         }
     }
 
@@ -128,6 +130,15 @@ class InvoiceTaskController extends ApiController
     public function getMoneyOfMonths(InvoiceTaskGetMoneyRequest $request): Response
     {
         $result = $this->invoiceTaskService->getMoneyOfMonths($request->all());
+        return $this->getResponseHandler()->send($result);
+    }
+
+    /**
+     * Force delelte invoices with task (not delete invoice_task)
+     */
+    public function forceDeleteInvoiceWithTask(InvoiceTaskWithTypeRequest $request): Response
+    {
+        $result = $this->invoiceTaskService->forceDeleteInvoiceWithTask($request->all());
         return $this->getResponseHandler()->send($result);
     }
 }

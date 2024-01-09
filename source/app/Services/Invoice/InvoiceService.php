@@ -237,6 +237,11 @@ class InvoiceService extends \App\Services\BaseService implements IInvoiceServic
             $param = array_merge($param, [
                 'id' => $record->id
             ]);
+            $after = (object)[
+                'sum_money_no_vat' => $record->sum_money_no_vat ?? 0,
+                'sum_money_vat' => $record->sum_money_vat ?? 0,
+                'sum_money' => $record->sum_money ?? 0,
+            ];
             $record = $this->invoiceRepos->update($param, $commandMetaInfo);
 
             #3: Get invoice-details
@@ -295,14 +300,27 @@ class InvoiceService extends \App\Services\BaseService implements IInvoiceServic
                         }
                     }
                 }
-
-                # Update main invoice
                 $_sumMoney = $_sumMoneyNoVat + $_sumMoneyVat;
-                $record->sum_money_no_vat = $_sumMoneyNoVat;
-                $record->sum_money_vat = $_sumMoneyVat;
-                // $record->sum_money_discount = $_sumMoneyDiscount;
-                $record->sum_money = $_sumMoney;
-                $record->save();
+                # Get new sum money
+                $newMoneyNoVat = $param['sum_money_no_vat'] ?? null;
+                $newMoneyVat = $param['sum_money_vat'] ?? null;
+                $newMoney = $param['sum_money'] ?? null;
+                # Update main invoice
+                if (empty($newMoneyNoVat) || empty($newMoneyVat) || empty($newMoney)) {
+                    $record->sum_money_no_vat = $_sumMoneyNoVat;
+                    $record->sum_money_vat = $_sumMoneyVat;
+                    // $record->sum_money_discount = $_sumMoneyDiscount;
+                    $record->sum_money = $_sumMoney;
+                    $record->save();
+                } else {
+                    $newMoneyNoVat = floatval($newMoneyNoVat) == floatval($after->sum_money_no_vat) ? $_sumMoneyNoVat : $newMoneyNoVat;
+                    $newMoneyVat = floatval($newMoneyVat) == floatval($after->sum_money_vat) ? $_sumMoneyVat : $newMoneyVat;
+                    $newMoney = floatval($newMoney) == floatval($after->sum_money) ? $_sumMoney : $newMoney;
+                    $record->sum_money_no_vat = $newMoneyNoVat;
+                    $record->sum_money_vat = $newMoneyVat;
+                    $record->sum_money = $newMoney;
+                    $record->save();
+                }
             }
             DB::commit();
             return $record;

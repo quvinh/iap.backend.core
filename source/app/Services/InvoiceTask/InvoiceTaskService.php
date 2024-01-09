@@ -22,6 +22,7 @@ use Illuminate\Database\RecordsNotFoundException;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Throwable;
 
 class InvoiceTaskService extends \App\Services\BaseService implements IInvoiceTaskService
@@ -209,10 +210,19 @@ class InvoiceTaskService extends \App\Services\BaseService implements IInvoiceTa
                 throw new RecordIsNotFoundException();
             }
             $result =  $this->invoiceTaskRepos->delete(id: $id, soft: $softDelete, meta: $commandMetaInfo);
+            Log::channel('invoice_task')->info("Force delete task", [
+                'task_id' => $record->id,
+                'company_id' => $record->company_id,
+                'user_id' => auth()->user()->id,
+                'month_of_year' => $record->month_of_year,
+                'soft_delete' => $softDelete,
+                'result' => $result,
+            ]);
             DB::commit();
             return $result;
         } catch (\Exception $ex) {
             DB::rollBack();
+            Log::channel('invoice_task')->error($ex->getMessage());
             throw new CannotDeleteDBException(
                 message: 'update: ' . json_encode(['id' => $id, 'softDelete' => $softDelete]),
                 previous: $ex
@@ -342,5 +352,36 @@ class InvoiceTaskService extends \App\Services\BaseService implements IInvoiceTa
     public function monthlyTask(): array
     {
         return $this->invoiceTaskRepos->monthlyTask();
+    }
+
+    /**
+     * Force delete invoice with task
+     */
+    public function forceDeleteInvoiceWithTask(array $params): mixed
+    {
+        DB::beginTransaction();
+        try {
+            $invoice_type = $params['type'];
+            $task = $this->invoiceTaskRepos->getSingleObject($params['task_id'])->first();
+            if (empty($task)) throw new ActionFailException(message: "Task ID not found!");
+            $result = $this->invoiceTaskRepos->forceDeleteInvoiceWithTask($task->id, $invoice_type);
+            Log::channel('invoice_task')->info("Force delete invoices $invoice_type with task id", [
+                'task_id' => $task->id,
+                'company_id' => $task->company_id,
+                'user_id' => auth()->user()->id,
+                'month_of_year' => $task->month_of_year,
+                'invoice_type' => $invoice_type,
+                'result' => $result,
+            ]);
+            DB::commit();
+            return $result;
+        } catch (\Exception $ex) {
+            DB::rollBack();
+            Log::channel('invoice_task')->error($ex->getMessage());
+            throw new ActionFailException(
+                message: $ex->getMessage(),
+                previous: $ex
+            );
+        }
     }
 }
