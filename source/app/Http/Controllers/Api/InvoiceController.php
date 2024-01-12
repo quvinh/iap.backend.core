@@ -12,6 +12,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Controllers\Traits\DefaultRestActions;
 use App\Http\Requests\Invoice\InvoiceCreateEachRowRequest;
 use App\Http\Requests\Invoice\InvoiceCreateRequest;
+use App\Http\Requests\Invoice\InvoiceFindNextRequest;
 use App\Http\Requests\Invoice\InvoiceImportRequest;
 use App\Http\Requests\Invoice\InvoiceSearchPartnerRequest;
 use App\Http\Requests\Invoice\InvoiceSearchRequest;
@@ -55,6 +56,7 @@ class InvoiceController extends ApiController
             Route::post($root . '/restore-rows/{id}', [InvoiceController::class, 'restoreRows']);
             Route::post($root . '/partners', [InvoiceController::class, 'partners']);
             Route::post($root . '/info', [InvoiceController::class, 'info']);
+            Route::post($root . '/next', [InvoiceController::class, 'next']);
         }
     }
 
@@ -208,6 +210,17 @@ class InvoiceController extends ApiController
     public function info(Request $request): Response
     {
         $result = $this->invoiceService->info($request->all());
+        # Send response using the predefined format
+        $response = $this->getResponseHandler();
+        return $response->send($result);
+    }
+
+    /**
+     * Find next invoice
+     */
+    public function next(InvoiceFindNextRequest $request): Response
+    {
+        $result = $this->invoiceService->findNextInvoice($request->all());
         # Send response using the predefined format
         $response = $this->getResponseHandler();
         return $response->send($result);

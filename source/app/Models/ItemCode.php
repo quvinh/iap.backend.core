@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Helpers\Utils\RoundMoneyHelper;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasOne;
@@ -46,7 +47,7 @@ class ItemCode extends BaseModel
         try {
             // $getPrice = $this->opening_balance_value / $this->quantity;
             $total = $this->quantity * $this->price;
-            return round($total, 3);
+            return RoundMoneyHelper::roundMoney($total);
         } catch (\Exception) {
             return 0;
         }

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Helpers\Utils\RoundMoneyHelper;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -50,10 +51,11 @@ class Invoice extends BaseModel
     public function plusMoneyInvoice(float $total_money_no_vat, int $vat, float $discount = 0): void
     {
         $vat_money = $this->getVatMoneyInvoiceDetail($total_money_no_vat, $vat);
+        $total_money_no_vat = RoundMoneyHelper::roundMoney($total_money_no_vat);
         $this->sum_money_no_vat += $total_money_no_vat;
         $this->sum_money_vat += $vat_money;
-        $this->sum_money_discount += $discount;
-        $this->sum_money += ($total_money_no_vat + $vat_money);
+        $this->sum_money_discount += RoundMoneyHelper::roundMoney($discount);
+        $this->sum_money += RoundMoneyHelper::roundMoney($total_money_no_vat + $vat_money);
     }
 
     public function getVatMoneyInvoiceDetail(float $total_money_no_vat, int $_vat): float
@@ -62,7 +64,7 @@ class Invoice extends BaseModel
             $vat = $_vat;
             if ($_vat < 0) $vat = 0; // Exception vat=-1; vat=-2
             $vat_money = $total_money_no_vat * ($vat / 100);
-            return round($vat_money, 2);
+            return RoundMoneyHelper::roundMoney($vat_money);
         } catch (\Exception) {
             return 0;
         }

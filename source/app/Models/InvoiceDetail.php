@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Helpers\Utils\RoundMoneyHelper;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasOne;
@@ -47,7 +48,7 @@ class InvoiceDetail extends BaseModel
 
     public function setInvoiceDetail(float $quantity, float $price, int $vat, bool $rounding = true): void
     {
-        $this->total_money = $rounding ? round($quantity * $price, 2) : floor($quantity * $price);
+        $this->total_money = RoundMoneyHelper::roundMoney($quantity * $price, $rounding ? 1 : 0);
         $this->vat = $vat;
         $this->vat_money = $this->getVatMoney();
     }
@@ -58,7 +59,7 @@ class InvoiceDetail extends BaseModel
             $vat = $this->vat;
             if ($this->vat < 0) $vat = 0; // Exception vat=-1; vat=-2
             $vat_money = $this->total_money * ($vat / 100);
-            return round($vat_money, 2);
+            return RoundMoneyHelper::roundMoney($vat_money);
         } catch (\Exception) {
             return 0;
         }

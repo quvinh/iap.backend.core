@@ -9,7 +9,9 @@ use App\Models\Invoice;
 use App\Repositories\BaseRepository;
 use App\Exceptions\DB\RecordIsNotFoundException as DBRecordIsNotFoundException;
 use App\Helpers\Enums\InvoiceTypes;
+use App\Models\Company;
 use App\Models\InvoiceDetail;
+use Illuminate\Database\Eloquent\Collection;
 
 use function Spatie\SslCertificate\starts_with;
 
@@ -105,5 +107,31 @@ class InvoiceRepository extends BaseRepository implements IInvoiceRepository
             'no_verification_code' => $sumInvoiceNotVerificated,
             'locked' => $sumInvoiceNotUse,
         ];
+    }
+
+    /**
+     * Find invoice previous/next
+     */
+    public function findNextInvoice(array $params): Invoice | Collection | null 
+    {
+        $record = Invoice::find($params['invoice_id'] ?? 0);
+        if (empty($record)) throw new \Exception("Invoice not found!");
+        $company_id = $params['company_id'] ?? 0;
+        $type = $params['type'] ?? '';
+        $operate = $params['operate'] ?? '>=';
+        $invoices = Invoice::query()
+            ->where([
+                ['company_id', '=', $company_id],
+                ['type', '=', $type],
+            ])
+            ->whereDate('date', $operate, $record->date)
+            ->orderBy('date')->orderBy('invoice_number')->take(100)->get();
+        $position = 0;
+        foreach ($invoices as $index => $invoice) {
+            if ($invoice->id == $record->id) $position = $index;
+        }
+        if ($operate == '>=') return $invoices[$position + 1] ?? null;
+        if ($operate == '<=') return $invoices[$position - 1] ?? null;
+        return null;
     }
 }

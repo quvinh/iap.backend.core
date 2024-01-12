@@ -10,6 +10,7 @@ use App\Exceptions\DB\CannotSaveToDBException;
 use App\Exceptions\DB\CannotUpdateDBException;
 use App\Exceptions\DB\RecordIsNotFoundException;
 use App\Helpers\Common\MetaInfo;
+use App\Helpers\Utils\RoundMoneyHelper;
 use App\Helpers\Utils\StorageHelper;
 use App\Helpers\Utils\StringHelper;
 use App\Models\Invoice;
@@ -23,6 +24,7 @@ use App\Services\InvoiceTask\IInvoiceTaskService;
 use App\Services\ItemCode\IItemCodeService;
 use Carbon\Carbon;
 use Exception;
+use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -228,6 +230,7 @@ class InvoiceService extends \App\Services\BaseService implements IInvoiceServic
     {
         DB::beginTransaction();
         try {
+            $rounding = $param['rounding'] ?? 1;
             #1: Can edit? -> Yes: move to #2 No: return Exception with error
             $record = $this->invoiceRepos->getSingleObject($id)->first();
             if (empty($record)) {
@@ -266,9 +269,9 @@ class InvoiceService extends \App\Services\BaseService implements IInvoiceServic
                         $item->quantity = $row['quantity'] ?? $item->quantity;
                         $item->price = $row['price'] ?? $item->price;
                         $item->vat = $row['vat'] ?? $item->vat;
-                        $item->total_money = $row['total_money'] ?? $item->total_money;
+                        $item->total_money = RoundMoneyHelper::roundMoney($row['total_money'] ?? $item->total_money, $rounding);
                         $item->warehouse = $row['warehouse'] ?? $item->warehouse;
-                        $item->vat_money = round((floatval($_vat) * floatval($item->total_money)) / 100, 2);
+                        $item->vat_money = RoundMoneyHelper::roundMoney((floatval($_vat) * floatval($item->total_money)) / 100, $rounding);
                         if ($item->save()) {
                             $_sumMoneyNoVat += floatval($item->total_money);
                             $_sumMoneyVat += floatval($item->vat_money);
@@ -290,8 +293,8 @@ class InvoiceService extends \App\Services\BaseService implements IInvoiceServic
                             'quantity' => $row['quantity'],
                             'price' => $row['price'],
                             'vat' => $row['vat'] ?? 0,
-                            'vat_money' => $row['vat_money'],
-                            'total_money' => $row['total_money'],
+                            'vat_money' => RoundMoneyHelper::roundMoney($row['vat_money'], $rounding),
+                            'total_money' => RoundMoneyHelper::roundMoney($row['total_money'], $rounding),
                             'warehouse' => $row['warehouse'] ?? 0,
                         ], $commandMetaInfo);
                         if (!empty($item)) {
@@ -300,7 +303,7 @@ class InvoiceService extends \App\Services\BaseService implements IInvoiceServic
                         }
                     }
                 }
-                $_sumMoney = $_sumMoneyNoVat + $_sumMoneyVat;
+                $_sumMoney = RoundMoneyHelper::roundMoney($_sumMoneyNoVat + $_sumMoneyVat, $rounding);
                 # Get new sum money
                 $newMoneyNoVat = $param['sum_money_no_vat'] ?? null;
                 $newMoneyVat = $param['sum_money_vat'] ?? null;
@@ -374,6 +377,7 @@ class InvoiceService extends \App\Services\BaseService implements IInvoiceServic
     {
         DB::beginTransaction();
         try {
+            $rounding = $param['rounding'] ?? 1;
             $company_id = $param['company_id'];
             $partner_tax_code = $param['partner_tax_code'];
             $type = $param['type'];
@@ -492,6 +496,7 @@ class InvoiceService extends \App\Services\BaseService implements IInvoiceServic
     {
         DB::beginTransaction();
         try {
+            $rounding = $param['rounding'] ?? 1;
             foreach ($param['invoice_details'] as $index => $row) {
                 $record = $this->storeEachRowInvoice([
                     'company_id' => $param['company_id'],
@@ -507,10 +512,11 @@ class InvoiceService extends \App\Services\BaseService implements IInvoiceServic
                     'product_code' => $row['product_code'] ?? null,
                     'product_exchange' => $row['product_exchange'] ?? null,
                     'unit' => $row['unit'],
-                    'vat' => $row['vat'],
+                    'vat' => RoundMoneyHelper::roundMoney(floatval($row['vat']), $rounding),
                     'quantity' => $row['quantity'],
                     'price' => $row['price'],
                     'verification_code_status' => $param['verification_code_status'] ?? 1, # Co ma co quan thue
+                    'rounding' => $rounding,
                 ], $commandMetaInfo);
                 if (empty($record)) {
                     $index += 1;
@@ -605,5 +611,13 @@ class InvoiceService extends \App\Services\BaseService implements IInvoiceServic
     public function info(array $params): array
     {
         return $this->invoiceRepos->info($params);
+    }
+
+    /**
+     * Find next invoice
+     */
+    public function findNextInvoice(array $params): Invoice | EloquentCollection | null
+    {
+        return $this->invoiceRepos->findNextInvoice($params);
     }
 }
