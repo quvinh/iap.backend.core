@@ -123,6 +123,7 @@ class InvoiceRepository extends BaseRepository implements IInvoiceRepository
             ->where([
                 ['company_id', '=', $company_id],
                 ['type', '=', $type],
+                ['status', '<>', 2],
             ])
             ->whereDate('date', $operate, $record->date)
             ->orderBy('date')->orderBy('invoice_number')->take(100)->get();
