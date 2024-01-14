@@ -5,9 +5,12 @@ namespace App\Http\Controllers\Api;
 use App\DataResources\BaseDataResource;
 use App\DataResources\Invoice\InvoiceBasicResource;
 use App\DataResources\Invoice\InvoiceResource;
+use App\Exports\InvoiceDetailsExport;
+use App\Exports\InvoicesExport;
 use App\Helpers\Common\MetaInfo;
 use App\Helpers\Enums\UserRoles;
 use App\Helpers\Responses\ApiResponse;
+use App\Helpers\Utils\StorageHelper;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\Traits\DefaultRestActions;
 use App\Http\Requests\Invoice\InvoiceCreateEachRowRequest;
@@ -21,7 +24,11 @@ use App\Services\IService;
 use App\Services\Invoice\IInvoiceService;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Storage;
+use Maatwebsite\Excel\Facades\Excel;
 
 class InvoiceController extends ApiController
 {
@@ -57,6 +64,9 @@ class InvoiceController extends ApiController
             Route::post($root . '/partners', [InvoiceController::class, 'partners']);
             Route::post($root . '/info', [InvoiceController::class, 'info']);
             Route::post($root . '/next', [InvoiceController::class, 'next']);
+
+            Route::post($root . '/invoices-export', [InvoiceController::class, 'invoicesExport']);
+            Route::post($root . '/invoice-details-export', [InvoiceController::class, 'invoiceDetailsExport']);
         }
     }
 
@@ -224,5 +234,82 @@ class InvoiceController extends ApiController
         # Send response using the predefined format
         $response = $this->getResponseHandler();
         return $response->send($result);
+    }
+
+    public function searchBusiness(InvoiceSearchRequest $request): array
+    {
+        # Get payload
+        $payload = $request->input();
+        $withs = $payload['withs']?? [];
+        # Get pagination if any
+        $paging = $request->getPaginationInfo();
+        # Call business processes
+        $result = $this->getService()->search($payload, paging: $paging, withs: $withs);
+        # Convert result to output resource
+        $resourceClass = $this->getDataBasicResourceClass();
+        $result = BaseDataResource::generateResources($result, $resourceClass, $withs);
+        return $result;
+    }
+
+    public function invoicesExport(InvoiceSearchRequest $request)
+    {
+        # Search invoices
+        $record = $this->searchBusiness($request);
+        # Send response using the predefined format
+        $response = $this->getResponseHandler();
+
+        # Set file path
+        $timestamp = date('YmdHi');
+        $file = "DanhSachHoaDon_$timestamp.xlsx";
+        $filePath = "invoices/$file";
+
+        $result = Excel::store(new InvoicesExport($record), $filePath, StorageHelper::EXCEL_DISK_NAME);
+        if (empty($result)) $response->fail(['status' => $result]);
+        # Generate file base64
+        $fileContent = Storage::disk(StorageHelper::EXCEL_DISK_NAME)->get($filePath);
+        $fileType = File::mimeType(storage_path("app/export/$filePath"));
+        $base64 = base64_encode($fileContent);
+        $fileBase64Uri = "data:$fileType;base64,$base64";
+
+        # Delete if needed
+        Storage::disk(StorageHelper::EXCEL_DISK_NAME)->delete($filePath);
+
+        # Return
+        return $response->send([
+            'file' => $file,
+            'type' => $fileType,
+            'data' => $fileBase64Uri,
+        ]);
+    }
+
+    public function invoiceDetailsExport(InvoiceSearchRequest $request)
+    {
+        # Search invoices
+        $record = $this->searchBusiness($request);
+        # Send response using the predefined format
+        $response = $this->getResponseHandler();
+
+        # Set file path
+        $timestamp = date('YmdHi');
+        $file = "DanhSachChiTietHoaDon_$timestamp.xlsx";
+        $filePath = "invoice-details/$file";
+
+        $result = Excel::store(new InvoiceDetailsExport($record), $filePath, StorageHelper::EXCEL_DISK_NAME);
+        if (empty($result)) $response->fail(['status' => $result]);
+        # Generate file base64
+        $fileContent = Storage::disk(StorageHelper::EXCEL_DISK_NAME)->get($filePath);
+        $fileType = File::mimeType(storage_path("app/export/$filePath"));
+        $base64 = base64_encode($fileContent);
+        $fileBase64Uri = "data:$fileType;base64,$base64";
+
+        # Delete if needed
+        Storage::disk(StorageHelper::EXCEL_DISK_NAME)->delete($filePath);
+
+        # Return
+        return $response->send([
+            'file' => $file,
+            'type' => $fileType,
+            'data' => $fileBase64Uri,
+        ]);
     }
 }

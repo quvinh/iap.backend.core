@@ -72,6 +72,13 @@ return [
             'folder' => env('GOOGLE_DRIVE_FOLDER')
         ],
 
+        'excel' => [
+            'driver' => 'local',
+            'root' => storage_path('app/export'),
+            'url' => env('APP_URL') . '/excel',
+            'visibility' => 'public',
+            'throw' => false,
+        ],
     ],
 
     /*

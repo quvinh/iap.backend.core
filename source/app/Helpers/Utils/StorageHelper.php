@@ -9,6 +9,7 @@ class StorageHelper
     public const TMP_DISK_NAME = 'tmp';
     public const CACHE_DISK_NAME = 'cache';
     public const CLOUD_DISK_NAME = 'google';
+    public const EXCEL_DISK_NAME = 'excel';
 
     /**
      * Move a file from disk to disk
