@@ -12,8 +12,11 @@ use Maatwebsite\Excel\Concerns\WithStyles;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use Maatwebsite\Excel\Concerns\WithColumnWidths;
 use Maatwebsite\Excel\Concerns\WithHeadings;
+use PhpOffice\PhpSpreadsheet\Style\Border;
+use Maatwebsite\Excel\Concerns\WithColumnFormatting;
+use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
 
-class InvoiceDetailsExport implements FromCollection, Responsable, WithStyles, WithHeadings, WithColumnWidths
+class InvoiceDetailsExport implements FromCollection, Responsable, WithStyles, WithHeadings, WithColumnWidths, WithColumnFormatting
 {
     use Exportable;
 
@@ -81,9 +84,33 @@ class InvoiceDetailsExport implements FromCollection, Responsable, WithStyles, W
         ];
     }
 
+    public function columnFormats(): array
+    {
+        return [
+            'D' => NumberFormat::FORMAT_NUMBER,
+            'K' => NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1,
+            'L' => NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1,
+            'M' => NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1,
+            'N' => NumberFormat::FORMAT_NUMBER,
+            'O' => NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1,
+        ];
+    }
+
     public function styles(Worksheet $sheet)
     {
-        return [];
+        $count = 0;
+        foreach ($this->record as $row) {
+            foreach ($row->invoice_details as $item) {
+                $count++;
+            }
+        }
+        $count++;
+        return [
+            "1" => ['font' => ['bold' => true]],
+            "A1:P$count" => ['borders' => [
+                'allBorders' => ['borderStyle' => Border::BORDER_THIN]
+            ]]
+        ];
     }
 
     /**
@@ -111,7 +138,7 @@ class InvoiceDetailsExport implements FromCollection, Responsable, WithStyles, W
                     'quantity' => $item->quantity,
                     'price' => $item->price,
                     'total_money' => $item->total_money,
-                    'vat' => $item->vat,
+                    'vat' => "{$item->vat}",
                     'vat_money' => $item->vat_money,
 
                     'status' => $row->status == 2 ? 'Hoàn thành' : '-',

@@ -12,8 +12,11 @@ use Maatwebsite\Excel\Concerns\WithStyles;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use Maatwebsite\Excel\Concerns\WithColumnWidths;
 use Maatwebsite\Excel\Concerns\WithHeadings;
+use PhpOffice\PhpSpreadsheet\Style\Border;
+use Maatwebsite\Excel\Concerns\WithColumnFormatting;
+use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
 
-class InvoicesExport implements FromCollection, Responsable, WithStyles, WithHeadings, WithColumnWidths
+class InvoicesExport implements FromCollection, Responsable, WithStyles, WithHeadings, WithColumnWidths, WithColumnFormatting
 {
     use Exportable;
 
@@ -75,9 +78,26 @@ class InvoicesExport implements FromCollection, Responsable, WithStyles, WithHea
         ];
     }
 
+    public function columnFormats(): array
+    {
+        return [
+            'D' => NumberFormat::FORMAT_NUMBER,
+            'J' => NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1,
+            'K' => NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1,
+            'L' => NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1,
+        ];
+    }
+
     public function styles(Worksheet $sheet)
     {
-        return [];
+        $count = count($this->record);
+        $count++;
+        return [
+            "1" => ['font' => ['bold' => true]],
+            "A1:P$count" => ['borders' => [
+                'allBorders' => ['borderStyle' => Border::BORDER_THIN]
+            ]]
+        ];
     }
 
     /**
