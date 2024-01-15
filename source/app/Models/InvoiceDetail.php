@@ -48,6 +48,8 @@ class InvoiceDetail extends BaseModel
 
     public function setInvoiceDetail(float $quantity, float $price, int $vat, bool $rounding = true): void
     {
+        $this->quantity = $quantity;
+        $this->price = $price;
         $this->total_money = RoundMoneyHelper::roundMoney($quantity * $price, $rounding ? 1 : 0);
         $this->vat = $vat;
         $this->vat_money = $this->getVatMoney();
@@ -58,8 +60,8 @@ class InvoiceDetail extends BaseModel
         try {
             $vat = $this->vat;
             if ($this->vat < 0) $vat = 0; // Exception vat=-1; vat=-2
-            $vat_money = $this->total_money * ($vat / 100);
-            return RoundMoneyHelper::roundMoney($vat_money);
+            $vat_money = $this->quantity * $this->price * $vat * 0.01;
+            return round($vat_money, 2);
         } catch (\Exception) {
             return 0;
         }

@@ -4,6 +4,7 @@ namespace App\Exports;
 
 use App\Helpers\Enums\InvoiceTypes;
 use App\Models\Invoice;
+use Carbon\Carbon;
 use Maatwebsite\Excel\Excel;
 use Illuminate\Contracts\Support\Responsable;
 use Maatwebsite\Excel\Concerns\Exportable;
@@ -45,8 +46,8 @@ class InvoiceDetailsExport implements FromCollection, Responsable, WithStyles, W
         return [
             'Mẫu số',
             'Ký hiệu',
-            'Tháng',
             'Số HĐ',
+            'Tháng',
             'MST bên mua',
             'Tên bên mua',
             'MST bên bán',
@@ -66,9 +67,9 @@ class InvoiceDetailsExport implements FromCollection, Responsable, WithStyles, W
     {
         return [
             'A' => 7,
-            'B' => 7,
-            'C' => 15,
-            'D' => 10,
+            'B' => 15,
+            'C' => 7,
+            'D' => 15,
             'E' => 15,
             'F' => 25,
             'G' => 15,
@@ -87,7 +88,8 @@ class InvoiceDetailsExport implements FromCollection, Responsable, WithStyles, W
     public function columnFormats(): array
     {
         return [
-            'D' => NumberFormat::FORMAT_NUMBER,
+            'C' => NumberFormat::FORMAT_NUMBER,
+            'D' => NumberFormat::FORMAT_DATE_DDMMYYYY,
             'K' => NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1,
             'L' => NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1,
             'M' => NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1,
@@ -126,8 +128,8 @@ class InvoiceDetailsExport implements FromCollection, Responsable, WithStyles, W
                 $result[] = [
                     'invoice_number_form' => $row->invoice_number_form,
                     'invoice_symbol' => $row->invoice_symbol,
-                    'date' => $row->date,
                     'invoice_number' => $row->invoice_number,
+                    'date' => Carbon::parse($row->date)->format('d/m/Y'),
                     'purchaser_tax_code' => $isPurchase ? $row->company[0]->tax_code : $row->partner_tax_code,
                     'purchaser' => $isPurchase ? $row->company[0]->tax_code : $row->partner_tax_code,
                     'seller_tax_code' => $isSold ? $row->company[0]->tax_code : $row->partner_tax_code,
@@ -135,7 +137,7 @@ class InvoiceDetailsExport implements FromCollection, Responsable, WithStyles, W
                     # item-detail
                     'product' => $item->product,
                     'unit' => $item->unit,
-                    'quantity' => $item->quantity,
+                    'quantity' => "{$item->quantity}",
                     'price' => $item->price,
                     'total_money' => $item->total_money,
                     'vat' => "{$item->vat}",

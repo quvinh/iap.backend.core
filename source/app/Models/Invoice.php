@@ -51,7 +51,7 @@ class Invoice extends BaseModel
     public function plusMoneyInvoice(float $total_money_no_vat, int $vat, float $discount = 0): void
     {
         $vat_money = $this->getVatMoneyInvoiceDetail($total_money_no_vat, $vat);
-        $total_money_no_vat = RoundMoneyHelper::roundMoney($total_money_no_vat);
+        // $total_money_no_vat = RoundMoneyHelper::roundMoney($total_money_no_vat);
         $this->sum_money_no_vat += $total_money_no_vat;
         $this->sum_money_vat += $vat_money;
         $this->sum_money_discount += RoundMoneyHelper::roundMoney($discount);
@@ -64,7 +64,7 @@ class Invoice extends BaseModel
             $vat = $_vat;
             if ($_vat < 0) $vat = 0; // Exception vat=-1; vat=-2
             $vat_money = $total_money_no_vat * ($vat / 100);
-            return RoundMoneyHelper::roundMoney($vat_money);
+            return round($vat_money, 2);
         } catch (\Exception) {
             return 0;
         }

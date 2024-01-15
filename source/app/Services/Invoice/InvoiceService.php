@@ -264,14 +264,15 @@ class InvoiceService extends \App\Services\BaseService implements IInvoiceServic
                     $item = $this->invoiceDetailService->getSingleObject($row['id']);
                     if (!empty($item)) {
                         $_vat = empty($row['vat']) ? 0 : ($row['vat'] >= 0 ? $row['vat'] : 0);
+                        $total_money = $row['total_money'] ?? $item->total_money;
                         $item->product = $row['product'] ?? $item->product;
                         $item->unit = $row['unit'] ?? $item->unit;
                         $item->quantity = $row['quantity'] ?? $item->quantity;
                         $item->price = $row['price'] ?? $item->price;
                         $item->vat = $row['vat'] ?? $item->vat;
-                        $item->total_money = RoundMoneyHelper::roundMoney($row['total_money'] ?? $item->total_money, $rounding);
+                        $item->total_money = RoundMoneyHelper::roundMoney($total_money, $rounding);
                         $item->warehouse = $row['warehouse'] ?? $item->warehouse;
-                        $item->vat_money = RoundMoneyHelper::roundMoney((floatval($_vat) * floatval($item->total_money)) / 100, $rounding);
+                        $item->vat_money = round((floatval($_vat) * floatval($item->total_money)) / 100, 2);
                         if ($item->save()) {
                             $_sumMoneyNoVat += floatval($item->total_money);
                             $_sumMoneyVat += floatval($item->vat_money);
@@ -293,7 +294,7 @@ class InvoiceService extends \App\Services\BaseService implements IInvoiceServic
                             'quantity' => $row['quantity'],
                             'price' => $row['price'],
                             'vat' => $row['vat'] ?? 0,
-                            'vat_money' => RoundMoneyHelper::roundMoney($row['vat_money'], $rounding),
+                            'vat_money' => round($row['vat_money'], 2),
                             'total_money' => RoundMoneyHelper::roundMoney($row['total_money'], $rounding),
                             'warehouse' => $row['warehouse'] ?? 0,
                         ], $commandMetaInfo);
@@ -465,8 +466,8 @@ class InvoiceService extends \App\Services\BaseService implements IInvoiceServic
             $invoiceDetail->product = $param['product'];
             $invoiceDetail->product_exchange = $param['product_exchange'] ?? null;
             $invoiceDetail->unit = $unit;
-            $invoiceDetail->quantity = $param['quantity'];
-            $invoiceDetail->price = $param['price'];
+            // $invoiceDetail->quantity = $param['quantity'];
+            // $invoiceDetail->price = $param['price'];
             $invoiceDetail->setInvoiceDetail($param['quantity'], $param['price'], $param['vat']);
             $invoiceDetail->save();
             # 5.Update sum value of invoice
@@ -512,7 +513,7 @@ class InvoiceService extends \App\Services\BaseService implements IInvoiceServic
                     'product_code' => $row['product_code'] ?? null,
                     'product_exchange' => $row['product_exchange'] ?? null,
                     'unit' => $row['unit'],
-                    'vat' => RoundMoneyHelper::roundMoney(floatval($row['vat']), $rounding),
+                    'vat' => $row['vat'],
                     'quantity' => $row['quantity'],
                     'price' => $row['price'],
                     'verification_code_status' => $param['verification_code_status'] ?? 1, # Co ma co quan thue

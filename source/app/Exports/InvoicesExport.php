@@ -4,6 +4,7 @@ namespace App\Exports;
 
 use App\Helpers\Enums\InvoiceTypes;
 use App\Models\Invoice;
+use Carbon\Carbon;
 use Maatwebsite\Excel\Excel;
 use Illuminate\Contracts\Support\Responsable;
 use Maatwebsite\Excel\Concerns\Exportable;
@@ -46,8 +47,8 @@ class InvoicesExport implements FromCollection, Responsable, WithStyles, WithHea
             'STT',
             'Mẫu số',
             'Ký hiệu',
-            'Tháng',
             'Số HĐ',
+            'Tháng',
             'MST bên mua',
             'Tên bên mua',
             'MST bên bán',
@@ -65,15 +66,15 @@ class InvoicesExport implements FromCollection, Responsable, WithStyles, WithHea
             'A' => 7,
             'B' => 7,
             'C' => 7,
-            'D' => 15,
-            'E' => 10,
+            'D' => 10,
+            'E' => 15,
             'F' => 15,
             'G' => 25,
             'H' => 15,
             'I' => 25,
-            'J' => 30,
-            'K' => 10,
-            'L' => 10,
+            'J' => 20,
+            'K' => 20,
+            'L' => 20,
             'M' => 15,
         ];
     }
@@ -82,6 +83,7 @@ class InvoicesExport implements FromCollection, Responsable, WithStyles, WithHea
     {
         return [
             'D' => NumberFormat::FORMAT_NUMBER,
+            'E' => NumberFormat::FORMAT_DATE_DDMMYYYY,
             'J' => NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1,
             'K' => NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1,
             'L' => NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1,
@@ -94,7 +96,7 @@ class InvoicesExport implements FromCollection, Responsable, WithStyles, WithHea
         $count++;
         return [
             "1" => ['font' => ['bold' => true]],
-            "A1:P$count" => ['borders' => [
+            "A1:M$count" => ['borders' => [
                 'allBorders' => ['borderStyle' => Border::BORDER_THIN]
             ]]
         ];
@@ -113,8 +115,8 @@ class InvoicesExport implements FromCollection, Responsable, WithStyles, WithHea
                 'index' => $index + 1,
                 'invoice_number_form' => $row->invoice_number_form,
                 'invoice_symbol' => $row->invoice_symbol,
-                'date' => $row->date,
                 'invoice_number' => $row->invoice_number,
+                'date' => Carbon::parse($row->date)->format('d/m/Y'),
                 'purchaser_tax_code' => $isPurchase ? $row->company[0]->tax_code : $row->partner_tax_code,
                 'purchaser' => $isPurchase ? $row->company[0]->tax_code : $row->partner_tax_code,
                 'seller_tax_code' => $isSold ? $row->company[0]->tax_code : $row->partner_tax_code,
