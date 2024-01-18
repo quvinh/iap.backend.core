@@ -124,27 +124,30 @@ class InvoiceDetailsExport implements FromCollection, Responsable, WithStyles, W
         foreach ($this->record as $row) {
             $isSold = $row->type == InvoiceTypes::SOLD;
             $isPurchase = $row->type == InvoiceTypes::PURCHASE;
-            foreach ($row->invoice_details as $item) {
-                $result[] = [
-                    'invoice_number_form' => $row->invoice_number_form,
-                    'invoice_symbol' => $row->invoice_symbol,
-                    'invoice_number' => $row->invoice_number,
-                    'date' => Carbon::parse($row->date)->format('d/m/Y'),
-                    'purchaser_tax_code' => $isPurchase ? $row->company[0]->tax_code : $row->partner_tax_code,
-                    'purchaser' => $isPurchase ? $row->company[0]->tax_code : $row->partner_tax_code,
-                    'seller_tax_code' => $isSold ? $row->company[0]->tax_code : $row->partner_tax_code,
-                    'seller' => $isSold ? $row->company[0]->name : $row->partner_name,
-                    # item-detail
-                    'product' => $item->product,
-                    'unit' => $item->unit,
-                    'quantity' => "{$item->quantity}",
-                    'price' => $item->price,
-                    'total_money' => $item->total_money,
-                    'vat' => "{$item->vat}",
-                    'vat_money' => $item->vat_money,
-
-                    'status' => $row->status == 2 ? 'Hoàn thành' : '-',
-                ];
+            # Check invoice locked
+            if ($row->locked == 0) {
+                foreach ($row->invoice_details as $item) {
+                    $result[] = [
+                        'invoice_number_form' => $row->invoice_number_form,
+                        'invoice_symbol' => $row->invoice_symbol,
+                        'invoice_number' => $row->invoice_number,
+                        'date' => Carbon::parse($row->date)->format('d/m/Y'),
+                        'purchaser_tax_code' => $isPurchase ? $row->company[0]->tax_code : $row->partner_tax_code,
+                        'purchaser' => $isPurchase ? $row->company[0]->tax_code : $row->partner_tax_code,
+                        'seller_tax_code' => $isSold ? $row->company[0]->tax_code : $row->partner_tax_code,
+                        'seller' => $isSold ? $row->company[0]->name : $row->partner_name,
+                        # item-detail
+                        'product' => $item->product,
+                        'unit' => $item->unit,
+                        'quantity' => "{$item->quantity}",
+                        'price' => $item->price,
+                        'total_money' => $item->total_money,
+                        'vat' => "{$item->vat}",
+                        'vat_money' => $item->vat_money,
+    
+                        'status' => $row->status == 2 ? 'Hoàn thành' : '-',
+                    ];
+                }
             }
         }
         return collect($result);

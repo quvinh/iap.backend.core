@@ -31,6 +31,7 @@ class InvoiceBasicResource extends BaseDataResource
         'sum_money_discount',
         'sum_money',
         'status',
+        'locked',
     ];
 
     /**

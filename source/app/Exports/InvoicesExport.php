@@ -111,21 +111,24 @@ class InvoicesExport implements FromCollection, Responsable, WithStyles, WithHea
         foreach ($this->record as $index => $row) {
             $isSold = $row->type == InvoiceTypes::SOLD;
             $isPurchase = $row->type == InvoiceTypes::PURCHASE;
-            $result[] = [
-                'index' => $index + 1,
-                'invoice_number_form' => $row->invoice_number_form,
-                'invoice_symbol' => $row->invoice_symbol,
-                'invoice_number' => $row->invoice_number,
-                'date' => Carbon::parse($row->date)->format('d/m/Y'),
-                'purchaser_tax_code' => $isPurchase ? $row->company[0]->tax_code : $row->partner_tax_code,
-                'purchaser' => $isPurchase ? $row->company[0]->tax_code : $row->partner_tax_code,
-                'seller_tax_code' => $isSold ? $row->company[0]->tax_code : $row->partner_tax_code,
-                'seller' => $isSold ? $row->company[0]->name : $row->partner_name,
-                'sum_money_no_vat' => $row->sum_money_no_vat,
-                'sum_money_vat' => $row->sum_money_vat,
-                'sum_money' => $row->sum_money,
-                'status' => $row->status == 2 ? 'Hoàn thành' : '-',
-            ];
+            # Check invoice locked
+            if ($row->locked == 0) {
+                $result[] = [
+                    'index' => $index + 1,
+                    'invoice_number_form' => $row->invoice_number_form,
+                    'invoice_symbol' => $row->invoice_symbol,
+                    'invoice_number' => $row->invoice_number,
+                    'date' => Carbon::parse($row->date)->format('d/m/Y'),
+                    'purchaser_tax_code' => $isPurchase ? $row->company[0]->tax_code : $row->partner_tax_code,
+                    'purchaser' => $isPurchase ? $row->company[0]->tax_code : $row->partner_tax_code,
+                    'seller_tax_code' => $isSold ? $row->company[0]->tax_code : $row->partner_tax_code,
+                    'seller' => $isSold ? $row->company[0]->name : $row->partner_name,
+                    'sum_money_no_vat' => $row->sum_money_no_vat,
+                    'sum_money_vat' => $row->sum_money_vat,
+                    'sum_money' => $row->sum_money,
+                    'status' => $row->status == 2 ? 'Hoàn thành' : '-',
+                ];
+            }
         }
         return collect($result);
     }
