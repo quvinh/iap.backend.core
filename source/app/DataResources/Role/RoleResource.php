@@ -16,6 +16,7 @@ class RoleResource extends BaseDataResource
         'id',
         'slug',
         'name',
+        'created_by',
     ];
 
     /**
