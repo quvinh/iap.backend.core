@@ -30,6 +30,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class InvoiceMediaController extends ApiController
 {
@@ -135,6 +136,7 @@ class InvoiceMediaController extends ApiController
     {
         $root = self::DEFAULT_FOLDER_UPLOAD_FILE;
         $company_id = $request->company_id;
+        $month = $request->month;
         $year = $request->year;
         # Send response using the predefined format
         $response = ApiResponse::v1();
@@ -155,6 +157,7 @@ class InvoiceMediaController extends ApiController
             if (!empty($result)) {
                 $params = [
                     'company_id' => $com->id,
+                    'month' => $month,
                     'year' => $year,
                     'path' => $result,
                 ];

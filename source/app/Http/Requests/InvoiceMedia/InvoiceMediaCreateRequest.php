@@ -34,6 +34,7 @@ class InvoiceMediaCreateRequest extends BaseRequest
         return [
             'company_id' => ['required', 'integer', 'exists:companies,id'],
             'invoice_id' => ['integer', 'exists:invoices,id'],
+            'month' => ['required'],
             'year' => ['required', 'max:4'],
             'file' => ['required', 'mimes:pdf,png,jpg,jpeg', "max:$maxSizeUpload"],
         ];

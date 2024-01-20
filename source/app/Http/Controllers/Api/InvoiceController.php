@@ -165,7 +165,6 @@ class InvoiceController extends ApiController
             $filename        = pathinfo($filenameWithExt, PATHINFO_FILENAME);
             $extension       = $request->file('file')->getClientOriginalExtension();
             $fileNameToStore = $filename . '_' . time() . '.' . $extension;
-            dd($fileNameToStore, $request->company_id);
         }
         # Send response using the predefined format
         $response = ApiResponse::v1();
