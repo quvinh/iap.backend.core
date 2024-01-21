@@ -61,7 +61,7 @@ class PermissionService extends \App\Services\BaseService implements IPermission
     /**
      * Search list of items
      *
-     * @param array<string> $rawConditions
+     * @param array $rawConditions
      * @param PaginationInfo|null $paging
      * @param array<string> $withs
      * @return Collection<int,Permission>
