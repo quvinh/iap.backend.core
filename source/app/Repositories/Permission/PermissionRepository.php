@@ -20,4 +20,9 @@ class PermissionRepository extends BaseRepository implements IPermissionReposito
     {
         return Permission::class;
     }
+
+    public function findBySlug($slug): Permission | null
+    {
+        return Permission::query()->where('slug', $slug)->first();
+    }
 }

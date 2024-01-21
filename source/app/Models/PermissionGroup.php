@@ -18,13 +18,13 @@ class PermissionGroup extends Model
 
     public $timestamps = false;
 
-    public function permission(): HasOne
+    public function permission(): BelongsTo
     {
-        return $this->hasOne(Permission::class, 'id', 'permission_id');
+        return $this->belongsTo(Permission::class);
     }
 
     public function role(): BelongsTo
     {
-        return $this->belongsTo(Role::class, 'id', 'role_id');
+        return $this->belongsTo(Role::class);
     }
 }

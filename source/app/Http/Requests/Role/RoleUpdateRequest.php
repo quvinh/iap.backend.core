@@ -31,7 +31,8 @@ class RoleUpdateRequest extends BaseRequest
     public function rules(): array
     {
         return [
-            'name' => ['required', 'string', 'max:100', 'unique:roles,name,' . $this->id]
+            'slug' => ['required', 'string', 'max:100', 'unique:roles,slug,' . $this->id],
+            'name' => ['required', 'string', 'max:100'],
         ];
     }
 }

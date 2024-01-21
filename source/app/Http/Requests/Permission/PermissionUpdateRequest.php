@@ -31,8 +31,8 @@ class PermissionUpdateRequest extends BaseRequest
     public function rules(): array
     {
         return [
-            'role_id' => ['required', 'integer', 'exists:roles,id'],
-            'name' => ['required', 'string', 'max:100', 'unique:permissions,name,' . $this->id]
+            'slug' => ['required', 'string', 'max:100', 'unique:permissions,slug,' . $this->id],
+            'name' => ['required', 'string', 'max:100'],
         ];
     }
 }

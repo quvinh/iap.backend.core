@@ -7,4 +7,5 @@ use App\Services\IService;
 
 interface IPermissionService extends IService
 {
+    public function findBySlug($slug): Permission | null;
 }

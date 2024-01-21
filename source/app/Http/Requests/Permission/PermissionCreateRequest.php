@@ -31,8 +31,8 @@ class PermissionCreateRequest extends BaseRequest
     public function rules(): array
     {
         return [
-            'role_id' => ['required', 'integer', 'exists:roles,id'],
-            'name' => ['required', 'string', 'max:100', 'unique:permissions,name']
+            'slug' => ['required', 'string', 'max:100', 'unique:permissions,slug'],
+            'name' => ['required', 'string', 'max:100'],
         ];
     }
 }

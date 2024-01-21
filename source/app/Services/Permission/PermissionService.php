@@ -118,16 +118,16 @@ class PermissionService extends \App\Services\BaseService implements IPermission
         try {
             #1 Create
             $record = $this->permissionRepos->create($param, $commandMetaInfo);
-            if (!empty($record)) {
-                $role = $this->roleRepos->getSingleObject($param['role_id'])->first();
-                if (empty($role)) throw new RecordIsNotFoundException();
-                $permissionGroup = new PermissionGroup();
-                $permissionGroup->role_id = $param['role_id'];
-                $permissionGroup->permission_id = $record->id;
-                if (!$permissionGroup->save()) throw new CannotSaveToDBException(message: "Cannot create record: permission group");
-            } else {
-                throw new CannotSaveToDBException(message: "Cannot create record: permission");
-            }
+            // if (!empty($record)) {
+            //     $role = $this->roleRepos->getSingleObject($param['role_id'])->first();
+            //     if (empty($role)) throw new RecordIsNotFoundException();
+            //     $permissionGroup = new PermissionGroup();
+            //     $permissionGroup->role_id = $param['role_id'];
+            //     $permissionGroup->permission_id = $record->id;
+            //     if (!$permissionGroup->save()) throw new CannotSaveToDBException(message: "Cannot create record: permission group");
+            // } else {
+            //     throw new CannotSaveToDBException(message: "Cannot create record: permission");
+            // }
             DB::commit();
             #2 Return
             return $record;
@@ -183,7 +183,7 @@ class PermissionService extends \App\Services\BaseService implements IPermission
      * @return bool
      * @throws CannotDeleteDBException
      */
-    public function delete(int $id, bool $softDelete = true, MetaInfo $commandMetaInfo = null): bool
+    public function delete(int $id, bool $softDelete = false, MetaInfo $commandMetaInfo = null): bool
     {
         DB::beginTransaction();
         try {
@@ -191,10 +191,10 @@ class PermissionService extends \App\Services\BaseService implements IPermission
             if (empty($record)) {
                 throw new RecordIsNotFoundException();
             }
-            $permissionGroup = new PermissionGroup();
-            if (!$permissionGroup->where('permission_id', $record->id)->delete()) {
-                throw new CannotDeleteDBException(message: "Cannot delete record: permission");
-            }
+            // $permissionGroup = new PermissionGroup();
+            // if (!$permissionGroup->where('permission_id', $record->id)->delete()) {
+            //     throw new CannotDeleteDBException(message: "Cannot delete record: permission");
+            // }
             $result =  $this->permissionRepos->delete(id: $id, soft: $softDelete, meta: $commandMetaInfo);
             DB::commit();
             return $result;
@@ -205,5 +205,10 @@ class PermissionService extends \App\Services\BaseService implements IPermission
                 previous: $ex
             );
         }
+    }
+
+    public function findBySlug($slug): Permission | null
+    {
+        return $this->permissionRepos->findBySlug($slug);
     }
 }

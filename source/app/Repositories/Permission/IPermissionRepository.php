@@ -8,4 +8,5 @@ use App\Repositories\IRepository;
 
 interface IPermissionRepository extends IRepository
 {
+    public function findBySlug($slug): Permission | null;
 }

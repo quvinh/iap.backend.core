@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Permission extends BaseModel
@@ -17,10 +18,10 @@ class Permission extends BaseModel
     ];
 
     /**
-     * @return BelongsTo
+     * @return HasMany
      */
-    public function permission_group(): BelongsTo
+    public function permission_groups(): HasMany
     {
-        return $this->belongsTo(PermissionGroup::class, 'permission_id', 'id');
+        return $this->hasMany(PermissionGroup::class, 'permission_id', 'id');
     }
 }

@@ -3,6 +3,7 @@
 namespace App\DataResources\Permission;
 
 use App\DataResources\BaseDataResource;
+use App\DataResources\PermissionGroup\PermissionGroupResource;
 use App\Models\Permission;
 
 class PermissionResource extends BaseDataResource
@@ -14,6 +15,7 @@ class PermissionResource extends BaseDataResource
         'id',
         'slug',
         'name',
+        'created_by',
     ];
 
     /**
@@ -32,5 +34,9 @@ class PermissionResource extends BaseDataResource
     public function load(mixed $obj): void
     {
         parent::copy($obj, $this->fields);
+
+        if (in_array('permission_groups', $this->fields)) {
+            $this->permission_groups = BaseDataResource::generateResources($obj->permission_groups, PermissionGroupResource::class);
+        }
     }
 }
