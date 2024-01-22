@@ -21,12 +21,13 @@ class CommandController extends Controller
     {
         $root = 'command';
         if ($role == UserRoles::ADMINISTRATOR) {
-            Route::post($root . '/migrate', [CommandController::class, 'migrate']);
-            Route::post($root . '/migrate/fresh', [CommandController::class, 'migrateFresh']);
-            Route::post($root . '/backup', [CommandController::class, 'backup']);
-            Route::post($root . '/cache/clear', [CommandController::class, 'cacheClear']);
-            Route::post($root . '/user/fresh', [CommandController::class, 'userFresh']);
-            Route::post($root . '/user/companies', [CommandController::class, 'userCompanies']);
+            // Route::post($root . '/migrate', [CommandController::class, 'migrate']);
+            // Route::post($root . '/migrate/fresh', [CommandController::class, 'migrateFresh']);
+            // Route::post($root . '/backup', [CommandController::class, 'backup']);
+            // Route::post($root . '/cache/clear', [CommandController::class, 'cacheClear']);
+            // Route::post($root . '/user/fresh', [CommandController::class, 'userFresh']);
+            // Route::post($root . '/user/companies', [CommandController::class, 'userCompanies']);
+            Route::post($root, [CommandController::class, 'command']);
         }
     }
 
@@ -71,5 +72,33 @@ class CommandController extends Controller
         Log::info('user:companies');
         Artisan::call('user:companies');
         return ApiResponse::v1()->send(['info' => 'User:companies executed', 'output' => Artisan::output()]);
+    }
+
+    /**
+     * Execute command
+     */
+    public function command(Request $request)
+    {
+        try {
+            if (empty($request->command)) throw new \Exception("Command invalid");
+            $command = $request->command;
+            if (in_array($command, $this->actions())) {
+                Log::info("Executing: 'php artisan $command'");
+                Artisan::call($command);
+                return ApiResponse::v1()->send(['resulte' => "Executed: php artisan $command", 'output' => Artisan::output()]);
+            } else throw new \Exception("Command '$command' invalid");
+        } catch (\Exception $ex) {
+            Log::error($ex->getMessage());
+            return ApiResponse::v1()->fail(['result' => $ex->getMessage()]);
+        }
+    }
+
+    function actions(): array
+    {
+        return [
+            'migrate',
+            'cache:clear',
+            'generate:permissions',
+        ];
     }
 }

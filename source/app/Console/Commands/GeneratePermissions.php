@@ -38,7 +38,7 @@ class GeneratePermissions extends Command
         try {
             $this->info('Start generate permissions...');
             DB::table('permissions')->truncate();
-
+            DB::table('permission_groups')->truncate();
             $metaInfo = new MetaInfo('cmd', 'command');
             foreach ($models as $model) {
                 foreach ($actions as $action) {
