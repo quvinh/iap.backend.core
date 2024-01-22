@@ -236,6 +236,7 @@ class UserService extends \App\Services\BaseService implements IUserService
             if (empty($record)) {
                 throw new RecordIsNotFoundException();
             }
+            UserCompany::query()->where('user_id', $record->id)->delete();
             $result =  $this->userRepos->delete(id: $id, soft: $softDelete, meta: $commandMetaInfo);
             DB::commit();
             return $result;

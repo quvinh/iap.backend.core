@@ -14,6 +14,7 @@ class UserResource extends BaseDataResource
      */
     protected array $fields = [
         'id',
+        'role_id',
         'username',
         'email',
         'name',
@@ -43,6 +44,7 @@ class UserResource extends BaseDataResource
         if (in_array('role', $this->fields)) {
             $this->withField('role');
             $this->role = new RoleResource($obj->role);
+            // $this->role = BaseDataResource::generateResources($obj->role()->get(), RoleResource::class, ['permissions']);
         }
 
         if (in_array('companies', $this->fields)) {
