@@ -237,13 +237,24 @@ class AuthenticationController extends ApiController
         $getAuthIdentifier = auth()->user()->getAuthIdentifier();
         if ($getAuthIdentifier) {
             $user = auth()->user();
-            $role = Role::find(auth()->user()->role_id ?? null);
+
+            # Role-permissions
+            $role = $this->roleService->getSingleObject($user->role_id, ['permissions']);
+            if (!empty($role)) {
+                $slugs = array();
+                $role = (object)new RoleResource($role, ['permissions']);
+                foreach ($role->permissions as $item) {
+                    if (!empty($item->permission->slug)) $slugs[] = $item->permission->slug;
+                }
+                $role->permissions = $slugs;
+            }
+
+            # User-companies
             $companyIds = $this->userService->findByCompanies($getAuthIdentifier);
             $ret = array_merge($ret, [
                 'name' => $user->name,
                 'username' => $user->username,
-                'role' => $role->name,
-                'permissions' => [],
+                'role' => $role,
                 'companies' => array_map(function ($item) {
                     return $item['company_id'];
                 }, $companyIds),
