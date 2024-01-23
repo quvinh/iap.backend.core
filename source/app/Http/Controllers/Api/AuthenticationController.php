@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\DataResources\Role\RoleResource;
 use Illuminate\Http\Request;
 use App\Exceptions\Business\AuthorizationIsInvalid;
 use App\Exceptions\DB\RecordIsNotFoundException;
@@ -18,6 +19,7 @@ use App\Http\Requests\User\UserChangePasswordRequest;
 use App\Http\Requests\User\UserUpdateRequest;
 use App\Models\Role;
 use App\Services\Auth\IAuthService;
+use App\Services\Role\IRoleService;
 use App\Services\User\IUserService;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Hash;
@@ -28,11 +30,13 @@ class AuthenticationController extends ApiController
     use ResponseHandlerTrait;
     private IAuthService $authService;
     private IUserService $userService;
+    private IRoleService $roleService;
 
-    public function __construct(IAuthService $authService, IUserService $userService)
+    public function __construct(IAuthService $authService, IUserService $userService, IRoleService $roleService)
     {
         $this->userService = $userService;
         $this->authService = $authService;
+        $this->roleService = $roleService;
     }
 
     /**
@@ -88,11 +92,28 @@ class AuthenticationController extends ApiController
         if (!isset($sub) || !$sub->getAuthIdentifier()) {
             throw new AuthorizationIsInvalid(ErrorCodes::ERR_INVALID_AUTHORIZATION);
         }
+        
+        # Role-permissions
+        if (!empty($sub->role_id)) {
+            $role = $this->roleService->getSingleObject($sub->role_id, ['permissions']);
+            if (!empty($role)) {
+                $slugs = array();
+                $role = (object)new RoleResource($role, ['permissions']);
+                foreach ($role->permissions as $item) {
+                    if (!empty($item->permission->slug)) $slugs[] = $item->permission->slug;
+                }
+                $role->permissions = $slugs;
+            }
+            $sub->role = $role;
+        }
+        
+        # User-companies
         $companyIds = $this->userService->findByCompanies($sub->getAuthIdentifier());
         $sub->companies = array_map(function ($item) {
             return $item['company_id'];
         }, $companyIds);
-        # 3. return result
+
+        # Return result
         $response = ApiResponse::v1();
         return $response->send($sub);
     }
