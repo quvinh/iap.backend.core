@@ -8,35 +8,41 @@ use Maatwebsite\Excel\Events\AfterSheet;
 use Maatwebsite\Excel\Sheet;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Style\Border;
+use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
 
 class DataAnnouncementExport implements WithEvents
 {
     private const HEIGHT_TITLE = 30;
     private const ALL_BORDERS = ['allBorders' => ['borderStyle' => Border::BORDER_THIN]];
+    private int $rowIndex;
+    private $record;
 
-    public function __construct()
+    public function __construct($record)
     {
+        $this->rowIndex = 5;
+        $this->record = $record;
     }
 
     public function registerEvents(): array
     {
-        $rowIndex = 5;
         return [
-            AfterSheet::class => function (AfterSheet $event) use ($rowIndex) {
+            AfterSheet::class => function (AfterSheet $event) {
                 $sheet = $event->sheet;
                 $this->setWidthColumns($sheet);
                 $this->setTitle($sheet);
-                $this->mainHeader($sheet, $rowIndex);
+                $this->mainHeader($sheet);
 
                 # A.Doanh thu
-                $rowIndex++;
-                $this->doanhThu($sheet, $rowIndex);
+                $this->doanhThu($sheet);
 
                 # B.Chi phi
-                $rowIndex+= 2;
-                $this->chiPhi($sheet, $rowIndex);
+                $this->chiPhi($sheet);
+
                 # C.Thue GTGT
+                $this->thueGTGT($sheet);
+
                 # D.Loi nhuan
+                $this->loiNhuan($sheet);
             },
         ];
     }
@@ -53,7 +59,12 @@ class DataAnnouncementExport implements WithEvents
             'borders' => ['allBorders' => ['borderStyle' => Border::BORDER_THIN, 'color' => ['rgb' => $color]]],
         ]);
     }
-    
+    function increaseIndex(int $increase = 1): int
+    {
+        $this->rowIndex += $increase;
+        return $this->rowIndex;
+    }
+
     /**
      * Set width columns
      * @param Sheet $sheet
@@ -109,10 +120,11 @@ class DataAnnouncementExport implements WithEvents
     /**
      * Set title excel
      * @param Sheet $sheet
-     * @param int $rowIndex
      */
-    function mainHeader(Sheet $sheet, int $rowIndex = 1): void
+    function mainHeader(Sheet $sheet): void
     {
+        $this->rowIndex += 1;
+        $rowIndex = $this->rowIndex;
         $sheet->setCellValue("B$rowIndex", "Chỉ tiêu");
         $sheet->setCellValue("C$rowIndex", "Bán ra");
         $sheet->setCellValue("D$rowIndex", "Tồn đầu kỳ");
@@ -127,10 +139,11 @@ class DataAnnouncementExport implements WithEvents
     /**
      * A. Doanh thu
      * @param Sheet $sheet
-     * @param int $rowIndex
      */
-    function doanhThu(Sheet $sheet, int $rowIndex = 1): void
+    function doanhThu(Sheet $sheet): void
     {
+        $this->rowIndex += 1;
+        $rowIndex = $this->rowIndex;
         $sheet->setCellValue("A$rowIndex", "A");
         $sheet->setCellValue("B$rowIndex", "Doanh thu");
         $sheet->getStyle("A$rowIndex:B$rowIndex")->getFont()->setBold(true);
@@ -138,30 +151,45 @@ class DataAnnouncementExport implements WithEvents
         $this->setBorders($sheet, "A$rowIndex:G$rowIndex");
 
         # I.HH-DV Chinh
-        $rowIndex++;
-        $this->hangHoaDichVuChinh($sheet, $rowIndex);
+        $this->hangHoaDichVuChinh($sheet);
 
         # II.Doanh thu khac
-        $rowIndex++;
-        $this->doanhThuKhac($sheet, $rowIndex);
+        $this->doanhThuKhac($sheet);
 
         # III.Doanh thu tai chinh
-        $rowIndex++;
-        $this->doanhThuTaiChinh($sheet, $rowIndex);
+        $this->doanhThuTaiChinh($sheet);
     }
 
     /**
      * I. Hang hoa - Dich vu chinh
      * @param Sheet $sheet
-     * @param int $rowIndex
      */
-    function hangHoaDichVuChinh(Sheet $sheet, int $rowIndex = 1): void
+    function hangHoaDichVuChinh(Sheet $sheet): void
     {
+        $rowIndex = $this->increaseIndex();
         $sheet->setCellValue("A$rowIndex", "I");
         $sheet->setCellValue("B$rowIndex", "HH-DV Chính");
         $sheet->getStyle("A$rowIndex:B$rowIndex")->getFont()->setBold(true);
         $this->setBackgroundColor($sheet, "A$rowIndex:B$rowIndex", "C0C0C0");
         $this->setBorders($sheet, "A$rowIndex:G$rowIndex");
+        
+        # Get data-analysis
+        $record = (object) $this->record;
+        $data = $record->data_analysis ?? [];
+        foreach ($data as $index => $row) {
+            $rowIndex = $this->increaseIndex();
+            $row = (object) $row;
+
+            $this->setBorders($sheet, "A$rowIndex:G$rowIndex");
+            $sheet->getStyle("C$rowIndex:F$rowIndex")->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1);
+
+            $sheet->setCellValue("A$rowIndex", $index + 1);
+            $sheet->setCellValue("B$rowIndex", $row->formula_name);
+            $sheet->setCellValue("C$rowIndex", $row->sold);
+            $sheet->setCellValue("D$rowIndex", $row->opening_balance);
+            $sheet->setCellValue("E$rowIndex", $row->purchase);
+            $sheet->setCellValue("F$rowIndex", "=SUM(D$rowIndex+E$rowIndex)");
+        }
 
         # Code here
     }
@@ -169,10 +197,11 @@ class DataAnnouncementExport implements WithEvents
     /**
      * II. Doanh thu khac
      * @param Sheet $sheet
-     * @param int $rowIndex
      */
-    function doanhThuKhac(Sheet $sheet, int $rowIndex = 1): void
+    function doanhThuKhac(Sheet $sheet): void
     {
+        $this->rowIndex += 1;
+        $rowIndex = $this->rowIndex;
         $sheet->setCellValue("A$rowIndex", "II");
         $sheet->setCellValue("B$rowIndex", "Doanh thu khác");
         $sheet->getStyle("A$rowIndex:B$rowIndex")->getFont()->setBold(true);
@@ -185,10 +214,11 @@ class DataAnnouncementExport implements WithEvents
     /**
      * III. Doanh thu tai chinh
      * @param Sheet $sheet
-     * @param int $rowIndex
      */
-    function doanhThuTaiChinh(Sheet $sheet, int $rowIndex = 1): void
+    function doanhThuTaiChinh(Sheet $sheet): void
     {
+        $this->rowIndex += 1;
+        $rowIndex = $this->rowIndex;
         $sheet->setCellValue("A$rowIndex", "III");
         $sheet->setCellValue("B$rowIndex", "Doanh thu tài chính");
         $sheet->getStyle("A$rowIndex:B$rowIndex")->getFont()->setBold(true);
@@ -201,10 +231,11 @@ class DataAnnouncementExport implements WithEvents
     /**
      * B. Chi phi
      * @param Sheet $sheet
-     * @param int $rowIndex
      */
-    function chiPhi(Sheet $sheet, int $rowIndex = 1): void
+    function chiPhi(Sheet $sheet): void
     {
+        $this->rowIndex += 2;
+        $rowIndex = $this->rowIndex;
         $sheet->setCellValue("A$rowIndex", "B");
         $sheet->setCellValue("B$rowIndex", "Chi phí");
         $sheet->setCellValue("C$rowIndex", "CP có hoá đơn");
@@ -217,5 +248,85 @@ class DataAnnouncementExport implements WithEvents
         $this->setBackgroundColor($sheet, "A$rowIndex:B$rowIndex", "9BE5FF");
         $this->setBackgroundColor($sheet, "C$rowIndex:H$rowIndex", "C0C0C0");
         $this->setBorders($sheet, "A$rowIndex:H$rowIndex");
+
+        # I.Cac CP SXKD
+        $this->cacCPSXKD($sheet);
+
+        # II.Cac CP Khac
+        $this->cacCPKhac($sheet);
+    }
+
+    /**
+     * I. Cac CP SXKD
+     * @param Sheet $sheet
+     */
+    function cacCPSXKD(Sheet $sheet): void
+    {
+        $this->rowIndex += 1;
+        $rowIndex = $this->rowIndex;
+        $sheet->setCellValue("A$rowIndex", "I");
+        $sheet->setCellValue("B$rowIndex", "Các CP SXKD");
+        $sheet->getStyle("A$rowIndex:B$rowIndex")->getFont()->setBold(true);
+        $this->setBackgroundColor($sheet, "A$rowIndex:B$rowIndex", "C0C0C0");
+        $this->setBorders($sheet, "A$rowIndex:G$rowIndex");
+
+        # Code here
+    }
+
+    /**
+     * II. Cac CP Khac
+     * @param Sheet $sheet
+     */
+    function cacCPKhac(Sheet $sheet): void
+    {
+        $this->rowIndex += 1;
+        $rowIndex = $this->rowIndex;
+        $sheet->setCellValue("A$rowIndex", "I");
+        $sheet->setCellValue("B$rowIndex", "Các CP Khác");
+        $sheet->getStyle("A$rowIndex:B$rowIndex")->getFont()->setBold(true);
+        $this->setBackgroundColor($sheet, "A$rowIndex:B$rowIndex", "C0C0C0");
+        $this->setBorders($sheet, "A$rowIndex:G$rowIndex");
+
+        # Code here
+    }
+
+    /**
+     * C. Thue GTGT
+     * @param Sheet $sheet
+     */
+    function thueGTGT(Sheet $sheet): void
+    {
+        $this->rowIndex += 2;
+        $rowIndex = $this->rowIndex;
+        $sheet->setCellValue("A$rowIndex", "C");
+        $sheet->setCellValue("B$rowIndex", "Thuế GTGT");
+        $sheet->setCellValue("C$rowIndex", "Dư đầu kỳ");
+        $sheet->setCellValue("D$rowIndex", "Mua vào");
+        $sheet->setCellValue("E$rowIndex", "Bán ra");
+        $sheet->setCellValue("F$rowIndex", "Dư cuối kỳ");
+        $sheet->setCellValue("G$rowIndex", "Đã nộp");
+        $sheet->setCellValue("H$rowIndex", "Lý do");
+        $sheet->getStyle("A$rowIndex:B$rowIndex")->getFont()->setBold(true);
+        $this->setBackgroundColor($sheet, "A$rowIndex:B$rowIndex", "9BE5FF");
+        $this->setBackgroundColor($sheet, "C$rowIndex:H$rowIndex", "C0C0C0");
+        $this->setBorders($sheet, "A$rowIndex:H$rowIndex");
+    }
+
+    /**
+     * D. Loi nhuan
+     * @param Sheet $sheet
+     */
+    function loiNhuan(Sheet $sheet): void
+    {
+        $this->rowIndex += 2;
+        $rowIndex = $this->rowIndex;
+        $sheet->setCellValue("A$rowIndex", "D");
+        $sheet->setCellValue("B$rowIndex", "Lợi nhuận");
+        $sheet->setCellValue("C$rowIndex", "% Doanh thu");
+        $sheet->setCellValue("D$rowIndex", "~ Số tiền");
+        $sheet->getStyle("A$rowIndex:B$rowIndex")->getFont()->setBold(true);
+        $this->setBackgroundColor($sheet, "A$rowIndex:B$rowIndex", "9BE5FF");
+        $this->setBackgroundColor($sheet, "C$rowIndex:D$rowIndex", "C0C0C0");
+        $this->setBorders($sheet, "A$rowIndex:D$rowIndex");
     }
 }

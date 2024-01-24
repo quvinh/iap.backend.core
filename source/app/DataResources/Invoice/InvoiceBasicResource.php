@@ -14,6 +14,8 @@ class InvoiceBasicResource extends BaseDataResource
      */
     protected array $fields = [
         'id',
+        'company_id',
+        'invoice_task_id',
         'type',
         'date',
         'invoice_symbol',

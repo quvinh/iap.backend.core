@@ -15,10 +15,13 @@ use App\Http\Controllers\Traits\DefaultRestActions;
 use App\Http\Requests\Company\CompanyCreateRequest;
 use App\Http\Requests\Company\CompanySearchRequest;
 use App\Http\Requests\Company\CompanyUpdateRequest;
+use App\Http\Requests\Company\DataAnouncementExportRequest;
 use App\Services\IService;
 use App\Services\Company\ICompanyService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Storage;
 use Maatwebsite\Excel\Facades\Excel;
 
 class CompanyController extends ApiController
@@ -128,24 +131,34 @@ class CompanyController extends ApiController
     /**
      * Export excel
      */
-    public function dataAnnouncementExport(Request $request)
+    public function dataAnnouncementExport(DataAnouncementExportRequest $request)
     {
         # Send response using the predefined format
         $response = $this->getResponseHandler();
-
+        $payload = $request->input();
+        
         # Set file path
         $timestamp = date('YmdHi');
         $file = "ThongBaoSoLieu_$timestamp.xlsx";
         $filePath = "data-announcement/$file";
 
-        $result = Excel::store(new DataAnnouncementExport(), $filePath, StorageHelper::EXCEL_DISK_NAME);
+        $result = Excel::store(new DataAnnouncementExport($payload), $filePath, StorageHelper::EXCEL_DISK_NAME);
         if (empty($result)) $response->fail(['status' => $result]);
+
+        # Generate file base64
+        $fileContent = Storage::disk(StorageHelper::EXCEL_DISK_NAME)->get($filePath);
+        $fileType = File::mimeType(storage_path("app/export/$filePath"));
+        $base64 = base64_encode($fileContent);
+        $fileBase64Uri = "data:$fileType;base64,$base64";
+
+        # Delete if needed
+        Storage::disk(StorageHelper::EXCEL_DISK_NAME)->delete($filePath);
 
         # Return
         return $response->send([
             'file' => $file,
-            // 'type' => $fileType,
-            // 'data' => $fileBase64Uri,
+            'type' => $fileType,
+            'data' => $fileBase64Uri,
         ]);
     }
 }
