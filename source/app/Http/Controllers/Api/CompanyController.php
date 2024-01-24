@@ -5,9 +5,11 @@ namespace App\Http\Controllers\Api;
 use App\DataResources\BaseDataResource;
 use App\DataResources\Company\CompanyAllResource;
 use App\DataResources\Company\CompanyResource;
+use App\Exports\DataAnnouncementExport;
 use App\Helpers\Common\MetaInfo;
 use App\Helpers\Enums\UserRoles;
 use App\Helpers\Responses\ApiResponse;
+use App\Helpers\Utils\StorageHelper;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\Traits\DefaultRestActions;
 use App\Http\Requests\Company\CompanyCreateRequest;
@@ -17,6 +19,7 @@ use App\Services\IService;
 use App\Services\Company\ICompanyService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use Maatwebsite\Excel\Facades\Excel;
 
 class CompanyController extends ApiController
 {
@@ -44,6 +47,9 @@ class CompanyController extends ApiController
             Route::post($root, [CompanyController::class, 'create']);
             Route::put($root . '/{id}', [CompanyController::class, 'update']);
             Route::delete($root . '/{id}', [CompanyController::class, 'delete']);
+
+            # Export excel
+            Route::post($root . '/data-announcement-export', [CompanyController::class, 'dataAnnouncementExport']);
         }
     }
 
@@ -117,5 +123,29 @@ class CompanyController extends ApiController
         # Send response using the predefined format
         $response = ApiResponse::v1();
         return $response->send($result);
+    }
+
+    /**
+     * Export excel
+     */
+    public function dataAnnouncementExport(Request $request)
+    {
+        # Send response using the predefined format
+        $response = $this->getResponseHandler();
+
+        # Set file path
+        $timestamp = date('YmdHi');
+        $file = "ThongBaoSoLieu_$timestamp.xlsx";
+        $filePath = "data-announcement/$file";
+
+        $result = Excel::store(new DataAnnouncementExport(), $filePath, StorageHelper::EXCEL_DISK_NAME);
+        if (empty($result)) $response->fail(['status' => $result]);
+
+        # Return
+        return $response->send([
+            'file' => $file,
+            // 'type' => $fileType,
+            // 'data' => $fileBase64Uri,
+        ]);
     }
 }
