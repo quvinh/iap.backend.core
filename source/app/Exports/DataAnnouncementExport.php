@@ -28,9 +28,15 @@ class DataAnnouncementExport implements WithEvents
                 $this->setTitle($sheet);
                 $this->mainHeader($sheet, $rowIndex);
 
-                # Data
+                # A.Doanh thu
                 $rowIndex++;
                 $this->doanhThu($sheet, $rowIndex);
+
+                # B.Chi phi
+                $rowIndex+= 2;
+                $this->chiPhi($sheet, $rowIndex);
+                # C.Thue GTGT
+                # D.Loi nhuan
             },
         ];
     }
@@ -128,7 +134,88 @@ class DataAnnouncementExport implements WithEvents
         $sheet->setCellValue("A$rowIndex", "A");
         $sheet->setCellValue("B$rowIndex", "Doanh thu");
         $sheet->getStyle("A$rowIndex:B$rowIndex")->getFont()->setBold(true);
-        $this->setBackgroundColor($sheet, "A$rowIndex:B$rowIndex", "FFF2CC");
+        $this->setBackgroundColor($sheet, "A$rowIndex:B$rowIndex", "9BE5FF");
         $this->setBorders($sheet, "A$rowIndex:G$rowIndex");
+
+        # I.HH-DV Chinh
+        $rowIndex++;
+        $this->hangHoaDichVuChinh($sheet, $rowIndex);
+
+        # II.Doanh thu khac
+        $rowIndex++;
+        $this->doanhThuKhac($sheet, $rowIndex);
+
+        # III.Doanh thu tai chinh
+        $rowIndex++;
+        $this->doanhThuTaiChinh($sheet, $rowIndex);
+    }
+
+    /**
+     * I. Hang hoa - Dich vu chinh
+     * @param Sheet $sheet
+     * @param int $rowIndex
+     */
+    function hangHoaDichVuChinh(Sheet $sheet, int $rowIndex = 1): void
+    {
+        $sheet->setCellValue("A$rowIndex", "I");
+        $sheet->setCellValue("B$rowIndex", "HH-DV Chính");
+        $sheet->getStyle("A$rowIndex:B$rowIndex")->getFont()->setBold(true);
+        $this->setBackgroundColor($sheet, "A$rowIndex:B$rowIndex", "C0C0C0");
+        $this->setBorders($sheet, "A$rowIndex:G$rowIndex");
+
+        # Code here
+    }
+
+    /**
+     * II. Doanh thu khac
+     * @param Sheet $sheet
+     * @param int $rowIndex
+     */
+    function doanhThuKhac(Sheet $sheet, int $rowIndex = 1): void
+    {
+        $sheet->setCellValue("A$rowIndex", "II");
+        $sheet->setCellValue("B$rowIndex", "Doanh thu khác");
+        $sheet->getStyle("A$rowIndex:B$rowIndex")->getFont()->setBold(true);
+        $this->setBackgroundColor($sheet, "A$rowIndex:B$rowIndex", "C0C0C0");
+        $this->setBorders($sheet, "A$rowIndex:G$rowIndex");
+
+        # Code here
+    }
+
+    /**
+     * III. Doanh thu tai chinh
+     * @param Sheet $sheet
+     * @param int $rowIndex
+     */
+    function doanhThuTaiChinh(Sheet $sheet, int $rowIndex = 1): void
+    {
+        $sheet->setCellValue("A$rowIndex", "III");
+        $sheet->setCellValue("B$rowIndex", "Doanh thu tài chính");
+        $sheet->getStyle("A$rowIndex:B$rowIndex")->getFont()->setBold(true);
+        $this->setBackgroundColor($sheet, "A$rowIndex:B$rowIndex", "C0C0C0");
+        $this->setBorders($sheet, "A$rowIndex:G$rowIndex");
+
+        # Code here
+    }
+
+    /**
+     * B. Chi phi
+     * @param Sheet $sheet
+     * @param int $rowIndex
+     */
+    function chiPhi(Sheet $sheet, int $rowIndex = 1): void
+    {
+        $sheet->setCellValue("A$rowIndex", "B");
+        $sheet->setCellValue("B$rowIndex", "Chi phí");
+        $sheet->setCellValue("C$rowIndex", "CP có hoá đơn");
+        $sheet->setCellValue("D$rowIndex", "CP kết chuyển");
+        $sheet->setCellValue("E$rowIndex", "CP trên CT khác");
+        $sheet->setCellValue("F$rowIndex", "Cộng");
+        $sheet->setCellValue("G$rowIndex", "Đề xuất");
+        $sheet->setCellValue("H$rowIndex", "Lý do");
+        $sheet->getStyle("A$rowIndex:B$rowIndex")->getFont()->setBold(true);
+        $this->setBackgroundColor($sheet, "A$rowIndex:B$rowIndex", "9BE5FF");
+        $this->setBackgroundColor($sheet, "C$rowIndex:H$rowIndex", "C0C0C0");
+        $this->setBorders($sheet, "A$rowIndex:H$rowIndex");
     }
 }
