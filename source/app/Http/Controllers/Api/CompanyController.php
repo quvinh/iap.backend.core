@@ -135,14 +135,17 @@ class CompanyController extends ApiController
     {
         # Send response using the predefined format
         $response = $this->getResponseHandler();
+        
         $payload = $request->input();
+        $company = $this->companyService->getSingleObject($request->company_id);
+        if (empty($company)) $response->fail(['status' => false, 'message' => 'Company not found']);
         
         # Set file path
         $timestamp = date('YmdHi');
         $file = "ThongBaoSoLieu_$timestamp.xlsx";
         $filePath = "data-announcement/$file";
 
-        $result = Excel::store(new DataAnnouncementExport($payload), $filePath, StorageHelper::EXCEL_DISK_NAME);
+        $result = Excel::store(new DataAnnouncementExport($company, $payload), $filePath, StorageHelper::EXCEL_DISK_NAME);
         if (empty($result)) $response->fail(['status' => $result]);
 
         # Generate file base64

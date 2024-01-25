@@ -280,14 +280,14 @@ class CompanyDetailService extends \App\Services\BaseService implements ICompany
         DB::beginTransaction();
         try {
             $entity = $this->companyDetailRepos->getSingleObject($id)->first();
-            if (!$entity) throw new RecordIsNotFoundException();
+            if (!$entity) throw new RecordIsNotFoundException(message: "Company detail not found with ID:$id");
             # TODO: first arise accounts
             $this->companyDetailRepos->deleteAriseAccount($entity->id, array_map(function ($value) {
                 return $value['id'];
             }, $param['arise_accounts']));
             foreach ($param['arise_accounts'] as $acc) {
                 $account = $this->ariseAccountRepos->getSingleObject($acc['id'])->first();
-                if (!$account) throw new RecordIsNotFoundException();
+                if (!$account) throw new RecordIsNotFoundException(message: "First arise account not found with ID:" . $acc['id']);
                 $ckAccount = $this->companyDetailRepos->getSinglePropertyObject($entity->id, $account->id)->first();
                 if ($ckAccount) {
                     # Update info
@@ -312,13 +312,15 @@ class CompanyDetailService extends \App\Services\BaseService implements ICompany
             $this->companyDetailRepos->deleteTaxFreeVoucher($entity->id, $param['tax_free_vouchers']);
             foreach ($param['tax_free_vouchers'] as $idT) {
                 $tax = $this->taxFreeVoucherRepos->getSingleObject($idT)->first();
-                if (!$tax) throw new RecordIsNotFoundException();
-                $ckTax = $this->companyDetailRepos->getSingleVoucherPropertyObject($entity->id, $tax->id)->first();
-                if (!$ckTax) {
-                    $this->companyDetailRepos->createTaxFreeVoucher([
-                        'company_detail_id' => $entity->id,
-                        'tax_free_voucher_id' => $tax->id,
-                    ]);
+                // if (!$tax) throw new RecordIsNotFoundException(message: "Tax free voucher not found with ID: $idT");
+                if (!empty($tax)) {
+                    $ckTax = $this->companyDetailRepos->getSingleVoucherPropertyObject($entity->id, $tax->id)->first();
+                    if (!empty($ckTax)) {
+                        $this->companyDetailRepos->createTaxFreeVoucher([
+                            'company_detail_id' => $entity->id,
+                            'tax_free_voucher_id' => $tax->id,
+                        ]);
+                    }
                 }
             }
 
@@ -332,7 +334,7 @@ class CompanyDetailService extends \App\Services\BaseService implements ICompany
         } catch (\Exception $e) {
             DB::rollBack();
             throw new ActionFailException(
-                message: 'action failure',
+                message: $e->getMessage(),
                 previous: $e
             );
         }

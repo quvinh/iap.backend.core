@@ -2,6 +2,8 @@
 
 namespace App\Exports;
 
+use App\Helpers\Enums\CellColors;
+use App\Models\Company;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithEvents;
 use Maatwebsite\Excel\Events\AfterSheet;
@@ -15,11 +17,13 @@ class DataAnnouncementExport implements WithEvents
     private const HEIGHT_TITLE = 30;
     private const ALL_BORDERS = ['allBorders' => ['borderStyle' => Border::BORDER_THIN]];
     private int $rowIndex;
+    private $company;
     private $record;
 
-    public function __construct($record)
+    public function __construct(Company $company, mixed $record)
     {
         $this->rowIndex = 5;
+        $this->company = $company;
         $this->record = $record;
     }
 
@@ -47,13 +51,13 @@ class DataAnnouncementExport implements WithEvents
         ];
     }
 
-    function setBackgroundColor(Sheet $sheet, string $cells, string $color = 'FFFFFF'): void
+    function setBackgroundColor(Sheet $sheet, string $cells, string $color = CellColors::WHITE): void
     {
         $sheet->getStyle($cells)->applyFromArray([
             'fill' => ['fillType' => 'solid', 'startColor' => ['rgb' => $color]],
         ]);
     }
-    function setBorders(Sheet $sheet, string $cells, string $color = '000000'): void
+    function setBorders(Sheet $sheet, string $cells, string $color = CellColors::BLACK): void
     {
         $sheet->getStyle($cells)->applyFromArray([
             'borders' => ['allBorders' => ['borderStyle' => Border::BORDER_THIN, 'color' => ['rgb' => $color]]],
@@ -103,7 +107,7 @@ class DataAnnouncementExport implements WithEvents
         # Company name
         $rowIndex++;
         $sheet->setCellValue("B$rowIndex", "Tên đơn vị");
-        $sheet->setCellValue("C$rowIndex", "..."); # Fix here
+        $sheet->setCellValue("C$rowIndex", $this->company->name ?? "...");
         $sheet->mergeCells("C$rowIndex:F$rowIndex");
         $sheet->getStyle("B$rowIndex:F$rowIndex")->getFont()->setBold(true);
         $this->setBorders($sheet, "B$rowIndex:F$rowIndex");
@@ -111,7 +115,7 @@ class DataAnnouncementExport implements WithEvents
         # Tax code
         $rowIndex++;
         $sheet->setCellValue("B$rowIndex", "Mã số thuế");
-        $sheet->setCellValue("C$rowIndex", "..."); # Fix here
+        $sheet->setCellValue("C$rowIndex", $this->company->tax_code ?? "...");
         $sheet->mergeCells("C$rowIndex:F$rowIndex");
         $sheet->getStyle("B$rowIndex:F$rowIndex")->getFont()->setBold(true);
         $this->setBorders($sheet, "B$rowIndex:F$rowIndex");
@@ -132,7 +136,7 @@ class DataAnnouncementExport implements WithEvents
         $sheet->setCellValue("F$rowIndex", "Tồn cuối kỳ");
         $sheet->setCellValue("G$rowIndex", "Ghi chú");
         $sheet->getStyle("A$rowIndex:G$rowIndex")->getFont()->setBold(true);
-        $this->setBackgroundColor($sheet, "A$rowIndex:G$rowIndex", "FFF2CC");
+        $this->setBackgroundColor($sheet, "A$rowIndex:G$rowIndex", CellColors::YELLOW);
         $this->setBorders($sheet, "A$rowIndex:G$rowIndex");
     }
 
@@ -147,7 +151,7 @@ class DataAnnouncementExport implements WithEvents
         $sheet->setCellValue("A$rowIndex", "A");
         $sheet->setCellValue("B$rowIndex", "Doanh thu");
         $sheet->getStyle("A$rowIndex:B$rowIndex")->getFont()->setBold(true);
-        $this->setBackgroundColor($sheet, "A$rowIndex:B$rowIndex", "9BE5FF");
+        $this->setBackgroundColor($sheet, "A$rowIndex:B$rowIndex", CellColors::BLUE);
         $this->setBorders($sheet, "A$rowIndex:G$rowIndex");
 
         # I.HH-DV Chinh
@@ -170,15 +174,18 @@ class DataAnnouncementExport implements WithEvents
         $sheet->setCellValue("A$rowIndex", "I");
         $sheet->setCellValue("B$rowIndex", "HH-DV Chính");
         $sheet->getStyle("A$rowIndex:B$rowIndex")->getFont()->setBold(true);
-        $this->setBackgroundColor($sheet, "A$rowIndex:B$rowIndex", "C0C0C0");
+        $this->setBackgroundColor($sheet, "A$rowIndex:B$rowIndex", CellColors::GRAY);
         $this->setBorders($sheet, "A$rowIndex:G$rowIndex");
         
         # Get data-analysis
         $record = (object) $this->record;
         $data = $record->data_analysis ?? [];
+        $indexStart = $indexEnd = 0;
         foreach ($data as $index => $row) {
             $rowIndex = $this->increaseIndex();
             $row = (object) $row;
+            if ($index == 0) $indexStart = $rowIndex;
+            $indexEnd = $rowIndex;
 
             $this->setBorders($sheet, "A$rowIndex:G$rowIndex");
             $sheet->getStyle("C$rowIndex:F$rowIndex")->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1);
@@ -188,10 +195,24 @@ class DataAnnouncementExport implements WithEvents
             $sheet->setCellValue("C$rowIndex", $row->sold);
             $sheet->setCellValue("D$rowIndex", $row->opening_balance);
             $sheet->setCellValue("E$rowIndex", $row->purchase);
-            $sheet->setCellValue("F$rowIndex", "=SUM(D$rowIndex+E$rowIndex)");
+            $sheet->setCellValue("F$rowIndex", "=SUM(D$rowIndex:E$rowIndex)");
         }
 
-        # Code here
+        # Sum
+        $rowIndex = $this->increaseIndex();
+        if ($indexStart != 0 && $indexEnd != 0) {
+            $this->setBorders($sheet, "A$rowIndex:G$rowIndex");
+            $sheet->getStyle("C$rowIndex:F$rowIndex")->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1);
+            $sheet->getStyle("A$rowIndex:G$rowIndex")->getFont()->setBold(true);
+            $this->setBackgroundColor($sheet, "A$rowIndex:G$rowIndex", CellColors::GRAY);
+            $sheet->mergeCells("A$rowIndex:B$rowIndex");
+
+            $sheet->setCellValue("A$rowIndex", "Cộng");
+            $sheet->setCellValue("C$rowIndex", "=SUM(C$indexStart:C$indexEnd)");
+            $sheet->setCellValue("D$rowIndex", "=SUM(D$indexStart:D$indexEnd)");
+            $sheet->setCellValue("E$rowIndex", "=SUM(E$indexStart:E$indexEnd)");
+            $sheet->setCellValue("F$rowIndex", "=SUM(D$rowIndex:E$rowIndex)");
+        }
     }
 
     /**
@@ -205,7 +226,7 @@ class DataAnnouncementExport implements WithEvents
         $sheet->setCellValue("A$rowIndex", "II");
         $sheet->setCellValue("B$rowIndex", "Doanh thu khác");
         $sheet->getStyle("A$rowIndex:B$rowIndex")->getFont()->setBold(true);
-        $this->setBackgroundColor($sheet, "A$rowIndex:B$rowIndex", "C0C0C0");
+        $this->setBackgroundColor($sheet, "A$rowIndex:B$rowIndex", CellColors::GRAY);
         $this->setBorders($sheet, "A$rowIndex:G$rowIndex");
 
         # Code here
@@ -222,7 +243,7 @@ class DataAnnouncementExport implements WithEvents
         $sheet->setCellValue("A$rowIndex", "III");
         $sheet->setCellValue("B$rowIndex", "Doanh thu tài chính");
         $sheet->getStyle("A$rowIndex:B$rowIndex")->getFont()->setBold(true);
-        $this->setBackgroundColor($sheet, "A$rowIndex:B$rowIndex", "C0C0C0");
+        $this->setBackgroundColor($sheet, "A$rowIndex:B$rowIndex", CellColors::GRAY);
         $this->setBorders($sheet, "A$rowIndex:G$rowIndex");
 
         # Code here
@@ -245,8 +266,8 @@ class DataAnnouncementExport implements WithEvents
         $sheet->setCellValue("G$rowIndex", "Đề xuất");
         $sheet->setCellValue("H$rowIndex", "Lý do");
         $sheet->getStyle("A$rowIndex:B$rowIndex")->getFont()->setBold(true);
-        $this->setBackgroundColor($sheet, "A$rowIndex:B$rowIndex", "9BE5FF");
-        $this->setBackgroundColor($sheet, "C$rowIndex:H$rowIndex", "C0C0C0");
+        $this->setBackgroundColor($sheet, "A$rowIndex:B$rowIndex", CellColors::BLUE);
+        $this->setBackgroundColor($sheet, "C$rowIndex:H$rowIndex", CellColors::GRAY);
         $this->setBorders($sheet, "A$rowIndex:H$rowIndex");
 
         # I.Cac CP SXKD
@@ -267,7 +288,7 @@ class DataAnnouncementExport implements WithEvents
         $sheet->setCellValue("A$rowIndex", "I");
         $sheet->setCellValue("B$rowIndex", "Các CP SXKD");
         $sheet->getStyle("A$rowIndex:B$rowIndex")->getFont()->setBold(true);
-        $this->setBackgroundColor($sheet, "A$rowIndex:B$rowIndex", "C0C0C0");
+        $this->setBackgroundColor($sheet, "A$rowIndex:B$rowIndex", CellColors::GRAY);
         $this->setBorders($sheet, "A$rowIndex:G$rowIndex");
 
         # Code here
@@ -284,7 +305,7 @@ class DataAnnouncementExport implements WithEvents
         $sheet->setCellValue("A$rowIndex", "I");
         $sheet->setCellValue("B$rowIndex", "Các CP Khác");
         $sheet->getStyle("A$rowIndex:B$rowIndex")->getFont()->setBold(true);
-        $this->setBackgroundColor($sheet, "A$rowIndex:B$rowIndex", "C0C0C0");
+        $this->setBackgroundColor($sheet, "A$rowIndex:B$rowIndex", CellColors::GRAY);
         $this->setBorders($sheet, "A$rowIndex:G$rowIndex");
 
         # Code here
@@ -307,8 +328,8 @@ class DataAnnouncementExport implements WithEvents
         $sheet->setCellValue("G$rowIndex", "Đã nộp");
         $sheet->setCellValue("H$rowIndex", "Lý do");
         $sheet->getStyle("A$rowIndex:B$rowIndex")->getFont()->setBold(true);
-        $this->setBackgroundColor($sheet, "A$rowIndex:B$rowIndex", "9BE5FF");
-        $this->setBackgroundColor($sheet, "C$rowIndex:H$rowIndex", "C0C0C0");
+        $this->setBackgroundColor($sheet, "A$rowIndex:B$rowIndex", CellColors::BLUE);
+        $this->setBackgroundColor($sheet, "C$rowIndex:H$rowIndex", CellColors::GRAY);
         $this->setBorders($sheet, "A$rowIndex:H$rowIndex");
     }
 
@@ -325,8 +346,8 @@ class DataAnnouncementExport implements WithEvents
         $sheet->setCellValue("C$rowIndex", "% Doanh thu");
         $sheet->setCellValue("D$rowIndex", "~ Số tiền");
         $sheet->getStyle("A$rowIndex:B$rowIndex")->getFont()->setBold(true);
-        $this->setBackgroundColor($sheet, "A$rowIndex:B$rowIndex", "9BE5FF");
-        $this->setBackgroundColor($sheet, "C$rowIndex:D$rowIndex", "C0C0C0");
+        $this->setBackgroundColor($sheet, "A$rowIndex:B$rowIndex", CellColors::BLUE);
+        $this->setBackgroundColor($sheet, "C$rowIndex:D$rowIndex", CellColors::GRAY);
         $this->setBorders($sheet, "A$rowIndex:D$rowIndex");
     }
 }

@@ -31,6 +31,7 @@ class DataAnouncementExportRequest extends BaseRequest
     public function rules(): array
     {
         return [
+            'company_id' => ['required'],
             'data_analysis' => ['required'],
             'data_vat_money' => ['required'],
             'data_expenses' => ['required'],

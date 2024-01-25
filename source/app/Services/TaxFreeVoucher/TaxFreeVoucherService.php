@@ -12,6 +12,7 @@ use App\Exceptions\DB\RecordIsNotFoundException;
 use App\Helpers\Common\MetaInfo;
 use App\Helpers\Utils\StorageHelper;
 use App\Helpers\Utils\StringHelper;
+use App\Models\CompanyDetailTaxFreeVoucher;
 use App\Models\TaxFreeVoucher;
 use App\Repositories\TaxFreeVoucher\ITaxFreeVoucherRepository;
 use Carbon\Carbon;
@@ -193,6 +194,9 @@ class TaxFreeVoucherService extends \App\Services\BaseService implements ITaxFre
             if (empty($record)) {
                 throw new RecordIsNotFoundException();
             }
+            # Delete CompanyDetailTaxFreeVoucher
+            # Note: model tax_free_voucher_monthlies
+            CompanyDetailTaxFreeVoucher::query()->where('tax_free_voucher_id', $record->id)->delete();
             $result =  $this->taxFreeVoucherRepos->delete(id: $id, soft: $softDelete, meta: $commandMetaInfo);
             DB::commit();
             return $result;
