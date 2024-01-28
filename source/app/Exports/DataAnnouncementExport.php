@@ -19,12 +19,19 @@ class DataAnnouncementExport implements WithEvents
     private int $rowIndex;
     private $company;
     private $record;
+    private $formulaTotalDataA;
 
     public function __construct(Company $company, mixed $record)
     {
         $this->rowIndex = 5;
         $this->company = $company;
         $this->record = $record;
+        $this->formulaTotalDataA = (object) [
+            'sold' => null,
+            'opening_balance' => null,
+            'purchase' => null,
+            'ending_balace' => null,
+        ];
     }
 
     public function registerEvents(): array
@@ -212,6 +219,12 @@ class DataAnnouncementExport implements WithEvents
             $sheet->setCellValue("D$rowIndex", "=SUM(D$indexStart:D$indexEnd)");
             $sheet->setCellValue("E$rowIndex", "=SUM(E$indexStart:E$indexEnd)");
             $sheet->setCellValue("F$rowIndex", "=SUM(D$rowIndex:E$rowIndex)");
+
+            # Set formula total
+            $this->formulaTotalDataA->sold = "=C$rowIndex";
+            $this->formulaTotalDataA->opening_balance = "=D$rowIndex";
+            $this->formulaTotalDataA->purchase = "=E$rowIndex";
+            $this->formulaTotalDataA->ending_balance = "=F$rowIndex";
         }
     }
 
@@ -221,14 +234,17 @@ class DataAnnouncementExport implements WithEvents
      */
     function doanhThuKhac(Sheet $sheet): void
     {
-        $this->rowIndex += 1;
-        $rowIndex = $this->rowIndex;
+        $rowIndex = $this->increaseIndex();
+
         $sheet->setCellValue("A$rowIndex", "II");
         $sheet->setCellValue("B$rowIndex", "Doanh thu khác");
         $sheet->getStyle("A$rowIndex:B$rowIndex")->getFont()->setBold(true);
         $this->setBackgroundColor($sheet, "A$rowIndex:B$rowIndex", CellColors::GRAY);
         $this->setBorders($sheet, "A$rowIndex:G$rowIndex");
 
+        $rowIndex = $this->increaseIndex();
+        $this->setBorders($sheet, "A$rowIndex:G$rowIndex");
+        $sheet->mergeCells("A$rowIndex:B$rowIndex");
         # Code here
     }
 
@@ -243,10 +259,21 @@ class DataAnnouncementExport implements WithEvents
         $sheet->setCellValue("A$rowIndex", "III");
         $sheet->setCellValue("B$rowIndex", "Doanh thu tài chính");
         $sheet->getStyle("A$rowIndex:B$rowIndex")->getFont()->setBold(true);
+        $sheet->getStyle("C$rowIndex:F$rowIndex")->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1);
         $this->setBackgroundColor($sheet, "A$rowIndex:B$rowIndex", CellColors::GRAY);
         $this->setBorders($sheet, "A$rowIndex:G$rowIndex");
 
+        $rowIndex = $this->increaseIndex();
+        $this->setBorders($sheet, "A$rowIndex:G$rowIndex");
         # Code here
+
+        # Calculate total money (I+II+II)
+        $rowIndex = $this->increaseIndex();
+        $sheet->getStyle("A$rowIndex:G$rowIndex")->getFont()->setBold(true);
+        $this->setBackgroundColor($sheet, "A$rowIndex:B$rowIndex", CellColors::GRAY);
+        $sheet->getStyle("C$rowIndex:F$rowIndex")->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1);
+        $sheet->setCellValue("A$rowIndex", "{$this->formulaTotalDataA}");
+        $sheet->setCellValue("A$rowIndex", "Tổng cộng (I+II+III)");
     }
 
     /**
