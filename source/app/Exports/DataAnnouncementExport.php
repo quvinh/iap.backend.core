@@ -183,7 +183,7 @@ class DataAnnouncementExport implements WithEvents
         $sheet->getStyle("A$rowIndex:B$rowIndex")->getFont()->setBold(true);
         $this->setBackgroundColor($sheet, "A$rowIndex:B$rowIndex", CellColors::GRAY);
         $this->setBorders($sheet, "A$rowIndex:G$rowIndex");
-        
+
         # Get data-analysis
         $record = (object) $this->record;
         $data = $record->data_analysis ?? [];
@@ -219,6 +219,7 @@ class DataAnnouncementExport implements WithEvents
             $sheet->setCellValue("D$rowIndex", "=SUM(D$indexStart:D$indexEnd)");
             $sheet->setCellValue("E$rowIndex", "=SUM(E$indexStart:E$indexEnd)");
             $sheet->setCellValue("F$rowIndex", "=SUM(D$rowIndex:E$rowIndex)");
+            $sheet->setCellValue("G$rowIndex", "/");
 
             # Set formula total
             $this->formulaTotalDataA->sold = "=C$rowIndex";
@@ -244,8 +245,21 @@ class DataAnnouncementExport implements WithEvents
 
         $rowIndex = $this->increaseIndex();
         $this->setBorders($sheet, "A$rowIndex:G$rowIndex");
-        $sheet->mergeCells("A$rowIndex:B$rowIndex");
+
         # Code here
+
+        $rowIndex = $this->increaseIndex();
+        $this->setBorders($sheet, "A$rowIndex:G$rowIndex");
+        $this->setBackgroundColor($sheet, "A$rowIndex:G$rowIndex", CellColors::GRAY);
+        $sheet->mergeCells("A$rowIndex:B$rowIndex");
+        $sheet->getStyle("A$rowIndex:G$rowIndex")->getFont()->setBold(true);
+        $sheet->getStyle("C$rowIndex:F$rowIndex")->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1);
+        $sheet->setCellValue("A$rowIndex", "Cộng");
+        $sheet->setCellValue("C$rowIndex", 0);
+        $sheet->setCellValue("G$rowIndex", "/");
+        if (isset($this->formulaTotalDataA->sold)) {
+            $this->formulaTotalDataA->sold .= "+C$rowIndex";
+        }
     }
 
     /**
@@ -263,17 +277,34 @@ class DataAnnouncementExport implements WithEvents
         $this->setBackgroundColor($sheet, "A$rowIndex:B$rowIndex", CellColors::GRAY);
         $this->setBorders($sheet, "A$rowIndex:G$rowIndex");
 
+        # Code here
+
         $rowIndex = $this->increaseIndex();
         $this->setBorders($sheet, "A$rowIndex:G$rowIndex");
-        # Code here
+        $rowIndex = $this->increaseIndex();
+        $this->setBorders($sheet, "A$rowIndex:G$rowIndex");
+        $this->setBackgroundColor($sheet, "A$rowIndex:G$rowIndex", CellColors::GRAY);
+        $sheet->mergeCells("A$rowIndex:B$rowIndex");
+        $sheet->getStyle("A$rowIndex:G$rowIndex")->getFont()->setBold(true);
+        $sheet->getStyle("C$rowIndex:F$rowIndex")->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1);
+        $sheet->setCellValue("A$rowIndex", "Cộng");
+        $sheet->setCellValue("C$rowIndex", 0);
+        $sheet->setCellValue("G$rowIndex", "/");
+        if (isset($this->formulaTotalDataA->sold)) {
+            $this->formulaTotalDataA->sold .= "+C$rowIndex";
+        }
 
         # Calculate total money (I+II+II)
         $rowIndex = $this->increaseIndex();
         $sheet->getStyle("A$rowIndex:G$rowIndex")->getFont()->setBold(true);
-        $this->setBackgroundColor($sheet, "A$rowIndex:B$rowIndex", CellColors::GRAY);
+        $this->setBackgroundColor($sheet, "A$rowIndex:G$rowIndex", CellColors::GRAY);
         $sheet->getStyle("C$rowIndex:F$rowIndex")->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1);
-        $sheet->setCellValue("A$rowIndex", "{$this->formulaTotalDataA}");
+        $this->setBorders($sheet, "A$rowIndex:G$rowIndex");
         $sheet->setCellValue("A$rowIndex", "Tổng cộng (I+II+III)");
+        $sheet->setCellValue("C$rowIndex", $this->formulaTotalDataA->sold ?? "");
+        $sheet->setCellValue("D$rowIndex", $this->formulaTotalDataA->opening_balance ?? "");
+        $sheet->setCellValue("E$rowIndex", $this->formulaTotalDataA->purchase ?? "");
+        $sheet->setCellValue("F$rowIndex", $this->formulaTotalDataA->ending_balance ?? "");
     }
 
     /**
@@ -282,8 +313,7 @@ class DataAnnouncementExport implements WithEvents
      */
     function chiPhi(Sheet $sheet): void
     {
-        $this->rowIndex += 2;
-        $rowIndex = $this->rowIndex;
+        $rowIndex = $this->increaseIndex(2);
         $sheet->setCellValue("A$rowIndex", "B");
         $sheet->setCellValue("B$rowIndex", "Chi phí");
         $sheet->setCellValue("C$rowIndex", "CP có hoá đơn");
@@ -310,8 +340,7 @@ class DataAnnouncementExport implements WithEvents
      */
     function cacCPSXKD(Sheet $sheet): void
     {
-        $this->rowIndex += 1;
-        $rowIndex = $this->rowIndex;
+        $rowIndex = $this->increaseIndex();
         $sheet->setCellValue("A$rowIndex", "I");
         $sheet->setCellValue("B$rowIndex", "Các CP SXKD");
         $sheet->getStyle("A$rowIndex:B$rowIndex")->getFont()->setBold(true);
@@ -327,8 +356,7 @@ class DataAnnouncementExport implements WithEvents
      */
     function cacCPKhac(Sheet $sheet): void
     {
-        $this->rowIndex += 1;
-        $rowIndex = $this->rowIndex;
+        $rowIndex = $this->increaseIndex();
         $sheet->setCellValue("A$rowIndex", "I");
         $sheet->setCellValue("B$rowIndex", "Các CP Khác");
         $sheet->getStyle("A$rowIndex:B$rowIndex")->getFont()->setBold(true);
@@ -344,8 +372,11 @@ class DataAnnouncementExport implements WithEvents
      */
     function thueGTGT(Sheet $sheet): void
     {
-        $this->rowIndex += 2;
-        $rowIndex = $this->rowIndex;
+        # Get data-vat
+        $record = (object) $this->record;
+        $data = (object) $record->data_vat_money ?? (object) [];
+
+        $rowIndex = $this->increaseIndex(2);
         $sheet->setCellValue("A$rowIndex", "C");
         $sheet->setCellValue("B$rowIndex", "Thuế GTGT");
         $sheet->setCellValue("C$rowIndex", "Dư đầu kỳ");
@@ -358,6 +389,14 @@ class DataAnnouncementExport implements WithEvents
         $this->setBackgroundColor($sheet, "A$rowIndex:B$rowIndex", CellColors::BLUE);
         $this->setBackgroundColor($sheet, "C$rowIndex:H$rowIndex", CellColors::GRAY);
         $this->setBorders($sheet, "A$rowIndex:H$rowIndex");
+
+        $rowIndex = $this->increaseIndex();
+        $sheet->getStyle("C$rowIndex:G$rowIndex")->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1);
+        $this->setBorders($sheet, "A$rowIndex:H$rowIndex");
+        $sheet->setCellValue("C$rowIndex", $data->opening_balance_vat ?? 0);
+        $sheet->setCellValue("D$rowIndex", $data->purchase ?? 0);
+        $sheet->setCellValue("E$rowIndex", $data->sold ?? 0);
+        $sheet->setCellValue("F$rowIndex", "=C$rowIndex+E$rowIndex-D$rowIndex");
     }
 
     /**
@@ -366,8 +405,7 @@ class DataAnnouncementExport implements WithEvents
      */
     function loiNhuan(Sheet $sheet): void
     {
-        $this->rowIndex += 2;
-        $rowIndex = $this->rowIndex;
+        $rowIndex = $this->increaseIndex(2);
         $sheet->setCellValue("A$rowIndex", "D");
         $sheet->setCellValue("B$rowIndex", "Lợi nhuận");
         $sheet->setCellValue("C$rowIndex", "% Doanh thu");
@@ -376,5 +414,22 @@ class DataAnnouncementExport implements WithEvents
         $this->setBackgroundColor($sheet, "A$rowIndex:B$rowIndex", CellColors::BLUE);
         $this->setBackgroundColor($sheet, "C$rowIndex:D$rowIndex", CellColors::GRAY);
         $this->setBorders($sheet, "A$rowIndex:D$rowIndex");
+
+        $rowIndex = $this->increaseIndex();
+        $sheet->getStyle("D$rowIndex")->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1);
+        $this->setBorders($sheet, "A$rowIndex:D$rowIndex");
+        $sheet->setCellValue("A$rowIndex", "421");
+        $sheet->setCellValue("B$rowIndex", "Lợi nhuận trước thuế");
+        $sheet->setCellValue("C$rowIndex", "");
+        $sheet->setCellValue("D$rowIndex", 0);
+
+        $rowIndex = $this->increaseIndex();
+        $sheet->getStyle("D$rowIndex")->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1);
+        $this->setBorders($sheet, "A$rowIndex:D$rowIndex");
+        $sheet->setCellValue("A$rowIndex", "421");
+        $sheet->setCellValue("B$rowIndex", "Lợi nhuận sau thuế");
+        $sheet->setCellValue("C$rowIndex", "");
+        $sheet->setCellValue("D$rowIndex", 0);
+
     }
 }
