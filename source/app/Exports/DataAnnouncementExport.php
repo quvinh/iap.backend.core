@@ -134,8 +134,7 @@ class DataAnnouncementExport implements WithEvents
      */
     function mainHeader(Sheet $sheet): void
     {
-        $this->rowIndex += 1;
-        $rowIndex = $this->rowIndex;
+        $rowIndex = $this->increaseIndex();
         $sheet->setCellValue("B$rowIndex", "Chỉ tiêu");
         $sheet->setCellValue("C$rowIndex", "Bán ra");
         $sheet->setCellValue("D$rowIndex", "Tồn đầu kỳ");
@@ -153,8 +152,7 @@ class DataAnnouncementExport implements WithEvents
      */
     function doanhThu(Sheet $sheet): void
     {
-        $this->rowIndex += 1;
-        $rowIndex = $this->rowIndex;
+        $rowIndex = $this->increaseIndex();
         $sheet->setCellValue("A$rowIndex", "A");
         $sheet->setCellValue("B$rowIndex", "Doanh thu");
         $sheet->getStyle("A$rowIndex:B$rowIndex")->getFont()->setBold(true);
