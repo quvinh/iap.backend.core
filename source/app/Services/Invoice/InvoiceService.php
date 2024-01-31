@@ -621,4 +621,12 @@ class InvoiceService extends \App\Services\BaseService implements IInvoiceServic
     {
         return $this->invoiceRepos->findNextInvoice($params);
     }
+
+    /**
+     * Report sold
+     */
+    public function reportSold(array $params): array | null
+    {
+        return $this->invoiceRepos->reportSold($params);
+    }
 }

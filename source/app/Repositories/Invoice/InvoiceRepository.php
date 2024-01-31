@@ -2,6 +2,8 @@
 
 namespace App\Repositories\Invoice;
 
+use App\DataResources\BaseDataResource;
+use App\DataResources\Invoice\InvoiceBasicResource;
 use App\Exceptions\DB\CannotSaveToDBException;
 use App\Exceptions\DB\IdIsNotProvidedException;
 use App\Helpers\Common\MetaInfo;
@@ -134,5 +136,20 @@ class InvoiceRepository extends BaseRepository implements IInvoiceRepository
         if ($operate == '>=') return $invoices[$position + 1] ?? null;
         if ($operate == '<=') return $invoices[$position - 1] ?? null;
         return null;
+    }
+
+    /**
+     * Report sold
+     */
+    public function reportSold(array $params): array | null
+    {
+        $invoices = Invoice::query()->where([
+            ['locked', '=', 0],
+            ['company_id', '=', $params['company_id']],
+            ['date', '>=', $params['start']],
+            ['date', '<=', $params['end']],
+        ])->orderBy('date')->get();
+        $result = BaseDataResource::generateResources($invoices, InvoiceBasicResource::class, ['invoice_details']);
+        return $result;
     }
 }
