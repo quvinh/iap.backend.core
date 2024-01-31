@@ -225,4 +225,12 @@ class CompanyService extends \App\Services\BaseService implements ICompanyServic
             );
         }
     }
+
+    /**
+     * Get list inventory by company
+     */
+    public function inventory(mixed $company_id, string $start, string $end): array
+    {
+        return $this->companyRepos->inventory($company_id, $start, $end);
+    }
 }

@@ -3,6 +3,7 @@
 namespace App\Exports;
 
 use App\Helpers\Enums\CellColors;
+use App\Services\Company\ICompanyService;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithEvents;
 use Maatwebsite\Excel\Events\AfterSheet;
@@ -14,10 +15,18 @@ use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
 class InventoryExport implements WithEvents
 {
     private int $rowIndex;
+    private ICompanyService $companyService;
+    private mixed $companyId;
+    private string $start;
+    private string $end;
 
-    public function __construct()
+    public function __construct(ICompanyService $companyService, mixed $companyId, string $start, string $end)
     {
         $this->rowIndex = 1;
+        $this->companyService = $companyService;
+        $this->companyId = $companyId;
+        $this->start = $start;
+        $this->end = $end;
     }
 
     public function registerEvents(): array
@@ -25,7 +34,10 @@ class InventoryExport implements WithEvents
         return [
             AfterSheet::class => function (AfterSheet $event) {
                 $sheet = $event->sheet;
+                // $sheet->getDelegate()->freezePane('A1');
                 $this->setWidthColumns($sheet);
+                $this->mainHeader($sheet);
+                $this->content($sheet);
             }
         ];
     }
@@ -86,5 +98,29 @@ class InventoryExport implements WithEvents
         $sheet->getStyle("A$rowIndex:J$rowIndex")->getFont()->setBold(true);
         $this->setBackgroundColor($sheet, "A$rowIndex:J$rowIndex", CellColors::YELLOW);
         $this->setBorders($sheet, "A$rowIndex:J$rowIndex");
+    }
+
+    /**
+     * Content table
+     * @param Sheet $sheet
+     */
+    function content(Sheet $sheet): void
+    {
+        $records = $this->companyService->inventory($this->companyId, $this->start, $this->end);
+        foreach ($records as $index => $record) {
+            $rowIndex = $this->increaseIndex();
+            $this->setBorders($sheet, "A$rowIndex:J$rowIndex");
+            $sheet->getStyle("E$rowIndex:I$rowIndex")->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1);
+            $sheet->setCellValue("A$rowIndex", $index + 1);
+            $sheet->setCellValue("B$rowIndex", $record['product_code']);
+            $sheet->setCellValue("C$rowIndex", $record['product_exchange']);
+            $sheet->setCellValue("D$rowIndex", $record['unit']);
+            $sheet->setCellValue("E$rowIndex", $record['opening_balance']);
+            $sheet->setCellValue("F$rowIndex", $record['purchase']);
+            $sheet->setCellValue("G$rowIndex", $record['sold']);
+            $sheet->setCellValue("H$rowIndex", $record['cost_price_sold']);
+            $sheet->setCellValue("I$rowIndex", "=E$rowIndex+F$rowIndex-H$rowIndex");
+            $sheet->setCellValue("J$rowIndex", "");
+        }
     }
 }

@@ -6,6 +6,7 @@ use App\DataResources\BaseDataResource;
 use App\DataResources\Company\CompanyAllResource;
 use App\DataResources\Company\CompanyResource;
 use App\Exports\DataAnnouncementExport;
+use App\Exports\InventoryExport;
 use App\Helpers\Common\MetaInfo;
 use App\Helpers\Enums\UserRoles;
 use App\Helpers\Responses\ApiResponse;
@@ -16,6 +17,7 @@ use App\Http\Requests\Company\CompanyCreateRequest;
 use App\Http\Requests\Company\CompanySearchRequest;
 use App\Http\Requests\Company\CompanyUpdateRequest;
 use App\Http\Requests\Company\DataAnouncementExportRequest;
+use App\Http\Requests\Company\InventoryExportRequest;
 use App\Services\IService;
 use App\Services\Company\ICompanyService;
 use Illuminate\Http\Request;
@@ -53,6 +55,7 @@ class CompanyController extends ApiController
 
             # Export excel
             Route::post($root . '/data-announcement-export', [CompanyController::class, 'dataAnnouncementExport']);
+            Route::post($root . '/inventory-export', [CompanyController::class, 'inventoryExport']);
         }
     }
 
@@ -135,17 +138,55 @@ class CompanyController extends ApiController
     {
         # Send response using the predefined format
         $response = $this->getResponseHandler();
-        
+
         $payload = $request->input();
         $company = $this->companyService->getSingleObject($request->company_id);
         if (empty($company)) $response->fail(['status' => false, 'message' => 'Company not found']);
-        
+
         # Set file path
         $timestamp = date('YmdHi');
         $file = "ThongBaoSoLieu_$timestamp.xlsx";
         $filePath = "data-announcement/$file";
 
         $result = Excel::store(new DataAnnouncementExport($company, $payload), $filePath, StorageHelper::EXCEL_DISK_NAME);
+        if (empty($result)) $response->fail(['status' => $result]);
+
+        # Generate file base64
+        $fileContent = Storage::disk(StorageHelper::EXCEL_DISK_NAME)->get($filePath);
+        $fileType = File::mimeType(storage_path("app/export/$filePath"));
+        $base64 = base64_encode($fileContent);
+        $fileBase64Uri = "data:$fileType;base64,$base64";
+
+        # Delete if needed
+        Storage::disk(StorageHelper::EXCEL_DISK_NAME)->delete($filePath);
+
+        # Return
+        return $response->send([
+            'file' => $file,
+            'type' => $fileType,
+            'data' => $fileBase64Uri,
+        ]);
+    }
+
+    /**
+     * Export inventory excel
+     */
+    public function inventoryExport(InventoryExportRequest $request)
+    {
+        # Send response using the predefined format
+        $response = $this->getResponseHandler();
+
+        # Set file path
+        $timestamp = date('YmdHi');
+        $file = "NhapXuatTon_$timestamp.xlsx";
+        $filePath = "inventory/$file";
+
+        $result = Excel::store(new InventoryExport(
+            $this->companyService, 
+            $request->company_id, 
+            $request->start, 
+            $request->end
+        ), $filePath, StorageHelper::EXCEL_DISK_NAME);
         if (empty($result)) $response->fail(['status' => $result]);
 
         # Generate file base64
