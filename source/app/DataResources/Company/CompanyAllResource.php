@@ -16,6 +16,7 @@ class CompanyAllResource extends BaseDataResource
         'id',
         'name',
         'tax_code',
+        'tax_password',
     ];
 
     /**
