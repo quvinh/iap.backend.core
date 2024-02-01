@@ -625,7 +625,7 @@ class InvoiceService extends \App\Services\BaseService implements IInvoiceServic
     /**
      * Report sold
      */
-    public function reportSold(array $params): array | null
+    public function reportSold(array $params): EloquentCollection | Invoice | array | null
     {
         return $this->invoiceRepos->reportSold($params);
     }

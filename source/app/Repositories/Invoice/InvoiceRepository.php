@@ -141,15 +141,16 @@ class InvoiceRepository extends BaseRepository implements IInvoiceRepository
     /**
      * Report sold
      */
-    public function reportSold(array $params): array | null
+    public function reportSold(array $params): Collection | Invoice | array | null
     {
         $invoices = Invoice::query()->where([
+            ['type', '=', InvoiceTypes::SOLD],
             ['locked', '=', 0],
             ['company_id', '=', $params['company_id']],
             ['date', '>=', $params['start']],
             ['date', '<=', $params['end']],
         ])->orderBy('date')->get();
-        $result = BaseDataResource::generateResources($invoices, InvoiceBasicResource::class, ['invoice_details']);
-        return $result;
+        // $result = BaseDataResource::generateResources($invoices, InvoiceBasicResource::class, ['invoice_details', 'company']);
+        return $invoices;
     }
 }

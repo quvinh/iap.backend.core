@@ -16,5 +16,5 @@ interface IInvoiceService extends IService
     public function findPartnersByCompanyId(mixed $company_id, mixed $year): mixed;
     public function info(array $params): array;
     public function findNextInvoice(array $params): Invoice | Collection | null;
-    public function reportSold(array $params): array | null;
+    public function reportSold(array $params): Collection | Invoice | array | null;
 }

@@ -3,6 +3,7 @@
 namespace App\Exports;
 
 use App\Helpers\Enums\CellColors;
+use Carbon\Carbon;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithEvents;
 use Maatwebsite\Excel\Events\AfterSheet;
@@ -187,5 +188,83 @@ class ReportSoldExport implements WithEvents
      */
     function content(Sheet $sheet): void
     {
+        foreach ($this->record as $record) {
+            $invoice_date = Carbon::parse($record->date)->format('d/m/Y');
+            $company = $record->company()->first();
+            $company_name = $company->name ?? "";
+            $company_tax_code = $company->tax_code ?? "";
+            $details = $record->invoice_details()->get();
+
+            # Invoice detail
+            foreach ($details as $detail) {
+                if (!empty($detail->item_code->id)) {
+                    $rowIndex = $this->increaseIndex();
+                    // $sheet->setCellValue("A$rowIndex", "");
+                    // $sheet->setCellValue("B$rowIndex", "");
+                    // $sheet->setCellValue("C$rowIndex", "");
+                    // $sheet->setCellValue("D$rowIndex", "");
+                    // $sheet->setCellValue("E$rowIndex", "");
+                    // $sheet->setCellValue("F$rowIndex", "");
+                    $sheet->setCellValue("G$rowIndex", $invoice_date);
+                    $sheet->setCellValue("H$rowIndex", $invoice_date);
+                    $sheet->setCellValue("I$rowIndex", $record->invoice_number);
+                    $sheet->setCellValue("J$rowIndex", "XK{$record->invoice_number}");
+                    $sheet->setCellValue("K$rowIndex", "Xuất kho bán hàng cho {$record->partner_name} theo hoá đơn {$record->invoice_number}");
+                    $sheet->setCellValue("L$rowIndex", $record->invoice_number_form);
+                    $sheet->setCellValue("M$rowIndex", $record->invoice_symbol);
+                    $sheet->setCellValue("N$rowIndex", $record->invoice_number);
+                    $sheet->setCellValue("O$rowIndex", $invoice_date);
+                    $sheet->setCellValue("P$rowIndex", $record->partner_tax_code);
+                    $sheet->setCellValue("Q$rowIndex", $record->partner_name);
+                    $sheet->setCellValue("R$rowIndex", $record->partner_address ?? "");
+                    $sheet->setCellValue("S$rowIndex", $record->company_tax_code);
+                    $sheet->setCellValue("T$rowIndex", $record->note ?? "Doanh thu bán hàng cho $company_name số {$record->invoice_number}");
+                    // $sheet->setCellValue("U$rowIndex", "");
+                    // $sheet->setCellValue("V$rowIndex", "");
+                    // $sheet->setCellValue("W$rowIndex", "");
+                    // $sheet->setCellValue("X$rowIndex", "");
+                    $sheet->setCellValue("Y$rowIndex", $detail->item_code->product_code ?? "");
+                    $sheet->setCellValue("Z$rowIndex", $detail->product ?? "");
+                    // $sheet->setCellValue("AA$rowIndex", "");
+                    $sheet->setCellValue("AB$rowIndex", "131");
+                    // $sheet->setCellValue("AC$rowIndex", ""); // TK Doanh thu/Có (*)
+                    $sheet->setCellValue("AD$rowIndex", $detail->unit);
+                    $sheet->setCellValue("AE$rowIndex", $detail->quantity);
+                    // $sheet->setCellValue("AF$rowIndex", "");
+                    $sheet->setCellValue("AG$rowIndex", $detail->price);
+                    $sheet->setCellValue("AH$rowIndex", $detail->total_money);
+                    // $sheet->setCellValue("AI$rowIndex", "");
+                    // $sheet->setCellValue("AJ$rowIndex", "");
+                    // $sheet->setCellValue("AK$rowIndex", "");
+                    // $sheet->setCellValue("AL$rowIndex", "");
+                    // $sheet->setCellValue("AM$rowIndex", "");
+                    // $sheet->setCellValue("AN$rowIndex", "");
+                    // $sheet->setCellValue("AO$rowIndex", "");
+                    // $sheet->setCellValue("AP$rowIndex", "");
+                    // $sheet->setCellValue("AQ$rowIndex", "");
+                    $sheet->setCellValue("AR$rowIndex", $detail->vat);
+                    $sheet->setCellValue("AS$rowIndex", $detail->vat_money);
+                    // $sheet->setCellValue("AT$rowIndex", "");
+                    $sheet->setCellValue("AU$rowIndex", "33311");
+                    // $sheet->setCellValue("AV$rowIndex", "");
+                    // $sheet->setCellValue("AW$rowIndex", "");
+                    // $sheet->setCellValue("AX$rowIndex", "");
+                    // $sheet->setCellValue("AY$rowIndex", "");
+                    // $sheet->setCellValue("AZ$rowIndex", "");
+                    // $sheet->setCellValue("BA$rowIndex", "");
+                    // $sheet->setCellValue("BB$rowIndex", "");
+                    // $sheet->setCellValue("BC$rowIndex", "");
+                    $this->setBorders($sheet, "A$rowIndex:BB$rowIndex");
+
+                    # Format cells
+                    $sheet->getStyle("G$rowIndex")->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_DATE_DDMMYYYY);
+                    $sheet->getStyle("H$rowIndex")->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_DATE_DDMMYYYY);
+                    $sheet->getStyle("O$rowIndex")->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_DATE_DDMMYYYY);
+                    $sheet->getStyle("AG$rowIndex")->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1);
+                    $sheet->getStyle("AH$rowIndex")->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1);
+                    $sheet->getStyle("AS$rowIndex")->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1);
+                }
+            }
+        }
     }
 }

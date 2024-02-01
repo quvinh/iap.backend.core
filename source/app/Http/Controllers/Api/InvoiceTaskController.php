@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\DataResources\BaseDataResource;
+use App\DataResources\Invoice\InvoiceBasicResource;
 use App\DataResources\InvoiceTask\InvoiceTaskResource;
 use App\Exports\ReportSoldExport;
 use App\Helpers\Common\MetaInfo;
@@ -177,7 +179,8 @@ class InvoiceTaskController extends ApiController
         return $response->send([
             'file' => $file,
             'path' => $filePath,
-            'record' => $record,
+            'count' => count($record),
+            'record' => BaseDataResource::generateResources($record, InvoiceBasicResource::class, ['invoice_details', 'company']),
         ]);
     }
 
