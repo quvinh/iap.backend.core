@@ -19,6 +19,7 @@ use App\Http\Requests\Invoice\InvoiceFindNextRequest;
 use App\Http\Requests\Invoice\InvoiceImportRequest;
 use App\Http\Requests\Invoice\InvoiceSearchPartnerRequest;
 use App\Http\Requests\Invoice\InvoiceSearchRequest;
+use App\Http\Requests\Invoice\InvoiceTctCreateRequest;
 use App\Http\Requests\Invoice\InvoiceUpdateRequest;
 use App\Services\IService;
 use App\Services\Invoice\IInvoiceService;
@@ -67,6 +68,7 @@ class InvoiceController extends ApiController
 
             Route::post($root . '/invoices-export', [InvoiceController::class, 'invoicesExport']);
             Route::post($root . '/invoice-details-export', [InvoiceController::class, 'invoiceDetailsExport']);
+            Route::post($root . '/tct', [InvoiceController::class, 'createInvoiceTct']);
         }
     }
 
@@ -310,5 +312,12 @@ class InvoiceController extends ApiController
             'type' => $fileType,
             'data' => $fileBase64Uri,
         ]);
+    }
+
+    public function createInvoiceTct(InvoiceTctCreateRequest $request) {
+        $result = $this->invoiceService->createInvoiceTct($request->all());
+        # Send response using the predefined format
+        $response = ApiResponse::v1();
+        return $response->send($result);
     }
 }

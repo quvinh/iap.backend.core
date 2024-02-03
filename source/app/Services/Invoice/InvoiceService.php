@@ -629,4 +629,12 @@ class InvoiceService extends \App\Services\BaseService implements IInvoiceServic
     {
         return $this->invoiceRepos->reportSold($params);
     }
+
+    /**
+     * Create invoice from TCT
+     */
+    public function createInvoiceTct(array $param): Invoice
+    {
+        return $this->invoiceRepos->createInvoiceTct($param);
+    }
 }

@@ -13,6 +13,8 @@ use App\Exceptions\DB\RecordIsNotFoundException as DBRecordIsNotFoundException;
 use App\Helpers\Enums\InvoiceTypes;
 use App\Models\Company;
 use App\Models\InvoiceDetail;
+use App\Models\InvoiceTask;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 
 use function Spatie\SslCertificate\starts_with;
@@ -152,5 +154,66 @@ class InvoiceRepository extends BaseRepository implements IInvoiceRepository
         ])->orderBy('date')->get();
         // $result = BaseDataResource::generateResources($invoices, InvoiceBasicResource::class, ['invoice_details', 'company']);
         return $invoices;
+    }
+
+    /**
+     * Create invoice from TCT
+     */
+    public function createInvoiceTct(array $param): Invoice
+    {
+        # Check task
+        $company_id = $param['company_id'];
+        $task_month = Carbon::parse($param['date'])->format('m/Y');
+        $task = InvoiceTask::query()->where([
+            ['company_id', '=', $company_id],
+            ['month_of_year', '=', $task_month],
+        ])->first();
+        if (empty($task)) {
+            $task = new InvoiceTask();
+            $task->company_id = $company_id;
+            $task->month_of_year = $task_month;
+            $task->save();
+        }
+        
+        # Checked invoice from front end
+        # Create invoice-tct
+        $invoice = new Invoice();
+        $invoice->company_id = $company_id;
+        $invoice->invoice_task_id = $task->id;
+        $invoice->partner_tax_code = $param['partner_tax_code'];
+        $invoice->partner_name = $param['partner_name'] ?? null;
+        $invoice->partner_address = $param['partner_address'] ?? null;
+        $invoice->type = $param['type'];
+        $invoice->invoice_number = $param['invoice_number'];
+        $invoice->invoice_symbol = $param['invoice_symbol'];
+        $invoice->date = $param['date'];
+        $invoice->invoice_number_form = $param['invoice_number_form'] ?? 1; # Warning
+        $invoice->verification_code_status = $param['verification_code_status'] ?? 1; # Co ma co quan thue
+        $invoice->status = $param['status'] ?? 1;
+        $invoice->sum_money_no_vat = $param['sum_money_no_vat'] ?? 0;
+        $invoice->sum_money_vat = $param['sum_money_vat'] ?? 0;
+        $invoice->sum_money = $param['sum_money'] ?? 0;
+        $invoice->created_by = auth()->user()->id . '|' . auth()->user()->name;
+        $invoice->save();
+
+        # Create invoice-detail
+        $invoice_details = $param['invoice_details'];
+        foreach ($invoice_details as $row) {
+            $invoiceDetail = new InvoiceDetail();
+            $invoiceDetail->invoice_id = $invoice->id;
+            // $invoiceDetail->item_code_id = null;
+            $invoiceDetail->product = $row['product'];
+            $invoiceDetail->product_exchange = $param['product_exchange'] ?? null;
+            $invoiceDetail->unit = $row['unit'] ?? '/';
+            $invoiceDetail->quantity = $row['quantity'] ?? 0;
+            $invoiceDetail->price = $row['price'] ?? 0;
+            $invoiceDetail->vat = $row['vat'] ?? 0;
+            $invoiceDetail->vat_money = $row['vat_money'] ?? 0;
+            $invoiceDetail->total_money = $row['total_money'] ?? 0;
+            $invoiceDetail->save();
+        }
+
+        # Return
+        return $invoice;
     }
 }
