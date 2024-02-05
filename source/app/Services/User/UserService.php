@@ -334,17 +334,12 @@ class UserService extends \App\Services\BaseService implements IUserService
     {
         try {
             $record = $this->userRepos->findByEmail($param['email']);
-            if (empty($record)) {
-                throw new RecordIsNotFoundException(message: 'Email not found');
-            }
+            if (empty($record)) throw new RecordIsNotFoundException(message: 'Email not found');
             # Check OTP and timestamp
             if ($record->request_otp == $param['otp'] && strtotime($record->request_timestamp) > time()) {
                 $record->password = Hash::make($param['password']);
-                if (!$record->save()) {
-                    Log::channel('forgot_password')->info("User:{$record->username} reset password successfully", ['name' => $record->name, 'email' => $record->email]);
-                } else {
-                    throw new CannotUpdateDBException('Cannot update DB');
-                }
+                if (!$record->save()) throw new CannotUpdateDBException('Cannot update DB');
+                Log::channel('forgot_password')->info("User:{$record->username} reset password successfully", ['name' => $record->name, 'email' => $record->email]);
                 return $record;
             }
             throw new ActionFailException(message: 'OTP or timestamp invalid');
