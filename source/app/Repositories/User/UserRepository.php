@@ -10,6 +10,7 @@ use App\Repositories\BaseRepository;
 use App\Exceptions\DB\RecordIsNotFoundException as DBRecordIsNotFoundException;
 use App\Models\UserCompany;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Hash;
 
 use function Spatie\SslCertificate\starts_with;
 
@@ -60,16 +61,10 @@ class UserRepository extends BaseRepository implements IUserRepository
      */
     public function changePassword(array $form, ?MetaInfo $meta = null, string $idColumnName = 'id'): User | null
     {
-        if (!in_array('id', array_keys($form))) throw new IdIsNotProvidedException();
-
-        $entity = $this->getSingleObject($form[$idColumnName], $idColumnName)->first();
-        if (isset($entity)) {
-            $isExcecuted = User::whereId($form[$idColumnName])->update(['password' => $form['password']]);
-            if ($isExcecuted !== false) {
-                return $entity;
-            } else {
-                throw new CannotSaveToDBException();
-            }
+        $user = User::find(auth()->user()->getAuthIdentifier());
+        if (isset($user) && isset($form['password'])) {
+            $user->password = $form['password'];
+            if ($user->save()) return $user;
         }
         throw new DBRecordIsNotFoundException();
     }
