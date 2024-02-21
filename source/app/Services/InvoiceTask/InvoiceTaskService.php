@@ -16,6 +16,7 @@ use App\Models\InvoiceTask;
 use App\Repositories\InvoiceTask\IInvoiceTaskRepository;
 use App\Services\InvoiceDetail\IInvoiceDetailService;
 use App\Services\ItemCode\IItemCodeService;
+use App\Services\User\IUserService;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Database\RecordsNotFoundException;
@@ -30,15 +31,18 @@ class InvoiceTaskService extends \App\Services\BaseService implements IInvoiceTa
     private ?IInvoiceTaskRepository $invoiceTaskRepos = null;
     private ?IInvoiceDetailService $invoiceDetailService = null;
     private ?IItemCodeService $itemCodeService = null;
+    private ?IUserService $userService = null;
 
     public function __construct(
-        IInvoiceTaskRepository $repos, 
+        IInvoiceTaskRepository $repos,
         IInvoiceDetailService $invoiceDetailService,
-        IItemCodeService $itemCodeService)
-    {
+        IItemCodeService $itemCodeService,
+        IUserService $userService
+    ) {
         $this->invoiceTaskRepos = $repos;
         $this->invoiceDetailService = $invoiceDetailService;
         $this->itemCodeService = $itemCodeService;
+        $this->userService = $userService;
     }
 
     /**
@@ -68,7 +72,7 @@ class InvoiceTaskService extends \App\Services\BaseService implements IInvoiceTa
     /**
      * Search list of items
      *
-     * @param array<string> $rawConditions
+     * @param array $rawConditions
      * @param PaginationInfo|null $paging
      * @param array<string> $withs
      * @return Collection<int,InvoiceTask>
@@ -83,6 +87,18 @@ class InvoiceTaskService extends \App\Services\BaseService implements IInvoiceTa
             //     $param = StringHelper::escapeLikeQueryParameter($rawConditions['month_of_year']);
             //     $query = $this->invoiceTaskRepos->queryOnAField([DB::raw("upper(month_of_year)"), 'LIKE BINARY', DB::raw("upper(concat('%', ? , '%'))")], positionalBindings: ['month_of_year' => $param]);
             // }
+
+            # Query get companies authoritied
+            $userId = auth()->user()->getAuthIdentifier();
+            $userCompanies = $this->userService->findByCompanies($userId);
+            if (empty($userCompanies)) {
+                $query->whereIn('company_id', []);
+            } else {
+                $arr = array_map(function ($item) {
+                    return $item['company_id'];
+                }, $userCompanies);
+                $query->whereIn('company_id', $arr);
+            }
 
             if (isset($rawConditions['id'])) {
                 $param = $rawConditions['id'];

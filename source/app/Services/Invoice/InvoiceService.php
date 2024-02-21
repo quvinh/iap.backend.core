@@ -22,6 +22,7 @@ use App\Services\Company\ICompanyService;
 use App\Services\InvoiceDetail\IInvoiceDetailService;
 use App\Services\InvoiceTask\IInvoiceTaskService;
 use App\Services\ItemCode\IItemCodeService;
+use App\Services\User\IUserService;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
@@ -39,13 +40,15 @@ class InvoiceService extends \App\Services\BaseService implements IInvoiceServic
     private ?IInvoiceTaskService $invoiceTaskService = null;
     private ?IItemCodeService $itemCodeService = null;
     private ?IInvoiceDetailService $invoiceDetailService = null;
+    private ?IUserService $userService = null;
 
     public function __construct(
         IInvoiceRepository $repos,
         ICompanyService $companyService,
         IInvoiceTaskService $invoiceTaskService,
         IItemCodeService $itemCodeService,
-        IInvoiceDetailService $invoiceDetailService
+        IInvoiceDetailService $invoiceDetailService,
+        IUserService $userService
     ) {
         $this->invoiceRepos = $repos;
 
@@ -53,6 +56,7 @@ class InvoiceService extends \App\Services\BaseService implements IInvoiceServic
         $this->invoiceTaskService = $invoiceTaskService;
         $this->itemCodeService = $itemCodeService;
         $this->invoiceDetailService = $invoiceDetailService;
+        $this->userService = $userService;
     }
 
     /**
@@ -97,6 +101,18 @@ class InvoiceService extends \App\Services\BaseService implements IInvoiceServic
 
             # Sort
             // $query = $query->orderByDesc('date')->orderByDesc('invoice_number');
+
+            # Query get companies authoritied
+            $userId = auth()->user()->getAuthIdentifier();
+            $userCompanies = $this->userService->findByCompanies($userId);
+            if (empty($userCompanies)) {
+                $query->whereIn('company_id', []);
+            } else {
+                $arr = array_map(function ($item) {
+                    return $item['company_id'];
+                }, $userCompanies);
+                $query->whereIn('company_id', $arr);
+            }
 
             if (isset($rawConditions['name'])) {
                 $param = StringHelper::escapeLikeQueryParameter($rawConditions['name']);

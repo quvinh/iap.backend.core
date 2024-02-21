@@ -15,6 +15,7 @@ use App\Helpers\Utils\StringHelper;
 use App\Models\Company;
 use App\Models\CompanyDetail;
 use App\Repositories\Company\ICompanyRepository;
+use App\Services\User\IUserService;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Support\Collection;
@@ -25,10 +26,12 @@ use Throwable;
 class CompanyService extends \App\Services\BaseService implements ICompanyService
 {
     private ?ICompanyRepository $companyRepos = null;
+    private ?IUserService $userService = null;
 
-    public function __construct(ICompanyRepository $repos)
+    public function __construct(ICompanyRepository $repos, IUserService $userService)
     {
         $this->companyRepos = $repos;
+        $this->userService = $userService;
     }
 
     /**
@@ -58,7 +61,7 @@ class CompanyService extends \App\Services\BaseService implements ICompanyServic
     /**
      * Search list of items
      *
-     * @param array<string> $rawConditions
+     * @param array $rawConditions
      * @param PaginationInfo|null $paging
      * @param array<string> $withs
      * @return Collection<int,Company>
@@ -69,6 +72,19 @@ class CompanyService extends \App\Services\BaseService implements ICompanyServic
     {
         try {
             $query = $this->companyRepos->search();
+
+            # Query get companies authoritied
+            $userId = auth()->user()->getAuthIdentifier();
+            $userCompanies = $this->userService->findByCompanies($userId);
+            if (empty($userCompanies)) {
+                $query->whereIn('id', []);
+            } else {
+                $arr = array_map(function ($item) {
+                    return $item['company_id'];
+                }, $userCompanies);
+                $query->whereIn('id', $arr);
+            }
+
             if (isset($rawConditions['name'])) {
                 $param = StringHelper::escapeLikeQueryParameter($rawConditions['name']);
                 $query = $this->companyRepos->queryOnAField([DB::raw("upper(name)"), 'LIKE BINARY', DB::raw("upper(concat('%', ? , '%'))")], positionalBindings: ['name' => $param]);

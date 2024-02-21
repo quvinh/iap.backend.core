@@ -14,6 +14,7 @@ use App\Helpers\Utils\StorageHelper;
 use App\Helpers\Utils\StringHelper;
 use App\Models\InvoiceMedia;
 use App\Repositories\InvoiceMedia\IInvoiceMediaRepository;
+use App\Services\User\IUserService;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Support\Collection;
@@ -24,10 +25,12 @@ use Throwable;
 class InvoiceMediaService extends \App\Services\BaseService implements IInvoiceMediaService
 {
     private ?IInvoiceMediaRepository $invoiceMediaRepos = null;
+    private ?IUserService $userService = null;
 
-    public function __construct(IInvoiceMediaRepository $repos)
+    public function __construct(IInvoiceMediaRepository $repos, IUserService $userService)
     {
         $this->invoiceMediaRepos = $repos;
+        $this->userService = $userService;
     }
 
     /**
@@ -68,6 +71,19 @@ class InvoiceMediaService extends \App\Services\BaseService implements IInvoiceM
     {
         try {
             $query = $this->invoiceMediaRepos->search();
+
+            # Query get companies authoritied
+            $userId = auth()->user()->getAuthIdentifier();
+            $userCompanies = $this->userService->findByCompanies($userId);
+            if (empty($userCompanies)) {
+                $query->whereIn('company_id', []);
+            } else {
+                $arr = array_map(function ($item) {
+                    return $item['company_id'];
+                }, $userCompanies);
+                $query->whereIn('company_id', $arr);
+            }
+
             if (isset($rawConditions['name'])) {
                 $param = StringHelper::escapeLikeQueryParameter($rawConditions['name']);
                 $query = $this->invoiceMediaRepos->queryOnAField([DB::raw("upper(name)"), 'LIKE BINARY', DB::raw("upper(concat('%', ? , '%'))")], positionalBindings: ['name' => $param]);

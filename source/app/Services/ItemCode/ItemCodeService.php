@@ -14,6 +14,7 @@ use App\Helpers\Utils\StorageHelper;
 use App\Helpers\Utils\StringHelper;
 use App\Models\ItemCode;
 use App\Repositories\ItemCode\IItemCodeRepository;
+use App\Services\User\IUserService;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Support\Collection;
@@ -25,10 +26,12 @@ use Throwable;
 class ItemCodeService extends \App\Services\BaseService implements IItemCodeService
 {
     private ?IItemCodeRepository $itemCodeRepos = null;
+    private ?IUserService $userService = null;
 
-    public function __construct(IItemCodeRepository $repos)
+    public function __construct(IItemCodeRepository $repos, IUserService $userService)
     {
         $this->itemCodeRepos = $repos;
+        $this->userService = $userService;
     }
 
     /**
@@ -58,7 +61,7 @@ class ItemCodeService extends \App\Services\BaseService implements IItemCodeServ
     /**
      * Search list of items
      *
-     * @param array<string> $rawConditions
+     * @param array $rawConditions
      * @param PaginationInfo|null $paging
      * @param array<string> $withs
      * @return Collection<int,ItemCode>
@@ -69,6 +72,19 @@ class ItemCodeService extends \App\Services\BaseService implements IItemCodeServ
     {
         try {
             $query = $this->itemCodeRepos->search();
+
+            # Query get companies authoritied
+            $userId = auth()->user()->getAuthIdentifier();
+            $userCompanies = $this->userService->findByCompanies($userId);
+            if (empty($userCompanies)) {
+                $query->whereIn('company_id', []);
+            } else {
+                $arr = array_map(function ($item) {
+                    return $item['company_id'];
+                }, $userCompanies);
+                $query->whereIn('company_id', $arr);
+            }
+            
             if (isset($rawConditions['product_code'])) {
                 $param = StringHelper::escapeLikeQueryParameter($rawConditions['product_code']);
                 $query = $this->itemCodeRepos->queryOnAField([DB::raw("upper(product_code)"), 'LIKE BINARY', DB::raw("upper(concat('%', ? , '%'))")], positionalBindings: ['product_code' => $param]);

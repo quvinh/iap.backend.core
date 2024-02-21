@@ -16,6 +16,7 @@ use App\Models\Formula;
 use App\Repositories\CategoryPurchase\ICategoryPurchaseRepository;
 use App\Repositories\CategorySold\ICategorySoldRepository;
 use App\Repositories\Formula\IFormulaRepository;
+use App\Services\User\IUserService;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Support\Collection;
@@ -28,12 +29,18 @@ class FormulaService extends \App\Services\BaseService implements IFormulaServic
     private ?IFormulaRepository $formulaRepos = null;
     private ?ICategorySoldRepository $catSoldRepos = null;
     private ?ICategoryPurchaseRepository $catPurchaseRepos = null;
+    private ?IUserService $userService = null;
 
-    public function __construct(IFormulaRepository $repos, ICategorySoldRepository $catSoldRepos, ICategoryPurchaseRepository $catPurchaseRepos)
-    {
+    public function __construct(
+        IFormulaRepository $repos,
+        ICategorySoldRepository $catSoldRepos,
+        ICategoryPurchaseRepository $catPurchaseRepos,
+        IUserService $userService
+    ) {
         $this->formulaRepos = $repos;
         $this->catSoldRepos = $catSoldRepos;
         $this->catPurchaseRepos = $catPurchaseRepos;
+        $this->userService = $userService;
     }
 
     /**
@@ -63,7 +70,7 @@ class FormulaService extends \App\Services\BaseService implements IFormulaServic
     /**
      * Search list of items
      *
-     * @param array<string> $rawConditions
+     * @param array $rawConditions
      * @param PaginationInfo|null $paging
      * @param array<string> $withs
      * @return Collection<int,Formula>
@@ -74,6 +81,19 @@ class FormulaService extends \App\Services\BaseService implements IFormulaServic
     {
         try {
             $query = $this->formulaRepos->search();
+
+            # Query get companies authoritied
+            $userId = auth()->user()->getAuthIdentifier();
+            $userCompanies = $this->userService->findByCompanieDetails($userId);
+            if (empty($userCompanies)) {
+                $query->whereIn('company_detail_id', []);
+            } else {
+                $arr = array_map(function ($item) {
+                    return $item['id'];
+                }, $userCompanies);
+                $query->whereIn('company_detail_id', $arr);
+            }
+
             if (isset($rawConditions['name'])) {
                 $param = StringHelper::escapeLikeQueryParameter($rawConditions['name']);
                 $query = $this->formulaRepos->queryOnAField([DB::raw("upper(name)"), 'LIKE BINARY', DB::raw("upper(concat('%', ? , '%'))")], positionalBindings: ['name' => $param]);
@@ -229,7 +249,7 @@ class FormulaService extends \App\Services\BaseService implements IFormulaServic
                     ]);
                 }
             }
-            
+
             # TODO: category purchases
             $this->formulaRepos->deleteCategoryPurchase($entity->id, array_map(function ($value) {
                 return $value['id'];
@@ -281,7 +301,7 @@ class FormulaService extends \App\Services\BaseService implements IFormulaServic
             $entity->note = $param['note'] ?? null;
             $entity->setFormula($sum_from, $sum_to);
             if (!$entity->save()) throw new ActionFailException();
-            
+
             DB::commit();
             return $entity;
         } catch (\Exception $e) {

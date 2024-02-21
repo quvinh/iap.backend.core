@@ -12,6 +12,7 @@ use App\Helpers\Enums\InvoiceTypes;
 use App\Models\Formula;
 use App\Models\Invoice;
 use App\Models\ItemCode;
+use App\Models\UserCompany;
 use Illuminate\Support\Collection;
 
 use function Spatie\SslCertificate\starts_with;
@@ -32,6 +33,14 @@ class CompanyRepository extends BaseRepository implements ICompanyRepository
      */
     public function getAllCompanies(): Collection
     {
+        // $userId = auth()->user()->getAuthIdentifier();
+        // $userCompanies = UserCompany::where('user_id', $userId)->get('company_id')->toArray();
+        // $arr = [];
+        // if (!empty($userCompanies)) {
+        //     $arr = array_map(function ($item) {
+        //         return $item['company_id'];
+        //     }, $userCompanies);
+        // }
         $companies = Company::where('status', 1)->orderByDesc('id')->get();
         return $companies;
     }

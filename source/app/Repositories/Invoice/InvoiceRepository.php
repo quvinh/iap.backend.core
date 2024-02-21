@@ -14,6 +14,7 @@ use App\Helpers\Enums\InvoiceTypes;
 use App\Models\Company;
 use App\Models\InvoiceDetail;
 use App\Models\InvoiceTask;
+use App\Models\UserCompany;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 
@@ -71,6 +72,18 @@ class InvoiceRepository extends BaseRepository implements IInvoiceRepository
     public function info(array $params): array
     {
         $query = Invoice::query();
+
+        # Check companies authoritied
+        $userId = auth()->user()->getAuthIdentifier();
+        $userCompanies = UserCompany::where('user_id', $userId)->get('company_id')->toArray();
+        $arr = [];
+        if (!empty($userCompanies)) {
+            $arr = array_map(function ($item) {
+                return $item['company_id'];
+            }, $userCompanies);
+        }
+        $query->whereIn('company_id', $arr);
+
         if (isset($params['company_id'])) {
             $query->where('company_id', '=', $params['company_id']);
         }

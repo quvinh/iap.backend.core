@@ -8,6 +8,7 @@ use App\Helpers\Common\MetaInfo;
 use App\Models\User;
 use App\Repositories\BaseRepository;
 use App\Exceptions\DB\RecordIsNotFoundException as DBRecordIsNotFoundException;
+use App\Models\CompanyDetail;
 use App\Models\UserCompany;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Hash;
@@ -54,6 +55,17 @@ class UserRepository extends BaseRepository implements IUserRepository
     public function findByCompanies($user_id): mixed
     {
         return UserCompany::query()->where('user_id', $user_id)->get('company_id')->toArray();
+    }
+
+    /**
+     * Find companie-details
+     * @param $user_id
+     * @param $companies
+     * @return User
+     */
+    public function findByCompanieDetails($user_id, array $companies): mixed
+    {
+        return CompanyDetail::query()->whereIn('company_id', $companies)->get('id')->toArray();
     }
 
     /**

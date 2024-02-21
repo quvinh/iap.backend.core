@@ -15,6 +15,7 @@ use App\Helpers\Utils\StringHelper;
 use App\Models\ItemGroup;
 use App\Repositories\ItemCode\IItemCodeRepository;
 use App\Repositories\ItemGroup\IItemGroupRepository;
+use App\Services\User\IUserService;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Database\RecordsNotFoundException;
@@ -27,11 +28,13 @@ class ItemGroupService extends \App\Services\BaseService implements IItemGroupSe
 {
     private ?IItemGroupRepository $itemGroupRepos = null;
     private ?IItemCodeRepository $itemCodeRepos = null;
+    private ?IUserService $userService = null;
 
-    public function __construct(IItemGroupRepository $repos, IItemCodeRepository $itemCodeRepos)
+    public function __construct(IItemGroupRepository $repos, IItemCodeRepository $itemCodeRepos, IUserService $userService)
     {
         $this->itemGroupRepos = $repos;
         $this->itemCodeRepos = $itemCodeRepos;
+        $this->userService = $userService;
     }
 
     /**
@@ -61,7 +64,7 @@ class ItemGroupService extends \App\Services\BaseService implements IItemGroupSe
     /**
      * Search list of items
      *
-     * @param array<string> $rawConditions
+     * @param array $rawConditions
      * @param PaginationInfo|null $paging
      * @param array<string> $withs
      * @return Collection<int,ItemGroup>
@@ -72,6 +75,19 @@ class ItemGroupService extends \App\Services\BaseService implements IItemGroupSe
     {
         try {
             $query = $this->itemGroupRepos->search();
+
+            # Query get companies authoritied
+            $userId = auth()->user()->getAuthIdentifier();
+            $userCompanies = $this->userService->findByCompanies($userId);
+            if (empty($userCompanies)) {
+                $query->whereIn('company_id', []);
+            } else {
+                $arr = array_map(function ($item) {
+                    return $item['company_id'];
+                }, $userCompanies);
+                $query->whereIn('company_id', $arr);
+            }
+
             if (isset($rawConditions['name'])) {
                 $param = StringHelper::escapeLikeQueryParameter($rawConditions['name']);
                 $query = $this->itemGroupRepos->queryOnAField([DB::raw("upper(name)"), 'LIKE BINARY', DB::raw("upper(concat('%', ? , '%'))")], positionalBindings: ['name' => $param]);

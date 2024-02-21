@@ -16,6 +16,7 @@ use App\Models\CompanyDetail;
 use App\Repositories\CompanyDetail\ICompanyDetailRepository;
 use App\Repositories\FirstAriseAccount\IFirstAriseAccountRepository;
 use App\Repositories\TaxFreeVoucher\ITaxFreeVoucherRepository;
+use App\Services\User\IUserService;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Database\Eloquent\Model;
@@ -29,12 +30,18 @@ class CompanyDetailService extends \App\Services\BaseService implements ICompany
     private ?ICompanyDetailRepository $companyDetailRepos = null;
     private ?IFirstAriseAccountRepository $ariseAccountRepos = null;
     private ?ITaxFreeVoucherRepository $taxFreeVoucherRepos = null;
+    private ?IUserService $userService = null;
 
-    public function __construct(ICompanyDetailRepository $repos, IFirstAriseAccountRepository $ariseAccountRepos, ITaxFreeVoucherRepository $taxFreeVoucherRepos)
-    {
+    public function __construct(
+        ICompanyDetailRepository $repos,
+        IFirstAriseAccountRepository $ariseAccountRepos,
+        ITaxFreeVoucherRepository $taxFreeVoucherRepos,
+        IUserService $userService
+    ) {
         $this->companyDetailRepos = $repos;
         $this->ariseAccountRepos = $ariseAccountRepos;
         $this->taxFreeVoucherRepos = $taxFreeVoucherRepos;
+        $this->userService = $userService;
     }
 
     /**
@@ -64,7 +71,7 @@ class CompanyDetailService extends \App\Services\BaseService implements ICompany
     /**
      * Search list of items
      *
-     * @param array<string> $rawConditions
+     * @param array $rawConditions
      * @param PaginationInfo|null $paging
      * @param array<string> $withs
      * @return Collection<int,CompanyDetail>
@@ -75,6 +82,19 @@ class CompanyDetailService extends \App\Services\BaseService implements ICompany
     {
         try {
             $query = $this->companyDetailRepos->search();
+
+            # Query get companies authoritied
+            $userId = auth()->user()->getAuthIdentifier();
+            $userCompanies = $this->userService->findByCompanies($userId);
+            if (empty($userCompanies)) {
+                $query->whereIn('company_id', []);
+            } else {
+                $arr = array_map(function ($item) {
+                    return $item['company_id'];
+                }, $userCompanies);
+                $query->whereIn('company_id', $arr);
+            }
+
             if (isset($rawConditions['id'])) {
                 $param = $rawConditions['id'];
                 $query = $this->companyDetailRepos->queryOnAField(['id', '=', $param], $query);

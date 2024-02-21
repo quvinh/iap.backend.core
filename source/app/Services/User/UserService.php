@@ -139,7 +139,7 @@ class UserService extends \App\Services\BaseService implements IUserService
             if (isset($param['company_id'])) {
                 foreach ($param['company_id'] as $company_id) {
                     $company = $this->companyRepos->getSingleObject($company_id)->first();
-                    if(empty($company)) {
+                    if (empty($company)) {
                         throw new CannotSaveToDBException(message: "company with id:$company_id not exists");
                     } else {
                         $userCompany = new UserCompany();
@@ -186,10 +186,11 @@ class UserService extends \App\Services\BaseService implements IUserService
             if (isset($param['photo_raw'])) {
                 $rem = $record->photo ?? '';
                 $photo = StorageHelper::storageImage(
-                    self::DEFAULT_FOLDER_TO_UPLOAD_IMAGES, 
-                    $param['photo_raw'], 
-                    StorageHelper::TMP_DISK_NAME, 
-                    $rem);
+                    self::DEFAULT_FOLDER_TO_UPLOAD_IMAGES,
+                    $param['photo_raw'],
+                    StorageHelper::TMP_DISK_NAME,
+                    $rem
+                );
                 $record->photo = $photo ?? null;
                 $record->save();
             }
@@ -198,7 +199,7 @@ class UserService extends \App\Services\BaseService implements IUserService
                 UserCompany::where('user_id', $record->id)->delete();
                 foreach ($param['company_id'] as $company_id) {
                     $company = $this->companyRepos->getSingleObject($company_id)->first();
-                    if(empty($company)) {
+                    if (empty($company)) {
                         throw new CannotSaveToDBException(message: "company with id:$company_id not exists");
                     } else {
                         $userCompany = new UserCompany();
@@ -262,6 +263,20 @@ class UserService extends \App\Services\BaseService implements IUserService
     public function findByCompanies($user_id): mixed
     {
         return $this->userRepos->findByCompanies($user_id);
+    }
+
+    public function findByCompanieDetails($user_id): mixed
+    {
+        # Query get companies authoritied
+        $companies = [];
+        $userId = auth()->user()->getAuthIdentifier();
+        $userCompanies = $this->findByCompanies($userId);
+        if (!empty($userCompanies)) {
+            $companies = array_map(function ($item) {
+                return $item['company_id'];
+            }, $userCompanies);
+        }
+        return $this->userRepos->findByCompanieDetails($user_id, $companies);
     }
 
     /**
