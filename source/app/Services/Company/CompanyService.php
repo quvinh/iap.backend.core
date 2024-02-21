@@ -72,7 +72,6 @@ class CompanyService extends \App\Services\BaseService implements ICompanyServic
     {
         try {
             $query = $this->companyRepos->search();
-
             # Query get companies authoritied
             $userId = auth()->user()->getAuthIdentifier();
             $userCompanies = $this->userService->findByCompanies($userId);

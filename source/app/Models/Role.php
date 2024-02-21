@@ -41,32 +41,18 @@ class Role extends BaseModel
     }
 
     /**
-     * Get name of permissions
+     * Get slug of permissions
      * @return string
      */
-    public function getNamePermissions()
+    public function getSlugPermissions()
     {
         $permissions = array_map(function ($item) {
             $permission = Permission::find($item['permission_id']);
             if ($permission) {
-                return $permission->name;
+                return $permission->slug;
             }
-        }, $this->permissionGroup->toArray());
-        return implode(', ', $permissions);
-    }
-
-    /**
-     * Get id of permissions
-     * @return array
-     */
-    public function getIdOfPermissions()
-    {
-        $permissions = array_map(function ($item) {
-            $permission = Permission::find($item['permission_id']);
-            if ($permission) {
-                return $permission->id;
-            }
-        }, $this->permissionGroup->toArray());
+        }, $this->permissions->toArray());
+        // return implode(', ', $permissions);
         return $permissions;
     }
 }

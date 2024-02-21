@@ -46,12 +46,12 @@ class CompanyController extends ApiController
     {
         $root = 'companies';
         if ($role == UserRoles::ADMINISTRATOR) {
-            Route::get($root . '/all', [CompanyController::class, 'all']);
-            Route::post($root . '/search', [CompanyController::class, 'search']);
-            Route::get($root . '/{id}', [CompanyController::class, 'getSingleObject']);
-            Route::post($root, [CompanyController::class, 'create']);
-            Route::put($root . '/{id}', [CompanyController::class, 'update']);
-            Route::delete($root . '/{id}', [CompanyController::class, 'delete']);
+            Route::get($root . '/all', [CompanyController::class, 'all'])->middleware('can:search,App\Models\Company');
+            Route::post($root . '/search', [CompanyController::class, 'search'])->middleware('can:search,App\Models\Company');
+            Route::get($root . '/{id}', [CompanyController::class, 'getSingleObject'])->middleware('can:search,App\Models\Company');
+            Route::post($root, [CompanyController::class, 'create'])->middleware('can:create,App\Models\Company');
+            Route::put($root . '/{id}', [CompanyController::class, 'update'])->middleware('can:update,App\Models\Company');
+            Route::delete($root . '/{id}', [CompanyController::class, 'delete'])->middleware('can:delete,App\Models\Company');
 
             # Export excel
             Route::post($root . '/data-announcement-export', [CompanyController::class, 'dataAnnouncementExport']);
@@ -182,9 +182,9 @@ class CompanyController extends ApiController
         $filePath = "inventory/$file";
 
         $result = Excel::store(new InventoryExport(
-            $this->companyService, 
-            $request->company_id, 
-            $request->start, 
+            $this->companyService,
+            $request->company_id,
+            $request->start,
             $request->end
         ), $filePath, StorageHelper::EXCEL_DISK_NAME);
         if (empty($result)) $response->fail(['status' => $result]);

@@ -51,16 +51,16 @@ class InvoiceController extends ApiController
     {
         $root = 'invoices';
         if ($role == UserRoles::ADMINISTRATOR) {
-            Route::post($root . '/search', [InvoiceController::class, 'search']);
-            Route::post($root . '/search-export', [InvoiceController::class, 'searchForExport']);
-            Route::get($root . '/{id}', [InvoiceController::class, 'getSingleObject']);
-            Route::post($root, [InvoiceController::class, 'create']);
+            Route::post($root . '/search', [InvoiceController::class, 'search'])->middleware('can:search,App\Models\Invoice');
+            Route::post($root . '/search-export', [InvoiceController::class, 'searchForExport'])->middleware('can:search,App\Models\Invoice');
+            Route::get($root . '/{id}', [InvoiceController::class, 'getSingleObject'])->middleware('can:search,App\Models\Invoice');
+            Route::post($root, [InvoiceController::class, 'create'])->middleware('can:create,App\Models\Invoice');
             // Route::post($root . '/each', [InvoiceController::class, 'createEachRow']);
-            Route::put($root . '/{id}', [InvoiceController::class, 'update']);
-            Route::delete($root . '/{id}', [InvoiceController::class, 'delete']);
+            Route::put($root . '/{id}', [InvoiceController::class, 'update'])->middleware('can:update,App\Models\Invoice');
+            Route::delete($root . '/{id}', [InvoiceController::class, 'delete'])->middleware('can:delete,App\Models\Invoice');
 
-            Route::post($root . '/import', [InvoiceController::class, 'import']);
-            Route::post($root . '/import-pdf', [InvoiceController::class, 'importPDF']);
+            Route::post($root . '/import', [InvoiceController::class, 'import'])->middleware('can:create,App\Models\Invoice');
+            Route::post($root . '/import-pdf', [InvoiceController::class, 'importPDF'])->middleware('can:create,App\Models\Invoice');
             Route::post($root . '/restore-rows/{id}', [InvoiceController::class, 'restoreRows']);
             Route::post($root . '/partners', [InvoiceController::class, 'partners']);
             Route::post($root . '/info', [InvoiceController::class, 'info']);
@@ -68,7 +68,7 @@ class InvoiceController extends ApiController
 
             Route::post($root . '/invoices-export', [InvoiceController::class, 'invoicesExport']);
             Route::post($root . '/invoice-details-export', [InvoiceController::class, 'invoiceDetailsExport']);
-            Route::post($root . '/tct', [InvoiceController::class, 'createInvoiceTct']);
+            Route::post($root . '/tct', [InvoiceController::class, 'createInvoiceTct'])->middleware('can:search,App\Models\Invoice');
         }
     }
 
