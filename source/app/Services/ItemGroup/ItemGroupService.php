@@ -76,18 +76,6 @@ class ItemGroupService extends \App\Services\BaseService implements IItemGroupSe
         try {
             $query = $this->itemGroupRepos->search();
 
-            # Query get companies authoritied
-            $userId = auth()->user()->getAuthIdentifier();
-            $userCompanies = $this->userService->findByCompanies($userId);
-            if (empty($userCompanies)) {
-                $query->whereIn('company_id', []);
-            } else {
-                $arr = array_map(function ($item) {
-                    return $item['company_id'];
-                }, $userCompanies);
-                $query->whereIn('company_id', $arr);
-            }
-
             if (isset($rawConditions['name'])) {
                 $param = StringHelper::escapeLikeQueryParameter($rawConditions['name']);
                 $query = $this->itemGroupRepos->queryOnAField([DB::raw("upper(name)"), 'LIKE BINARY', DB::raw("upper(concat('%', ? , '%'))")], positionalBindings: ['name' => $param]);
@@ -113,6 +101,18 @@ class ItemGroupService extends \App\Services\BaseService implements IItemGroupSe
             }
             if (isset($rawConditions['created_date'])) {
                 $query = $this->itemGroupRepos->queryOnDateRangeField($query, 'created_at', $rawConditions['created_date']);
+            }
+
+            # Query get companies authoritied
+            $userId = auth()->user()->getAuthIdentifier();
+            $userCompanies = $this->userService->findByCompanies($userId);
+            if (empty($userCompanies)) {
+                $query->whereIn('company_id', []);
+            } else {
+                $arr = array_map(function ($item) {
+                    return $item['company_id'];
+                }, $userCompanies);
+                $query->whereIn('company_id', $arr);
             }
 
             $query = $this->itemGroupRepos->with($withs, $query);

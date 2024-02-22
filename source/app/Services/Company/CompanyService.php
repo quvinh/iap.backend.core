@@ -72,17 +72,6 @@ class CompanyService extends \App\Services\BaseService implements ICompanyServic
     {
         try {
             $query = $this->companyRepos->search();
-            # Query get companies authoritied
-            $userId = auth()->user()->getAuthIdentifier();
-            $userCompanies = $this->userService->findByCompanies($userId);
-            if (empty($userCompanies)) {
-                $query->whereIn('id', []);
-            } else {
-                $arr = array_map(function ($item) {
-                    return $item['company_id'];
-                }, $userCompanies);
-                $query->whereIn('id', $arr);
-            }
 
             if (isset($rawConditions['name'])) {
                 $param = StringHelper::escapeLikeQueryParameter($rawConditions['name']);
@@ -104,6 +93,18 @@ class CompanyService extends \App\Services\BaseService implements ICompanyServic
             }
             if (isset($rawConditions['created_date'])) {
                 $query = $this->companyRepos->queryOnDateRangeField($query, 'created_at', $rawConditions['created_date']);
+            }
+
+            # Query get companies authoritied
+            $userId = auth()->user()->getAuthIdentifier();
+            $userCompanies = $this->userService->findByCompanies($userId);
+            if (empty($userCompanies)) {
+                $query->whereIn('id', []);
+            } else {
+                $arr = array_map(function ($item) {
+                    return $item['company_id'];
+                }, $userCompanies);
+                $query->whereIn('id', $arr);
             }
 
             $query = $this->companyRepos->with($withs, $query);

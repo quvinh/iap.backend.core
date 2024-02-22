@@ -71,19 +71,7 @@ class ItemCodeService extends \App\Services\BaseService implements IItemCodeServ
     public function search(array $rawConditions, PaginationInfo &$paging = null, array $withs = []): Collection
     {
         try {
-            $query = $this->itemCodeRepos->search();
-
-            # Query get companies authoritied
-            $userId = auth()->user()->getAuthIdentifier();
-            $userCompanies = $this->userService->findByCompanies($userId);
-            if (empty($userCompanies)) {
-                $query->whereIn('company_id', []);
-            } else {
-                $arr = array_map(function ($item) {
-                    return $item['company_id'];
-                }, $userCompanies);
-                $query->whereIn('company_id', $arr);
-            }
+            $query = $this->itemCodeRepos->search();            
             
             if (isset($rawConditions['product_code'])) {
                 $param = StringHelper::escapeLikeQueryParameter($rawConditions['product_code']);
@@ -135,6 +123,18 @@ class ItemCodeService extends \App\Services\BaseService implements IItemCodeServ
             }
             if (isset($rawConditions['created_date'])) {
                 $query = $this->itemCodeRepos->queryOnDateRangeField($query, 'created_at', $rawConditions['created_date']);
+            }
+
+            # Query get companies authoritied
+            $userId = auth()->user()->getAuthIdentifier();
+            $userCompanies = $this->userService->findByCompanies($userId);
+            if (empty($userCompanies)) {
+                $query->whereIn('company_id', []);
+            } else {
+                $arr = array_map(function ($item) {
+                    return $item['company_id'];
+                }, $userCompanies);
+                $query->whereIn('company_id', $arr);
             }
 
             $query = $this->itemCodeRepos->with($withs, $query);

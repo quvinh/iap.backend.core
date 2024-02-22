@@ -83,18 +83,6 @@ class CompanyDetailService extends \App\Services\BaseService implements ICompany
         try {
             $query = $this->companyDetailRepos->search();
 
-            # Query get companies authoritied
-            $userId = auth()->user()->getAuthIdentifier();
-            $userCompanies = $this->userService->findByCompanies($userId);
-            if (empty($userCompanies)) {
-                $query->whereIn('company_id', []);
-            } else {
-                $arr = array_map(function ($item) {
-                    return $item['company_id'];
-                }, $userCompanies);
-                $query->whereIn('company_id', $arr);
-            }
-
             if (isset($rawConditions['id'])) {
                 $param = $rawConditions['id'];
                 $query = $this->companyDetailRepos->queryOnAField(['id', '=', $param], $query);
@@ -115,6 +103,18 @@ class CompanyDetailService extends \App\Services\BaseService implements ICompany
             }
             if (isset($rawConditions['created_date'])) {
                 $query = $this->companyDetailRepos->queryOnDateRangeField($query, 'created_at', $rawConditions['created_date']);
+            }
+
+            # Query get companies authoritied
+            $userId = auth()->user()->getAuthIdentifier();
+            $userCompanies = $this->userService->findByCompanies($userId);
+            if (empty($userCompanies)) {
+                $query->whereIn('company_id', []);
+            } else {
+                $arr = array_map(function ($item) {
+                    return $item['company_id'];
+                }, $userCompanies);
+                $query->whereIn('company_id', $arr);
             }
 
             $query = $this->companyDetailRepos->with($withs, $query);

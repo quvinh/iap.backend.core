@@ -82,18 +82,6 @@ class FormulaService extends \App\Services\BaseService implements IFormulaServic
         try {
             $query = $this->formulaRepos->search();
 
-            # Query get companies authoritied
-            $userId = auth()->user()->getAuthIdentifier();
-            $userCompanies = $this->userService->findByCompanieDetails($userId);
-            if (empty($userCompanies)) {
-                $query->whereIn('company_detail_id', []);
-            } else {
-                $arr = array_map(function ($item) {
-                    return $item['id'];
-                }, $userCompanies);
-                $query->whereIn('company_detail_id', $arr);
-            }
-
             if (isset($rawConditions['name'])) {
                 $param = StringHelper::escapeLikeQueryParameter($rawConditions['name']);
                 $query = $this->formulaRepos->queryOnAField([DB::raw("upper(name)"), 'LIKE BINARY', DB::raw("upper(concat('%', ? , '%'))")], positionalBindings: ['name' => $param]);
@@ -114,6 +102,18 @@ class FormulaService extends \App\Services\BaseService implements IFormulaServic
             }
             if (isset($rawConditions['created_date'])) {
                 $query = $this->formulaRepos->queryOnDateRangeField($query, 'created_at', $rawConditions['created_date']);
+            }
+
+            # Query get companies authoritied
+            $userId = auth()->user()->getAuthIdentifier();
+            $userCompanies = $this->userService->findByCompanieDetails($userId);
+            if (empty($userCompanies)) {
+                $query->whereIn('company_detail_id', []);
+            } else {
+                $arr = array_map(function ($item) {
+                    return $item['id'];
+                }, $userCompanies);
+                $query->whereIn('company_detail_id', $arr);
             }
 
             $query = $this->formulaRepos->with($withs, $query);

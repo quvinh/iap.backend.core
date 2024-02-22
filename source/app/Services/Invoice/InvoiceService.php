@@ -102,18 +102,6 @@ class InvoiceService extends \App\Services\BaseService implements IInvoiceServic
             # Sort
             // $query = $query->orderByDesc('date')->orderByDesc('invoice_number');
 
-            # Query get companies authoritied
-            $userId = auth()->user()->getAuthIdentifier();
-            $userCompanies = $this->userService->findByCompanies($userId);
-            if (empty($userCompanies)) {
-                $query->whereIn('company_id', []);
-            } else {
-                $arr = array_map(function ($item) {
-                    return $item['company_id'];
-                }, $userCompanies);
-                $query->whereIn('company_id', $arr);
-            }
-
             if (isset($rawConditions['name'])) {
                 $param = StringHelper::escapeLikeQueryParameter($rawConditions['name']);
                 $query = $this->invoiceRepos->queryOnAField([DB::raw("upper(name)"), 'LIKE BINARY', DB::raw("upper(concat('%', ? , '%'))")], positionalBindings: ['name' => $param]);
@@ -183,6 +171,18 @@ class InvoiceService extends \App\Services\BaseService implements IInvoiceServic
             }
             if (isset($rawConditions['created_date'])) {
                 $query = $this->invoiceRepos->queryOnDateRangeField($query, 'created_at', $rawConditions['created_date']);
+            }
+
+            # Query get companies authoritied
+            $userId = auth()->user()->getAuthIdentifier();
+            $userCompanies = $this->userService->findByCompanies($userId);
+            if (empty($userCompanies)) {
+                $query->whereIn('company_id', []);
+            } else {
+                $arr = array_map(function ($item) {
+                    return $item['company_id'];
+                }, $userCompanies);
+                $query->whereIn('company_id', $arr);
             }
 
             $query = $this->invoiceRepos->with($withs, $query);

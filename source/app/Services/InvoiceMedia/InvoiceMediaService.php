@@ -60,7 +60,7 @@ class InvoiceMediaService extends \App\Services\BaseService implements IInvoiceM
     /**
      * Search list of items
      *
-     * @param array<string> $rawConditions
+     * @param array $rawConditions
      * @param PaginationInfo|null $paging
      * @param array<string> $withs
      * @return Collection<int,InvoiceMedia>
@@ -71,18 +71,6 @@ class InvoiceMediaService extends \App\Services\BaseService implements IInvoiceM
     {
         try {
             $query = $this->invoiceMediaRepos->search();
-
-            # Query get companies authoritied
-            $userId = auth()->user()->getAuthIdentifier();
-            $userCompanies = $this->userService->findByCompanies($userId);
-            if (empty($userCompanies)) {
-                $query->whereIn('company_id', []);
-            } else {
-                $arr = array_map(function ($item) {
-                    return $item['company_id'];
-                }, $userCompanies);
-                $query->whereIn('company_id', $arr);
-            }
 
             if (isset($rawConditions['name'])) {
                 $param = StringHelper::escapeLikeQueryParameter($rawConditions['name']);
@@ -109,6 +97,18 @@ class InvoiceMediaService extends \App\Services\BaseService implements IInvoiceM
             }
             if (isset($rawConditions['created_date'])) {
                 $query = $this->invoiceMediaRepos->queryOnDateRangeField($query, 'created_at', $rawConditions['created_date']);
+            }
+
+            # Query get companies authoritied
+            $userId = auth()->user()->getAuthIdentifier();
+            $userCompanies = $this->userService->findByCompanies($userId);
+            if (empty($userCompanies)) {
+                $query->whereIn('company_id', []);
+            } else {
+                $arr = array_map(function ($item) {
+                    return $item['company_id'];
+                }, $userCompanies);
+                $query->whereIn('company_id', $arr);
             }
 
             $query = $this->invoiceMediaRepos->with($withs, $query);

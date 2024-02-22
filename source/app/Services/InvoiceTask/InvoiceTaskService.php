@@ -88,18 +88,6 @@ class InvoiceTaskService extends \App\Services\BaseService implements IInvoiceTa
             //     $query = $this->invoiceTaskRepos->queryOnAField([DB::raw("upper(month_of_year)"), 'LIKE BINARY', DB::raw("upper(concat('%', ? , '%'))")], positionalBindings: ['month_of_year' => $param]);
             // }
 
-            # Query get companies authoritied
-            $userId = auth()->user()->getAuthIdentifier();
-            $userCompanies = $this->userService->findByCompanies($userId);
-            if (empty($userCompanies)) {
-                $query->whereIn('company_id', []);
-            } else {
-                $arr = array_map(function ($item) {
-                    return $item['company_id'];
-                }, $userCompanies);
-                $query->whereIn('company_id', $arr);
-            }
-
             if (isset($rawConditions['id'])) {
                 $param = $rawConditions['id'];
                 $query = $this->invoiceTaskRepos->queryOnAField(['id', '=', $param], $query);
@@ -125,6 +113,18 @@ class InvoiceTaskService extends \App\Services\BaseService implements IInvoiceTa
             }
             if (isset($rawConditions['created_date'])) {
                 $query = $this->invoiceTaskRepos->queryOnDateRangeField($query, 'created_at', $rawConditions['created_date']);
+            }
+
+            # Query get companies authoritied
+            $userId = auth()->user()->getAuthIdentifier();
+            $userCompanies = $this->userService->findByCompanies($userId);
+            if (empty($userCompanies)) {
+                $query->whereIn('company_id', []);
+            } else {
+                $arr = array_map(function ($item) {
+                    return $item['company_id'];
+                }, $userCompanies);
+                $query->whereIn('company_id', $arr);
             }
 
             $query = $this->invoiceTaskRepos->with($withs, $query);
