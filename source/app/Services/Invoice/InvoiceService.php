@@ -514,6 +514,7 @@ class InvoiceService extends \App\Services\BaseService implements IInvoiceServic
         DB::beginTransaction();
         try {
             $rounding = $param['rounding'] ?? 1;
+            $forceEdit = $param['force_edit'] ?? 0;
             foreach ($param['invoice_details'] as $index => $row) {
                 $record = $this->storeEachRowInvoice([
                     'company_id' => $param['company_id'],
@@ -539,6 +540,19 @@ class InvoiceService extends \App\Services\BaseService implements IInvoiceServic
                     $index += 1;
                     throw new ActionFailException(message: "Failure at row $index");
                 }
+            }
+
+            # Force edit money
+            if (
+                $forceEdit == 1 &&
+                isset($param['sum_money_no_vat']) &&
+                isset($param['sum_money_vat']) &&
+                isset($param['sum_money'])
+            ) {
+                $record->sum_money_no_vat = $param['sum_money_no_vat'];
+                $record->sum_money_vat = $param['sum_money_vat'];
+                $record->sum_money = $param['sum_money'];
+                $record->save();
             }
 
             DB::commit();

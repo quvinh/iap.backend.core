@@ -50,6 +50,11 @@ class InvoiceImportRequest extends BaseRequest
             'invoice_details.*.vat' => ['required', 'integer'],
             'invoice_details.*.quantity' => ['required', 'numeric'],
             'invoice_details.*.price' => ['required', 'numeric'],
+
+            'force_edit' => ['numeric', Rule::in([0, 1])],
+            'sum_money_no_vat' => ['numeric', 'gte:0'],
+            'sum_money_vat' => ['numeric', 'gte:0'],
+            'sum_money' => ['numeric', 'gte:0'],
         ];
     }
 
