@@ -76,7 +76,7 @@ class CompanyPolicy
      * @param  \App\Models\Company  $company
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function delete(User $user, Company $company)
+    public function delete(User $user)
     {
         try {
             $slug = self::slug;
