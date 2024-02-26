@@ -47,7 +47,7 @@ class InvoiceTctCreateRequest extends BaseRequest
             'invoice_details.*.product' => ['required', 'string'],
             'invoice_details.*.product_exchange' => ['nullable'],
             'invoice_details.*.unit' => ['required', 'string'],
-            'invoice_details.*.vat' => ['required', 'integer'],
+            'invoice_details.*.vat' => ['required', 'numeric'],
             'invoice_details.*.vat_money' => ['required', 'numeric'],
             'invoice_details.*.quantity' => ['required', 'numeric'],
             'invoice_details.*.price' => ['required', 'numeric'],
