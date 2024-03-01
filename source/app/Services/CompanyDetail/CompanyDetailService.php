@@ -151,6 +151,7 @@ class CompanyDetailService extends \App\Services\BaseService implements ICompany
         try {
             #1 Create
             $record = $this->companyDetailRepos->create($param, $commandMetaInfo);
+            // dd($param['company_detail_old_id']);
             DB::commit();
             #2 Return
             return $record;
@@ -335,7 +336,7 @@ class CompanyDetailService extends \App\Services\BaseService implements ICompany
                 // if (!$tax) throw new RecordIsNotFoundException(message: "Tax free voucher not found with ID: $idT");
                 if (!empty($tax)) {
                     $ckTax = $this->companyDetailRepos->getSingleVoucherPropertyObject($entity->id, $tax->id)->first();
-                    if (!empty($ckTax)) {
+                    if (empty($ckTax)) {
                         $this->companyDetailRepos->createTaxFreeVoucher([
                             'company_detail_id' => $entity->id,
                             'tax_free_voucher_id' => $tax->id,

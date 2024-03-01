@@ -103,8 +103,8 @@ class CompanyDetailRepository extends BaseRepository implements ICompanyDetailRe
     {
         $query = (new CompanyDetailTaxFreeVoucher())->query();
         return $query->where([
-            ['company_detail_id', $idCom],
-            ['tax_free_voucher_id', $idTax],
+            ['company_detail_id', '=', $idCom],
+            ['tax_free_voucher_id', '=', $idTax],
         ]);
     }
 
