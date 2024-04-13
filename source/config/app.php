@@ -198,6 +198,7 @@ return [
         /*
          * Package Service Providers...
          */
+        Elibyy\TCPDF\ServiceProvider::class,
 
         /*
          * Application Service Providers...
@@ -225,6 +226,7 @@ return [
     'aliases' => Facade::defaultAliases()->merge([
         // 'ExampleClass' => App\Example\ExampleClass::class,
         'Excel' => Maatwebsite\Excel\Facades\Excel::class,
+        'PDF' => Elibyy\TCPDF\Facades\TCPDF::class,
     ])->toArray(),
 
 ];
