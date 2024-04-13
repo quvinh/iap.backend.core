@@ -29,6 +29,7 @@ use App\Http\Controllers\Api\PermissionController;
 use App\Http\Controllers\Api\RoleController;
 use App\Http\Controllers\Api\TaxFreeVoucherController;
 use App\Http\Controllers\Api\TaxFreeVoucherRecordController;
+use App\Http\Controllers\Api\TemplateController;
 use App\Http\Controllers\Api\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -75,6 +76,7 @@ function registerResourceRoutes(string $group = UserRoles::ADMINISTRATOR): void
     PdfTableKeyController::registerRoutes($group);
     DashboardController::registerRoutes($group);
     OpeningBalanceVatController::registerRoutes($group);
+    TemplateController::registerRoutes($group);
 
     CommandController::registerRoutes($group);
 }

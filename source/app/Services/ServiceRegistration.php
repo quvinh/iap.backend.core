@@ -52,6 +52,8 @@ use App\Services\TaxFreeVoucher\ITaxFreeVoucherService;
 use App\Services\TaxFreeVoucher\TaxFreeVoucherService;
 use App\Services\TaxFreeVoucherRecord\ITaxFreeVoucherRecordService;
 use App\Services\TaxFreeVoucherRecord\TaxFreeVoucherRecordService;
+use App\Services\Template\ITemplateService;
+use App\Services\Template\TemplateService;
 use App\Services\User\IUserService;
 use App\Services\User\UserService;
 
@@ -89,5 +91,6 @@ class ServiceRegistration
         $app->singleton(IInvoiceMediaService::class, InvoiceMediaService::class);
         $app->singleton(IPdfTableKeyService::class, PdfTableKeyService::class);
         $app->singleton(IOpeningBalanceVatService::class, OpeningBalanceVatService::class);
+        $app->singleton(ITemplateService::class, TemplateService::class);
     }
 }

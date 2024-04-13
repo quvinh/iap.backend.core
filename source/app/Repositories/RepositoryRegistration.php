@@ -50,6 +50,8 @@ use App\Repositories\TaxFreeVoucher\ITaxFreeVoucherRepository;
 use App\Repositories\TaxFreeVoucher\TaxFreeVoucherRepository;
 use App\Repositories\TaxFreeVoucherRecord\ITaxFreeVoucherRecordRepository;
 use App\Repositories\TaxFreeVoucherRecord\TaxFreeVoucherRecordRepository;
+use App\Repositories\Template\ITemplateRepository;
+use App\Repositories\Template\TemplateRepository;
 use App\Repositories\User\IUserRepository;
 use App\Repositories\User\UserRepository;
 
@@ -86,5 +88,6 @@ class RepositoryRegistration
         $app->singleton(IInvoiceMediaRepository::class, InvoiceMediaRepository::class);
         $app->singleton(IPdfTableKeyRepository::class, PdfTableKeyRepository::class);
         $app->singleton(IOpeningBalanceVatRepository::class, OpeningBalanceVatRepository::class);
+        $app->singleton(ITemplateRepository::class, TemplateRepository::class);
     }
 }
