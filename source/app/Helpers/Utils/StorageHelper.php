@@ -128,7 +128,7 @@ class StorageHelper
             list($extension, $content) = explode(';', $data);
             $tmpExtension = explode('/', $extension);
             // Check mimetype
-            if (!in_array($tmpExtension[1], array('png', 'jpg', 'jpeg'))) throw new \Exception('invalid image');
+            if (!in_array($tmpExtension[1], array('png', 'jpg', 'jpeg', 'pdf'))) throw new \Exception('invalid image');
             // preg_match('/.([0-9]+) /', microtime(), $m);
             // $fileName = sprintf(uuid_create() . '%s%s.%s', date('YmdHis'), $m[1], $tmpExtension[1]);
             $fileName = sprintf(uuid_create() . '.%s', $tmpExtension[1]);

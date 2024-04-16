@@ -8,10 +8,14 @@ use App\Helpers\Enums\UserRoles;
 use App\Helpers\Responses\ApiResponse;
 use App\Helpers\Responses\HttpStatuses;
 use App\Helpers\Utils\StorageHelper;
+use Illuminate\Http\Response as HttpResponse;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Request;
 use App\Http\Requests\MediaStorage\MediaGetRequest;
 use App\Http\Requests\MediaStorage\MediaStoreRequest;
 use Carbon\Carbon;
 use http\Env\Response;
+use Illuminate\Support\Facades\Response as FacadesResponse;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
 use Symfony\Component\HttpFoundation\StreamedResponse;
@@ -31,6 +35,8 @@ class MediaStorageController extends ApiController
             Route::match(['post'], $root . '/store', [MediaStorageController::class, 'storeImage']);
             Route::match(['get'], $root . '/images', [MediaStorageController::class, 'getImage'])->withoutMiddleware(['auth.channel']);
         }
+
+        Route::get($root . '/{slug}', [MediaStorageController::class, 'retrieveFile'])->where('slug', '.*');
     }
 
     /**
@@ -63,5 +69,27 @@ class MediaStorageController extends ApiController
         if ($disk->exists($url)) return $disk->response($url);
         // abort(HttpStatuses::HTTP_NOT_FOUND);
         throw new ActionFailException(code: ErrorCodes::ERR_FILE_NOT_FOUND);
+    }
+
+    /**
+     * Get the system images
+     * @param Request $request
+     * @param string $slug
+     * @return Response
+     */
+    public function retrieveFile(Request $request, string $slug): HttpResponse
+    {
+        $disk = Storage::disk(StorageHelper::TMP_DISK_NAME);
+        if ($disk->exists($slug)) {
+            $filePath = $disk->path($slug);
+        }
+
+        $filePath = $filePath ?? public_path() . '/images/default-thumbnail.jpg';
+        $file = File::get($filePath);
+        $type = File::mimeType($filePath);
+
+        $response = FacadesResponse::make($file, 200);
+        $response->header("Content-Type", $type);
+        return $response;
     }
 }

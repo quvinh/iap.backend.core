@@ -26,6 +26,9 @@ class CompanyResource extends BaseDataResource
         'manager_phone',
         'manager_email',
         'status',
+        'registered_date',
+        'registration_file',
+        'place_of_registration',
         'created_by'
     ];
 

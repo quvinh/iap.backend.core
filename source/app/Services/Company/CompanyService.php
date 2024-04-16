@@ -25,6 +25,7 @@ use Throwable;
 
 class CompanyService extends \App\Services\BaseService implements ICompanyService
 {
+    private const DEFAULT_FOLDER_TO_UPLOAD_FILES = "images/companies";
     private ?ICompanyRepository $companyRepos = null;
     private ?IUserService $userService = null;
 
@@ -167,6 +168,15 @@ class CompanyService extends \App\Services\BaseService implements ICompanyServic
             //     $detail->year = $param['year'];
             //     $detail->save();
             // }
+
+            # Update file if needed
+            if (isset($param['file_raw'])) {
+                $rem = $record->registration_file ?? '';
+                $file = StorageHelper::storageImage(self::DEFAULT_FOLDER_TO_UPLOAD_FILES, $param['file_raw'], StorageHelper::TMP_DISK_NAME, $rem);
+                $record->registration_file = $file ?? null;
+                $record->save();
+            }
+
             DB::commit();
             #2 Return
             return $record;
@@ -200,8 +210,18 @@ class CompanyService extends \App\Services\BaseService implements ICompanyServic
                 'id' => $record->id
             ]);
             $record = $this->companyRepos->update($param, $commandMetaInfo);
-            // update picture if needed
-            // code here
+            
+            # Update file if needed
+            if (isset($param['file_raw'])) {
+                $rem = $record->registration_file ?? '';
+                $file = StorageHelper::storageImage(self::DEFAULT_FOLDER_TO_UPLOAD_FILES, $param['file_raw'], StorageHelper::TMP_DISK_NAME, $rem);
+                $record->registration_file = $file ?? null;
+                $record->save();
+
+                # Remove image from disk
+                if (isset($rem)) StorageHelper::removeFile(StorageHelper::TMP_DISK_NAME, $rem);
+            }
+
             DB::commit();
             return $record;
         } catch (\Exception $e) {

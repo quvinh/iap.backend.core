@@ -24,7 +24,10 @@ class Company extends BaseModel
         'manager_role',
         'manager_phone',
         'manager_email',
-        'status'
+        'status',
+        'registered_date',
+        'registration_file',
+        'place_of_registration',
     ];
 
     public function types(): HasManyThrough

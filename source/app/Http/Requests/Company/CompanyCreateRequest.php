@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Company;
 
 use App\Http\Requests\BaseRequest;
+use App\Rules\IsBase64Image;
 use Illuminate\Foundation\Http\FormRequest;
 
 class CompanyCreateRequest extends BaseRequest
@@ -44,7 +45,8 @@ class CompanyCreateRequest extends BaseRequest
             'email' => ['nullable', 'string'],
             // 'company_type_id' => ['required', 'integer', 'exists:company_types,id'],
             // 'year' => ['required', 'digits:4', 'integer', 'min:2000'],
-            'description' => ['nullable']
+            'description' => ['nullable'],
+            'file_raw' => ['nullable', new IsBase64Image(['size' => config('upload.images.max_size')])],
         ];
     }
 }
