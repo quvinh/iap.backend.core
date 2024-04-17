@@ -14,6 +14,8 @@ use App\Services\CompanyDetail\CompanyDetailService;
 use App\Services\CompanyDetail\ICompanyDetailService;
 use App\Services\CompanyDetailTaxFreeVoucher\CompanyDetailTaxFreeVoucherService;
 use App\Services\CompanyDetailTaxFreeVoucher\ICompanyDetailTaxFreeVoucherService;
+use App\Services\CompanyDocument\CompanyDocumentService;
+use App\Services\CompanyDocument\ICompanyDocumentService;
 use App\Services\CompanyType\CompanyTypeService;
 use App\Services\CompanyType\ICompanyTypeService;
 use App\Services\FirstAriseAccount\FirstAriseAccountService;
@@ -92,5 +94,6 @@ class ServiceRegistration
         $app->singleton(IPdfTableKeyService::class, PdfTableKeyService::class);
         $app->singleton(IOpeningBalanceVatService::class, OpeningBalanceVatService::class);
         $app->singleton(ITemplateService::class, TemplateService::class);
+        $app->singleton(ICompanyDocumentService::class, CompanyDocumentService::class);
     }
 }

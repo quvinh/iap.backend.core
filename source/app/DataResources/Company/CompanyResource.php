@@ -4,11 +4,14 @@ namespace App\DataResources\Company;
 
 use App\DataResources\BaseDataResource;
 use App\DataResources\CompanyDetail\CompanyDetailResource;
+use App\DataResources\CompanyDocument\CompanyDocumentResource;
 use App\DataResources\CompanyType\CompanyTypeResource;
 use App\Models\Company;
 
 class CompanyResource extends BaseDataResource
 {
+    protected $documents;
+    
     /**
      * @var array|string[]
      */
@@ -55,6 +58,10 @@ class CompanyResource extends BaseDataResource
 
         if (in_array('years', $this->fields)) {
             $this->years = BaseDataResource::generateResources($obj->years, CompanyDetailResource::class);
+        }
+
+        if (in_array('documents', $this->fields)) {
+            $this->documents = BaseDataResource::generateResources($obj->documents, CompanyDocumentResource::class);
         }
     }
 }

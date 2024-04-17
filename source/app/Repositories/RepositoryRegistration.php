@@ -12,6 +12,8 @@ use App\Repositories\CategorySold\CategorySoldRepository;
 use App\Repositories\CategorySold\ICategorySoldRepository;
 use App\Repositories\CompanyDetailTaxFreeVoucher\CompanyDetailTaxFreeVoucherRepository;
 use App\Repositories\CompanyDetailTaxFreeVoucher\ICompanyDetailTaxFreeVoucherRepository;
+use App\Repositories\CompanyDocument\CompanyDocumentRepository;
+use App\Repositories\CompanyDocument\ICompanyDocumentRepository;
 use App\Repositories\CompanyType\CompanyTypeRepository;
 use App\Repositories\CompanyType\ICompanyTypeRepository;
 use App\Repositories\FirstAriseAccount\FirstAriseAccountRepository;
@@ -89,5 +91,6 @@ class RepositoryRegistration
         $app->singleton(IPdfTableKeyRepository::class, PdfTableKeyRepository::class);
         $app->singleton(IOpeningBalanceVatRepository::class, OpeningBalanceVatRepository::class);
         $app->singleton(ITemplateRepository::class, TemplateRepository::class);
+        $app->singleton(ICompanyDocumentRepository::class, CompanyDocumentRepository::class);
     }
 }

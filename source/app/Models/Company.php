@@ -46,4 +46,12 @@ class Company extends BaseModel
     {
         return $this->hasMany(CompanyDetail::class, 'company_id', 'id');
     }
+
+    /**
+     * @return HasMany
+     */
+    public function documents(): HasMany
+    {
+        return $this->hasMany(CompanyDocument::class, 'company_id', 'id');
+    }
 }
