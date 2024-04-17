@@ -206,6 +206,7 @@ class InvoiceRepository extends BaseRepository implements IInvoiceRepository
         $invoice->sum_money_no_vat = $param['sum_money_no_vat'] ?? 0;
         $invoice->sum_money_vat = $param['sum_money_vat'] ?? 0;
         $invoice->sum_money = $param['sum_money'] ?? 0;
+        $invoice->property = $param['property'] ?? 0;
         $invoice->created_by = auth()->user()->id . '|' . auth()->user()->name;
         $invoice->save();
 

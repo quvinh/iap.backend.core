@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Invoice;
 
+use App\Helpers\Enums\InvoiceProperties;
 use App\Helpers\Enums\InvoiceTypes;
 use App\Http\Requests\BaseRequest;
 use App\Rules\ComparisonTotalMoney;
@@ -43,6 +44,7 @@ class InvoiceTctCreateRequest extends BaseRequest
             'invoice_number_from' => ['integer'],
             'invoice_symbol' => ['required', 'string', 'max:20'],
             'type' => ['required', 'string', 'max:10', Rule::in(InvoiceTypes::getValues())],
+            'property' => ['numeric', Rule::in(InvoiceProperties::getValues())],
             'invoice_details' => ['array'],
             'invoice_details.*.product' => ['required', 'string'],
             'invoice_details.*.product_exchange' => ['nullable'],
