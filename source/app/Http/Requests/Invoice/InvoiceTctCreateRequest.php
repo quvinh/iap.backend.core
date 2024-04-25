@@ -2,8 +2,9 @@
 
 namespace App\Http\Requests\Invoice;
 
-use App\Helpers\Enums\InvoiceProperties;
+use App\Helpers\Enums\InvoiceStatusEnum;
 use App\Helpers\Enums\InvoiceTypes;
+use App\Helpers\Enums\ProcessingStatusEnum;
 use App\Http\Requests\BaseRequest;
 use App\Rules\ComparisonTotalMoney;
 use Illuminate\Foundation\Http\FormRequest;
@@ -44,7 +45,9 @@ class InvoiceTctCreateRequest extends BaseRequest
             'invoice_number_from' => ['integer'],
             'invoice_symbol' => ['required', 'string', 'max:20'],
             'type' => ['required', 'string', 'max:10', Rule::in(InvoiceTypes::getValues())],
-            'property' => ['numeric', Rule::in(InvoiceProperties::getValues())],
+            'property' => ['numeric'], # tchat
+            'invoice_status' => ['nullable', 'numeric', Rule::in(InvoiceStatusEnum::getValues())], # tthai
+            'processing_status' => ['nullable', 'numeric', Rule::in(ProcessingStatusEnum::getValues())], # ttxly
             'invoice_details' => ['array'],
             'invoice_details.*.product' => ['required', 'string'],
             'invoice_details.*.product_exchange' => ['nullable'],

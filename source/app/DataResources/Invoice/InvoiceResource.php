@@ -22,6 +22,8 @@ class InvoiceResource extends BaseDataResource
         'invoice_number_form',
         'invoice_number',
         'property',
+        'invoice_status',
+        'processing_status',
         'note',
         'partner_name',
         'partner_tax_code',

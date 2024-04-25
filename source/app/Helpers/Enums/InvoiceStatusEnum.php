@@ -4,7 +4,10 @@ namespace App\Helpers\Enums;
 
 use BenSampo\Enum\Enum;
 
-class InvoiceProperties extends Enum
+/**
+ * Invoice status from General Department of Taxation(Tong cuc thue)
+ */
+class InvoiceStatusEnum extends Enum
 {
     const UNKNOWN = 0;
     const HOA_DON_MOI = 1;

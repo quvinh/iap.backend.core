@@ -28,7 +28,9 @@ class Invoice extends BaseModel
         'invoice_symbol',
         'invoice_number_form',
         'invoice_number',
-        'property',
+        'property', # tchat
+        'invoice_status', # tthai
+        'processing_status', # ttxly
         'note',
         'partner_name',
         'partner_tax_code',
