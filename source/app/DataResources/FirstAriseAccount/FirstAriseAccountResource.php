@@ -19,6 +19,10 @@ class FirstAriseAccountResource extends BaseDataResource
         'status',
         'note',
         'is_tracking',
+        'created_by',
+        'updated_by',
+        'created_at',
+        'updated_at',
     ];
 
     /**
