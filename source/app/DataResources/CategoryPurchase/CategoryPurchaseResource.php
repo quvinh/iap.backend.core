@@ -17,7 +17,10 @@ class CategoryPurchaseResource extends BaseDataResource
         'note',
         'status',
         'method',
-        'created_by'
+        'created_by',
+        'updated_by',
+        'created_at',
+        'updated_at',
     ];
 
     /**
