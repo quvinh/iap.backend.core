@@ -12,6 +12,7 @@ class CompanyDocument extends BaseModel
 
     protected $fillable = [
         'company_id',
+        'name',
         'year',
         'file',
     ];

@@ -8,6 +8,7 @@ use App\Http\Controllers\Api\CommandController;
 use App\Http\Controllers\Api\CompanyController;
 use App\Http\Controllers\Api\CompanyDetailController;
 use App\Http\Controllers\Api\CompanyDetailTaxFreeVoucherController;
+use App\Http\Controllers\Api\CompanyDocumentController;
 use App\Http\Controllers\Api\CompanyTypeController;
 use App\Http\Controllers\Api\DashboardController;
 use App\Http\Controllers\Api\FirstAriseAccountController;
@@ -77,6 +78,7 @@ function registerResourceRoutes(string $group = UserRoles::ADMINISTRATOR): void
     DashboardController::registerRoutes($group);
     OpeningBalanceVatController::registerRoutes($group);
     TemplateController::registerRoutes($group);
+    CompanyDocumentController::registerRoutes($group);
 
     CommandController::registerRoutes($group);
 }

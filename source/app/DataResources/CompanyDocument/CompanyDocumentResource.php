@@ -13,6 +13,7 @@ class CompanyDocumentResource extends BaseDataResource
     protected array $fields = [
         'id',
         'company_id',
+        'name',
         'year',
         'file',
         'created_at',

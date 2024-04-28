@@ -13,7 +13,11 @@ class CompanyDocumentSearchRequest extends DefaultSearchRequest
      */
     protected array $relations = [];
 
-    protected array $fields = [];
+    protected array $fields = [
+        'withs',
+        'company_id',
+        'year',
+    ];
 
     /**
      * Overwrite this function to prepare or convert data before validating

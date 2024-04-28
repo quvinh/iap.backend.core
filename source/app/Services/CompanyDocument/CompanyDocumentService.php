@@ -73,6 +73,16 @@ class CompanyDocumentService extends \App\Services\BaseService implements ICompa
                 $query = $this->companyDocumentRepos->queryOnAField([DB::raw("upper(name)"), 'LIKE BINARY', DB::raw("upper(concat('%', ? , '%'))")], positionalBindings: ['name' => $param]);
             }
 
+            if (isset($rawConditions['year'])) {
+                $param = $rawConditions['year'];
+                $query = $this->companyDocumentRepos->queryOnAField(['year', '=', $param], $query);
+            }
+
+            if (isset($rawConditions['company_id'])) {
+                $param = $rawConditions['company_id'];
+                $query = $this->companyDocumentRepos->queryOnAField(['company_id', '=', $param], $query);
+            }
+
             if (isset($rawConditions['updated_date'])) {
                 $query = $this->companyDocumentRepos->queryOnDateRangeField($query, 'updated_at', $rawConditions['updated_date']);
             }
