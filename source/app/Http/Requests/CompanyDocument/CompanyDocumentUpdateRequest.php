@@ -31,8 +31,8 @@ class CompanyDocumentUpdateRequest extends BaseRequest
     public function rules(): array
     {
         return [
-            'company_id' => ['required', 'exists:companies,id'],
-            'year' => ['required', 'integer', 'digits:4', 'min:2000'],
+            'company_id' => ['exists:companies,id'],
+            'year' => ['integer', 'digits:4', 'min:2000'],
         ];
     }
 }
