@@ -196,6 +196,7 @@ class CompanyDocumentController extends ApiController
         return $this->getResponseHandler()->send([
             'type' => $type,
             'uri' => $fileBase64Uri,
+            'slug' => $slug,
         ]);
     }
 }
