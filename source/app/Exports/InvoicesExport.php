@@ -2,6 +2,7 @@
 
 namespace App\Exports;
 
+use App\Helpers\Enums\InvoiceCompleteStatusEnum;
 use App\Helpers\Enums\InvoiceTypes;
 use App\Models\Invoice;
 use Carbon\Carbon;
@@ -126,7 +127,7 @@ class InvoicesExport implements FromCollection, Responsable, WithStyles, WithHea
                     'sum_money_no_vat' => $row->sum_money_no_vat,
                     'sum_money_vat' => $row->sum_money_vat,
                     'sum_money' => $row->sum_money,
-                    'status' => $row->status == 2 ? 'Hoàn thành' : '-',
+                    'status' => $row->status == InvoiceCompleteStatusEnum::HOAN_THANH ? 'Hoàn thành' : '-',
                 ];
             }
         }

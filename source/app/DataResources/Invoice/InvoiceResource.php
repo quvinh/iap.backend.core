@@ -5,10 +5,15 @@ namespace App\DataResources\Invoice;
 use App\DataResources\BaseDataResource;
 use App\DataResources\Company\CompanyResource;
 use App\DataResources\InvoiceDetail\InvoiceDetailResource;
+use App\DataResources\InvoiceMedia\InvoiceMediaResource;
 use App\Models\Invoice;
 
 class InvoiceResource extends BaseDataResource
 {
+    protected $invoice_details;
+    protected $company;
+    protected $invoice_media;
+
     /**
      * @var array|string[]
      */
@@ -70,6 +75,11 @@ class InvoiceResource extends BaseDataResource
 
         if (in_array('company', $this->fields)) {
             $this->company = BaseDataResource::generateResources($obj->company()->get(), CompanyResource::class);
+        }
+
+        if (in_array('invoice_media', $this->fields)) {
+            $this->withField('invoice_media');
+            $this->invoice_media = new InvoiceMediaResource($obj->invoice_media);
         }
     }
 }

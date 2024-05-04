@@ -14,6 +14,7 @@ class InvoiceSearchRequest extends DefaultSearchRequest
     protected array $relations = [
         'invoice_details',
         'company',
+        'invoice_media',
     ];
 
     protected array $fields = [

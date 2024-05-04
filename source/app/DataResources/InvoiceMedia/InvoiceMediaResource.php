@@ -9,6 +9,9 @@ use App\Models\InvoiceMedia;
 
 class InvoiceMediaResource extends BaseDataResource
 {
+    protected $invoice;
+    protected $company;
+
     /**
      * @var array|string[]
      */

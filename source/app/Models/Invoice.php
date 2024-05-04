@@ -87,4 +87,12 @@ class Invoice extends BaseModel
     {
         return $this->hasOne(Company::class, 'id', 'company_id');
     }
+
+    /**
+     * @return HasOne
+     */
+    public function invoice_media(): HasOne
+    {
+        return $this->hasOne(InvoiceMedia::class, 'invoice_id', 'id');
+    }
 }

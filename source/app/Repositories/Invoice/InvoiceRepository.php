@@ -10,6 +10,7 @@ use App\Helpers\Common\MetaInfo;
 use App\Models\Invoice;
 use App\Repositories\BaseRepository;
 use App\Exceptions\DB\RecordIsNotFoundException as DBRecordIsNotFoundException;
+use App\Helpers\Enums\InvoiceCompleteStatusEnum;
 use App\Helpers\Enums\InvoiceTypes;
 use App\Models\Company;
 use App\Models\InvoiceDetail;
@@ -108,7 +109,7 @@ class InvoiceRepository extends BaseRepository implements IInvoiceRepository
         $invoices = $query->get();
 
         // if (empty($invoices)) return [];
-        $sumSold = $sumPurchase = $sumInvoiceNotVerificated = $sumInvoiceNotUse = 0;
+        $sumSold = $sumPurchase = $sumInvoiceNotVerificated = $sumInvoiceNotUse = $complete = 0;
         foreach ($invoices as $invoice) {
             $type = $invoice->type;
             $verification_code_status = $invoice->verification_code_status;
@@ -117,12 +118,15 @@ class InvoiceRepository extends BaseRepository implements IInvoiceRepository
             if ($type == InvoiceTypes::PURCHASE) $sumPurchase++;
             if ($verification_code_status == 0) $sumInvoiceNotVerificated++;
             if ($locked == 1) $sumInvoiceNotUse++;
+            if ($invoice->status == InvoiceCompleteStatusEnum::HOAN_THANH) $complete++;
         }
         return [
             'sum_sold' => $sumSold,
             'sum_purchase' => $sumPurchase,
             'no_verification_code' => $sumInvoiceNotVerificated,
             'locked' => $sumInvoiceNotUse,
+            'complete' => $complete,
+            'total' => count($invoices),
         ];
     }
 
@@ -202,7 +206,7 @@ class InvoiceRepository extends BaseRepository implements IInvoiceRepository
         $invoice->date = $param['date'];
         $invoice->invoice_number_form = $param['invoice_number_form'] ?? 1; # Warning
         $invoice->verification_code_status = $param['verification_code_status'] ?? 1; # Co ma co quan thue
-        $invoice->status = $param['status'] ?? 1;
+        $invoice->status = $param['status'] ?? InvoiceCompleteStatusEnum::DA_XU_LY;
         $invoice->sum_money_no_vat = $param['sum_money_no_vat'] ?? 0;
         $invoice->sum_money_vat = $param['sum_money_vat'] ?? 0;
         $invoice->sum_money = $param['sum_money'] ?? 0;
