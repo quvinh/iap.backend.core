@@ -16,6 +16,8 @@ class CompanyDocumentResource extends BaseDataResource
         'name',
         'year',
         'file',
+        'is_contract',
+        'meta',
         'created_at',
         'created_by',
     ];

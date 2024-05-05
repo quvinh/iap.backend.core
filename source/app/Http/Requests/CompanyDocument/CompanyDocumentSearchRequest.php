@@ -17,6 +17,7 @@ class CompanyDocumentSearchRequest extends DefaultSearchRequest
         'withs',
         'company_id',
         'year',
+        'is_contract',
     ];
 
     /**

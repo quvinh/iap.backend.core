@@ -15,5 +15,7 @@ class CompanyDocument extends BaseModel
         'name',
         'year',
         'file',
+        'is_contract',
+        'meta',
     ];
 }

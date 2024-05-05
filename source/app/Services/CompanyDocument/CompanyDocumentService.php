@@ -83,6 +83,11 @@ class CompanyDocumentService extends \App\Services\BaseService implements ICompa
                 $query = $this->companyDocumentRepos->queryOnAField(['company_id', '=', $param], $query);
             }
 
+            if (isset($rawConditions['is_contract'])) {
+                $param = $rawConditions['is_contract'];
+                $query = $this->companyDocumentRepos->queryOnAField(['is_contract', '=', $param], $query);
+            }
+
             if (isset($rawConditions['updated_date'])) {
                 $query = $this->companyDocumentRepos->queryOnDateRangeField($query, 'updated_at', $rawConditions['updated_date']);
             }

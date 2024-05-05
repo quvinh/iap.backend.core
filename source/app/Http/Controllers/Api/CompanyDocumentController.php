@@ -134,6 +134,7 @@ class CompanyDocumentController extends ApiController
         $root = self::DEFAULT_FOLDER_UPLOAD_FILE;
         $company_id = $request->company_id;
         $year = $request->year;
+        $is_contract = $request->is_contract ?? 1;
         # Send response using the predefined format
         $response = ApiResponse::v1();
 
@@ -157,6 +158,7 @@ class CompanyDocumentController extends ApiController
                     'name' => "Doc_{$year}_{$date}",
                     'year' => $year,
                     'file' => $result,
+                    'is_contract' => $is_contract,
                 ];
 
                 $record = $this->companyDocumentService->create($params, $this->getCurrentMetaInfo());
