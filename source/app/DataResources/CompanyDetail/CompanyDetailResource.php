@@ -19,7 +19,8 @@ class CompanyDetailResource extends BaseDataResource
         'company_id',
         'company_type_id',
         'description',
-        'year'
+        'year',
+        'meta',
     ];
 
     /**

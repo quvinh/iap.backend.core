@@ -151,7 +151,16 @@ class CompanyDetailService extends \App\Services\BaseService implements ICompany
         try {
             #1 Create
             $record = $this->companyDetailRepos->create($param, $commandMetaInfo);
-            // dd($param['company_detail_old_id']);
+            
+            if (isset($param['contract_value'])) {
+                $meta = [
+                    'contract_value' => $param['contract_value'],
+                    'payment_time_type' => $param['payment_time_type'] ?? 'month',
+                    'payment_status' => $param['payment_status'] ?? 'advance_money',
+                ];
+                $record->meta = json_encode($meta);
+                $record->save();
+            }
             DB::commit();
             #2 Return
             return $record;
@@ -185,8 +194,16 @@ class CompanyDetailService extends \App\Services\BaseService implements ICompany
                 'id' => $record->id
             ]);
             $record = $this->companyDetailRepos->update($param, $commandMetaInfo);
-            // update picture if needed
-            // code here
+            
+            if (isset($param['contract_value'])) {
+                $meta = [
+                    'contract_value' => $param['contract_value'],
+                    'payment_time_type' => $param['payment_time_type'] ?? 'month',
+                    'payment_status' => $param['payment_status'] ?? 'advance_money',
+                ];
+                $record->meta = json_encode($meta);
+                $record->save();
+            }
             DB::commit();
             return $record;
         } catch (\Exception $e) {

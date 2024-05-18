@@ -31,9 +31,9 @@ class CompanyDetailUpdateRequest extends BaseRequest
     public function rules(): array
     {
         return [
-            'company_id' => ['required', 'integer', 'exists:companies,id'],
-            'company_type_id' => ['required', 'integer', 'exists:company_types,id'],
-            'year' => ['required', 'integer', 'digits:4', 'min:2000'],
+            'company_id' => ['integer', 'exists:companies,id'],
+            'company_type_id' => ['integer', 'exists:company_types,id'],
+            'year' => ['integer', 'digits:4', 'min:2000'],
             'description' => ['nullable']
         ];
     }
