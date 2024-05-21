@@ -177,6 +177,9 @@ class CompanyService extends \App\Services\BaseService implements ICompanyServic
                 $record->save();
             }
 
+            # TODO: add company management
+            $this->companyRepos->addUserCompany($record);
+
             DB::commit();
             #2 Return
             return $record;

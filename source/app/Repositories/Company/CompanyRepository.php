@@ -59,12 +59,13 @@ class CompanyRepository extends BaseRepository implements ICompanyRepository
             ])->get()->toArray();
 
         $invoices = Invoice::query()->select(
-            'invoices.id', 
-            'invoices.type', 
-            'invoice_details.item_code_id', 
-            'invoice_details.formula_path_id', 
+            'invoices.id',
+            'invoices.type',
+            'invoice_details.item_code_id',
+            'invoice_details.formula_path_id',
             'invoice_details.vat_money',
-            'invoice_details.total_money')
+            'invoice_details.total_money'
+        )
             ->join('invoice_details', 'invoice_details.invoice_id', '=', 'invoices.id')
             ->where([
                 ['invoices.company_id', '=', $company_id],
@@ -119,5 +120,19 @@ class CompanyRepository extends BaseRepository implements ICompanyRepository
             }
         }
         return array_values($result);
+    }
+
+    /**
+     * Add UserCompany management
+     * @param Company $record
+     */
+    public function addUserCompany(Company $record): bool
+    {
+        if (empty($record->id)) return false;
+        $user_id = auth()->user()->getAuthIdentifier();
+        $userCompany = new UserCompany();
+        $userCompany->user_id = $user_id;
+        $userCompany->company_id = $record->id;
+        return $userCompany->save();
     }
 }
