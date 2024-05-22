@@ -10,6 +10,7 @@ use App\Exceptions\DB\CannotSaveToDBException;
 use App\Exceptions\DB\CannotUpdateDBException;
 use App\Exceptions\DB\RecordIsNotFoundException;
 use App\Helpers\Common\MetaInfo;
+use App\Helpers\Enums\CompanyPaymentStatus;
 use App\Helpers\Utils\StorageHelper;
 use App\Helpers\Utils\StringHelper;
 use App\Models\CompanyDetail;
@@ -156,7 +157,8 @@ class CompanyDetailService extends \App\Services\BaseService implements ICompany
                 $meta = [
                     'contract_value' => $param['contract_value'],
                     'payment_time_type' => $param['payment_time_type'] ?? 'month',
-                    'payment_status' => $param['payment_status'] ?? 'advance_money',
+                    'payment_status' => $param['payment_status'] ?? CompanyPaymentStatus::UNPAID,
+                    'note' => $param['note'] ?? null,
                 ];
                 $record->meta = json_encode($meta);
                 $record->save();
@@ -199,7 +201,8 @@ class CompanyDetailService extends \App\Services\BaseService implements ICompany
                 $meta = [
                     'contract_value' => $param['contract_value'],
                     'payment_time_type' => $param['payment_time_type'] ?? 'month',
-                    'payment_status' => $param['payment_status'] ?? 'advance_money',
+                    'payment_status' => $param['payment_status'] ?? CompanyPaymentStatus::UNPAID,
+                    'note' => $param['note'] ?? null,
                 ];
                 $record->meta = json_encode($meta);
                 $record->save();
