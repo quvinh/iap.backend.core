@@ -36,7 +36,7 @@ class ItemCode extends BaseModel
 
     public function setItemCode(float $quantity, float $price): void
     {
-        if ($quantity <= 0) throw new \Exception('Invalid quantity');
+        if ($quantity < 0) throw new \Exception('Invalid quantity');
         $this->quantity = $quantity;
         $this->price = $price;
         $this->opening_balance_value = $this->getTotal();
