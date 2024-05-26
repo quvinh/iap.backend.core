@@ -9,6 +9,9 @@ use App\Models\InvoiceTask;
 
 class InvoiceTaskResource extends BaseDataResource
 {
+    protected $company;
+    protected $invoices;
+
     /**
      * @var array|string[]
      */
@@ -45,7 +48,7 @@ class InvoiceTaskResource extends BaseDataResource
 
         if (in_array('company', $this->fields)) {
             $this->withField('company');
-            $this->company = new CompanyResource($obj->company);
+            $this->company = new CompanyResource($obj->company, ['years']);
         }
 
         if (in_array('invoices', $this->fields)) {

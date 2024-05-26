@@ -10,6 +10,8 @@ use App\Models\Company;
 
 class CompanyResource extends BaseDataResource
 {
+    protected $types;
+    protected $years;
     protected $documents;
     
     /**
