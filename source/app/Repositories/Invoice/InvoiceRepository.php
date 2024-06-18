@@ -110,6 +110,7 @@ class InvoiceRepository extends BaseRepository implements IInvoiceRepository
 
         // if (empty($invoices)) return [];
         $sumSold = $sumPurchase = $sumInvoiceNotVerificated = $sumInvoiceNotUse = $complete = 0;
+        $sumMoney = 0;
         foreach ($invoices as $invoice) {
             $type = $invoice->type;
             $verification_code_status = $invoice->verification_code_status;
@@ -119,6 +120,10 @@ class InvoiceRepository extends BaseRepository implements IInvoiceRepository
             if ($verification_code_status == 0) $sumInvoiceNotVerificated++;
             if ($locked == 1) $sumInvoiceNotUse++;
             if ($invoice->status == InvoiceCompleteStatusEnum::HOAN_THANH) $complete++;
+
+            if ($locked == 0) {
+                $sumMoney += $invoice->sum_money;
+            }
         }
         return [
             'sum_sold' => $sumSold,
@@ -127,6 +132,7 @@ class InvoiceRepository extends BaseRepository implements IInvoiceRepository
             'locked' => $sumInvoiceNotUse,
             'complete' => $complete,
             'total' => count($invoices),
+            'sum_money' => $sumMoney,
         ];
     }
 
