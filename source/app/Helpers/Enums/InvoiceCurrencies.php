@@ -10,4 +10,5 @@ class InvoiceCurrencies extends Enum
     const JPY = 'jpy';
     const VND = 'vnd';
     const USD = 'usd';
+    const EUR = 'eur';
 }
