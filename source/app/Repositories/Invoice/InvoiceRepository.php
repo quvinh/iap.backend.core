@@ -110,7 +110,7 @@ class InvoiceRepository extends BaseRepository implements IInvoiceRepository
 
         // if (empty($invoices)) return [];
         $sumSold = $sumPurchase = $sumInvoiceNotVerificated = $sumInvoiceNotUse = $complete = 0;
-        $sumMoney = 0;
+        $sumMoney = $sumMoneyNoVat = $sumMoneyVat = 0;
         foreach ($invoices as $invoice) {
             $type = $invoice->type;
             $verification_code_status = $invoice->verification_code_status;
@@ -123,6 +123,8 @@ class InvoiceRepository extends BaseRepository implements IInvoiceRepository
 
             if ($locked == 0) {
                 $sumMoney += $invoice->sum_money;
+                $sumMoneyNoVat += $invoice->sum_money_no_vat;
+                $sumMoneyVat += $invoice->sum_money_vat;
             }
         }
         return [
@@ -133,6 +135,8 @@ class InvoiceRepository extends BaseRepository implements IInvoiceRepository
             'complete' => $complete,
             'total' => count($invoices),
             'sum_money' => $sumMoney,
+            'sum_money_no_vat' => $sumMoneyNoVat,
+            'sum_money_vat' => $sumMoneyVat,
         ];
     }
 
