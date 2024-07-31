@@ -15,6 +15,8 @@ use App\Http\Requests\MediaStorage\MediaGetRequest;
 use App\Http\Requests\MediaStorage\MediaStoreRequest;
 use Carbon\Carbon;
 use http\Env\Response;
+use Illuminate\Http\Request as HttpRequest;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Response as FacadesResponse;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
@@ -34,6 +36,7 @@ class MediaStorageController extends ApiController
         if ($role != UserRoles::ANONYMOUS) {
             Route::match(['post'], $root . '/store', [MediaStorageController::class, 'storeImage']);
             Route::match(['get'], $root . '/images', [MediaStorageController::class, 'getImage'])->withoutMiddleware(['auth.channel']);
+            Route::post($root . '/upload-google', [MediaStorageController::class, 'uploadGoogle']);
         }
 
         Route::get($root . '/{slug}', [MediaStorageController::class, 'retrieveFile'])->where('slug', '.*');
@@ -91,5 +94,28 @@ class MediaStorageController extends ApiController
         $response = FacadesResponse::make($file, 200);
         $response->header("Content-Type", $type);
         return $response;
+    }
+
+    public function uploadGoogle(HttpRequest $request)
+    {
+        $date = Carbon::now()->format('Ymd');
+        $storage = Storage::disk(StorageHelper::CLOUD_DISK_NAME);
+        $response = ApiResponse::v1();
+        if ($request->hasFile('file')) {
+            $folder = "excel/$date";
+            
+            if ($file = $storage->put($folder, $request->file('file'))) {
+                $dir = "/$folder";
+                $recursive = false; // Có lấy file trong các thư mục con không?
+                $contents = collect($storage->listContents($dir, $recursive));
+
+                # Return
+                return $response->send([
+                    'file' => $file,
+                    'list' => $contents, //->sortByDesc('last_modified'),
+                ]);
+            }
+            return $response->fail(['msg' => 'Cannot upload file!']);
+        } else return $response->fail(['msg' => 'File not found!']);
     }
 }

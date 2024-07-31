@@ -13,3 +13,6 @@
 - Cuối kỳ = Mua vào + Tồn đầu kỳ - Giá vốn
 - Giá vốn = Bán ra * %(Công thức trung bình)
 - VAT Dauky + VAT Banra - VAT Muavao > 0 ? VAT Phainop : VAT Khautru
+
+## Connect Google Drive
+- https://github.com/ivanvermeyen/laravel-google-drive-demo/tree/master/README

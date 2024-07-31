@@ -2,6 +2,7 @@
 
 namespace App\Helpers\Utils;
 
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
 class StorageHelper
@@ -30,6 +31,7 @@ class StorageHelper
             $originDisk->delete($filePath);
             return $newFilePath;
         } catch (\Exception $ex) {
+            Log::error($ex->getMessage());
             return false;
         }
     }
