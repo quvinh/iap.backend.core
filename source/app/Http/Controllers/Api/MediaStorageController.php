@@ -103,28 +103,28 @@ class MediaStorageController extends ApiController
         return $response;
     }
 
-    public function uploadGoogle(HttpRequest $request)
-    {
-        $date = Carbon::now()->format('Ymd');
-        $storage = Storage::disk(StorageHelper::CLOUD_DISK_NAME);
-        $response = ApiResponse::v1();
-        if ($request->hasFile('file')) {
-            $folder = "excel/$date";
+    // public function uploadGoogle(HttpRequest $request)
+    // {
+    //     $date = Carbon::now()->format('Ymd');
+    //     $storage = Storage::disk(StorageHelper::CLOUD_DISK_NAME);
+    //     $response = ApiResponse::v1();
+    //     if ($request->hasFile('file')) {
+    //         $folder = "excel/$date";
 
-            if ($file = $storage->put($folder, $request->file('file'))) {
-                $dir = "/$folder";
-                $recursive = false; // Có lấy file trong các thư mục con không?
-                $contents = collect($storage->listContents($dir, $recursive));
+    //         if ($file = $storage->put($folder, $request->file('file'))) {
+    //             $dir = "/$folder";
+    //             $recursive = false; // Có lấy file trong các thư mục con không?
+    //             $contents = collect($storage->listContents($dir, $recursive));
 
-                # Return
-                return $response->send([
-                    'file' => $file,
-                    'list' => $contents, //->sortByDesc('last_modified'),
-                ]);
-            }
-            return $response->fail(['msg' => 'Cannot upload file!']);
-        } else return $response->fail(['msg' => 'File not found!']);
-    }
+    //             # Return
+    //             return $response->send([
+    //                 'file' => $file,
+    //                 'list' => $contents, //->sortByDesc('last_modified'),
+    //             ]);
+    //         }
+    //         return $response->fail(['msg' => 'Cannot upload file!']);
+    //     } else return $response->fail(['msg' => 'File not found!']);
+    // }
 
     public function upload(HttpRequest $request)
     {
@@ -139,19 +139,27 @@ class MediaStorageController extends ApiController
         $file = $request->file('file');
         $filePath = $storage->put($folder, $file);
         $fileName = $file->getClientOriginalName();
+        $time = date('His');
 
-        $uploadResult = $this->googleDriveService->uploadFile($filePath, $fileName);
+        // Emails
+        $emails = ['quvinh0620@gmail.com'];
 
-        if ($uploadResult) {
-            $convertResult = $this->googleDriveService->convertToSpreadsheet($uploadResult->id);
+        $uploadResult = $this->googleDriveService->uploadFile($filePath, "{$fileName}_{$time}", $emails);
 
-            return response()->json([
-                'message' => 'File uploaded and converted successfully.',
-                'file_id' => $convertResult->id,
-                'mimeType' => $convertResult->mimeType
+        // Delete file from TMP_DISK
+        $storage->delete($filePath);
+
+        // Return
+        $response = ApiResponse::v1();
+        if (!empty($uploadResult)) {
+            return $response->send([
+                'message' => 'File uploaded, converted, and shared successfully.',
+                'file_id' => $uploadResult['file']->id,
+                'mimeType' => $uploadResult['file']->mimeType,
+                'url' => $uploadResult['url']
             ]);
         }
 
-        return response()->json(['message' => 'File upload failed.'], 500);
+        return $response->fail(['message' => 'File upload failed']);
     }
 }

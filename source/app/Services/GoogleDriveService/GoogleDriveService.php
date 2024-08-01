@@ -2,10 +2,15 @@
 
 namespace App\Services\GoogleDriveService;
 
-use App\Helpers\Utils\StorageHelper;
+use Exception;
 use Google_Client;
 use Google_Service_Drive;
 use Google_Service_Drive_DriveFile;
+use Google_Service_Drive_Permission;
+use Google_Service_Script;
+use Google_Service_Script_Script;
+use App\Helpers\Responses\ApiResponse;
+use App\Helpers\Utils\StorageHelper;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
@@ -14,6 +19,7 @@ class GoogleDriveService
 {
     protected $client;
     protected $service;
+    protected $scriptService;
 
     public function __construct()
     {
@@ -26,33 +32,177 @@ class GoogleDriveService
         $this->client->setPrompt('select_account consent');
 
         $this->service = new Google_Service_Drive($this->client);
+        $this->scriptService = new Google_Service_Script($this->client);
     }
 
-    public function uploadFile($filePath, $fileName)
+    /**
+     * Upload file to google drive
+     * @param string $filePath
+     * @param string $fileName
+     */
+    public function uploadFile($filePath, $fileName, $emails = [], $disk = StorageHelper::TMP_DISK_NAME)
     {
+        $folderName = 'excel/' . date('Ymd');
+        $folderId = $this->getOrCreateFolder($folderName);
+
         $file = new Google_Service_Drive_DriveFile();
         $file->setName($fileName);
-        // $file->setParents([env('GOOGLE_DRIVE_FOLDER')]);
-        $file->setParents(['1jV8lLMJWhaZiLBN_JIqkOn__kiRLlKFZ']);
-        $fileData = File::get(Storage::disk(StorageHelper::TMP_DISK_NAME)->path($filePath));
+        $file->setParents([$folderId]);
+        $fileData = File::get(Storage::disk($disk)->path($filePath));
         $result = $this->service->files->create($file, [
             'data' => $fileData,
             'mimeType' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
             'uploadType' => 'multipart'
         ]);
 
-        return $result;
+        $convertedFile = $this->convertToSpreadsheet($result->id);
+
+        if ($convertedFile && !empty($emails)) {
+            foreach ($emails as $email) {
+                $this->addPermissions($convertedFile->id, $email, 'writer'); // 'writer' for edit, 'reader' for view
+            }
+        }
+
+        $scriptProject = $this->createAppsScriptProject($convertedFile->id);
+        $this->addAppsScriptToProject($scriptProject->scriptId, $this->getSampleScript());
+
+        return [
+            'file' => $convertedFile,
+            'url' => $this->generateFileUrl($convertedFile->id)
+        ];
     }
 
+    private function generateFileUrl($fileId)
+    {
+        return 'https://docs.google.com/spreadsheets/d/' . $fileId . '/edit';
+    }
+
+    /**
+     * Convert to spreadsheet
+     * @param string $fileId
+     */
     public function convertToSpreadsheet($fileId)
     {
-        $file = new Google_Service_Drive_DriveFile();
-        $file->setMimeType('application/vnd.google-apps.spreadsheet');
+        try {
+            $fileMetadata = new Google_Service_Drive_DriveFile([
+                'mimeType' => 'application/vnd.google-apps.spreadsheet'
+            ]);
+            $result = $this->service->files->copy($fileId, $fileMetadata);
 
-        $result = $this->service->files->update($fileId, $file, [
-            'fields' => 'id, mimeType'
+            // Delete the original XLSX file after conversion
+            $this->service->files->delete($fileId);
+
+            return $result;
+        } catch (Exception $ex) {
+            $response = ApiResponse::v1();
+            return $response->fail([
+                'message' => 'Error converting file: ' . $ex->getMessage(),
+                'code' => $ex->getCode()
+            ]);
+        }
+    }
+
+    /**
+     * Get or create folder
+     * @param string $folderName
+     * @return string
+     */
+    private function getOrCreateFolder($folderName)
+    {
+        $parentFolderId = env('GOOGLE_DRIVE_FOLDER_ID'); // 1jV8lLMJWhaZiLBN_JIqkOn__kiRLlKFZ
+        $folders = explode('/', $folderName);
+        $currentFolderId = $parentFolderId;
+
+        foreach ($folders as $folder) {
+            $currentFolderId = $this->getOrCreateSubFolder($currentFolderId, $folder);
+        }
+
+        return $currentFolderId;
+    }
+
+    /**
+     * Get or create sub folder
+     * @param string $parentFolderId
+     * @param string $folderName
+     * @return string $id
+     */
+    private function getOrCreateSubFolder($parentFolderId, $folderName)
+    {
+        $query = "name = '$folderName' and mimeType = 'application/vnd.google-apps.folder' and '$parentFolderId' in parents";
+        $response = $this->service->files->listFiles([
+            'q' => $query,
+            'spaces' => 'drive',
+            'fields' => 'files(id, name)',
+            'pageSize' => 1,
         ]);
 
-        return $result;
+        if (count($response->files) > 0) {
+            return $response->files[0]->id;
+        } else {
+            $folder = new Google_Service_Drive_DriveFile();
+            $folder->setName($folderName);
+            $folder->setMimeType('application/vnd.google-apps.folder');
+            $folder->setParents([$parentFolderId]);
+
+            $result = $this->service->files->create($folder, [
+                'fields' => 'id'
+            ]);
+            return $result->id;
+        }
+    }
+
+    /**
+     * Add permissions
+     * @param string $fileId
+     * @param string $email
+     * @param string $role
+     */
+    public function addPermissions($fileId, $email, $role)
+    {
+        try {
+            $permission = new Google_Service_Drive_Permission();
+            $permission->setType('user');
+            $permission->setRole($role);
+            $permission->setEmailAddress($email);
+
+            $this->service->permissions->create($fileId, $permission);
+        } catch (Exception $ex) {
+            $response = ApiResponse::v1();
+            return $response->fail([
+                'message' => 'Error adding permission: ' . $ex->getMessage(),
+                'code' => $ex->getCode()
+            ]);
+        }
+    }
+
+    public function createAppsScriptProject($spreadsheetId)
+    {
+        $script = new Google_Service_Script_Script();
+        $script->setTitle('My Script Project');
+        $script->setParentId([$spreadsheetId]);
+
+        return $this->scriptService->projects->create($script);
+    }
+
+    public function addAppsScriptToProject($scriptId, $scriptContent)
+    {
+        $file = new \Google_Service_Script_ScriptFile();
+        $file->setName('Code');
+        $file->setType('SERVER_JS');
+        $file->setSource($scriptContent);
+
+        $content = new \Google_Service_Script_Content();
+        $content->setFiles([$file]);
+
+        return $this->scriptService->projects->updateContent($scriptId, $content);
+    }
+
+    private function getSampleScript()
+    {
+        return <<<EOT
+function myFunction() {
+  Logger.log("Hello, world!");
+}
+EOT;
     }
 }
