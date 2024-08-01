@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Request;
 use App\Http\Requests\MediaStorage\MediaGetRequest;
 use App\Http\Requests\MediaStorage\MediaStoreRequest;
+use App\Services\GoogleDriveService\GoogleDriveService;
 use Carbon\Carbon;
 use http\Env\Response;
 use Illuminate\Http\Request as HttpRequest;
@@ -24,6 +25,12 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class MediaStorageController extends ApiController
 {
+    protected $googleDriveService;
+
+    public function __construct(GoogleDriveService $googleDriveService)
+    {
+        $this->googleDriveService = $googleDriveService;
+    }
 
     /**
      * Register default routes
@@ -36,7 +43,7 @@ class MediaStorageController extends ApiController
         if ($role != UserRoles::ANONYMOUS) {
             Route::match(['post'], $root . '/store', [MediaStorageController::class, 'storeImage']);
             Route::match(['get'], $root . '/images', [MediaStorageController::class, 'getImage'])->withoutMiddleware(['auth.channel']);
-            Route::post($root . '/upload-google', [MediaStorageController::class, 'uploadGoogle']);
+            Route::post($root . '/upload-google', [MediaStorageController::class, 'upload']);
         }
 
         Route::get($root . '/{slug}', [MediaStorageController::class, 'retrieveFile'])->where('slug', '.*');
@@ -103,7 +110,7 @@ class MediaStorageController extends ApiController
         $response = ApiResponse::v1();
         if ($request->hasFile('file')) {
             $folder = "excel/$date";
-            
+
             if ($file = $storage->put($folder, $request->file('file'))) {
                 $dir = "/$folder";
                 $recursive = false; // Có lấy file trong các thư mục con không?
@@ -117,5 +124,34 @@ class MediaStorageController extends ApiController
             }
             return $response->fail(['msg' => 'Cannot upload file!']);
         } else return $response->fail(['msg' => 'File not found!']);
+    }
+
+    public function upload(HttpRequest $request)
+    {
+        $request->validate([
+            'file' => 'required|file|mimes:xlsx,xls',
+        ]);
+
+        $date = Carbon::now()->format('Ymd');
+        $storage = Storage::disk(StorageHelper::TMP_DISK_NAME);
+        $folder = "excel/$date";
+
+        $file = $request->file('file');
+        $filePath = $storage->put($folder, $file);
+        $fileName = $file->getClientOriginalName();
+
+        $uploadResult = $this->googleDriveService->uploadFile($filePath, $fileName);
+
+        if ($uploadResult) {
+            $convertResult = $this->googleDriveService->convertToSpreadsheet($uploadResult->id);
+
+            return response()->json([
+                'message' => 'File uploaded and converted successfully.',
+                'file_id' => $convertResult->id,
+                'mimeType' => $convertResult->mimeType
+            ]);
+        }
+
+        return response()->json(['message' => 'File upload failed.'], 500);
     }
 }
