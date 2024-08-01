@@ -38,7 +38,6 @@ class GoogleDriveService
         $result = $this->service->files->create($file, [
             'data' => $fileData,
             'mimeType' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-            'mimeType' => 'application/vnd.google-apps.spreadsheet',
             'uploadType' => 'multipart'
         ]);
 
