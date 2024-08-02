@@ -8,7 +8,9 @@ use Google_Service_Drive;
 use Google_Service_Drive_DriveFile;
 use Google_Service_Drive_Permission;
 use Google_Service_Script;
-use Google_Service_Script_Script;
+use Google_Service_Script_CreateProjectRequest;
+use Google_Service_Script_ScriptFile;
+use Google_Service_Script_Content;
 use App\Helpers\Responses\ApiResponse;
 use App\Helpers\Utils\StorageHelper;
 use Illuminate\Support\Facades\File;
@@ -28,6 +30,8 @@ class GoogleDriveService
         $this->client->setClientSecret(env('GOOGLE_DRIVE_CLIENT_SECRET'));
         $this->client->refreshToken(env('GOOGLE_DRIVE_REFRESH_TOKEN'));
         $this->client->addScope(Google_Service_Drive::DRIVE);
+        $this->client->addScope(Google_Service_Script::DRIVE);
+        $this->client->addScope(Google_Service_Script::SCRIPT_PROJECTS);
         $this->client->setAccessType('offline');
         $this->client->setPrompt('select_account consent');
 
@@ -57,11 +61,11 @@ class GoogleDriveService
 
         $convertedFile = $this->convertToSpreadsheet($result->id);
 
-        if ($convertedFile && !empty($emails)) {
-            foreach ($emails as $email) {
-                $this->addPermissions($convertedFile->id, $email, 'writer'); // 'writer' for edit, 'reader' for view
-            }
-        }
+        // if ($convertedFile && !empty($emails)) {
+        //     foreach ($emails as $email) {
+        //         $this->addPermissions($convertedFile->id, $email, 'writer'); // 'writer' for edit, 'reader' for view
+        //     }
+        // }
 
         $scriptProject = $this->createAppsScriptProject($convertedFile->id);
         $this->addAppsScriptToProject($scriptProject->scriptId, $this->getSampleScript());
@@ -177,32 +181,37 @@ class GoogleDriveService
 
     public function createAppsScriptProject($spreadsheetId)
     {
-        $script = new Google_Service_Script_Script();
-        $script->setTitle('My Script Project');
-        $script->setParentId([$spreadsheetId]);
+        $createProjectRequest = new Google_Service_Script_CreateProjectRequest();
+        $createProjectRequest->setTitle('My Script Project');
+        $createProjectRequest->setParentId($spreadsheetId);
 
-        return $this->scriptService->projects->create($script);
+        return $this->scriptService->projects->create($createProjectRequest);
     }
 
     public function addAppsScriptToProject($scriptId, $scriptContent)
     {
-        $file = new \Google_Service_Script_ScriptFile();
+        $file = new Google_Service_Script_ScriptFile();
         $file->setName('Code');
         $file->setType('SERVER_JS');
         $file->setSource($scriptContent);
 
-        $content = new \Google_Service_Script_Content();
-        $content->setFiles([$file]);
+        // Add manifest appsscript.json
+        $manifestFile = new Google_Service_Script_ScriptFile();
+        $manifestFile->setName('appsscript');
+        $manifestFile->setType('JSON');
+        $manifestFile->setSource(json_encode([
+            'timeZone' => 'Asia/Ho_Chi_Minh',
+            'exceptionLogging' => 'STACKDRIVER'
+        ]));
+
+        $content = new Google_Service_Script_Content();
+        $content->setFiles([$file, $manifestFile]);
 
         return $this->scriptService->projects->updateContent($scriptId, $content);
     }
 
     private function getSampleScript()
     {
-        return <<<EOT
-function myFunction() {
-  Logger.log("Hello, world!");
-}
-EOT;
+        return file_get_contents(resource_path('scripts/script.js'));
     }
 }
