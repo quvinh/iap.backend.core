@@ -11,6 +11,7 @@ use Google_Service_Script;
 use Google_Service_Script_CreateProjectRequest;
 use Google_Service_Script_ScriptFile;
 use Google_Service_Script_Content;
+use Google_Service_Script_ExecutionRequest;
 use App\Helpers\Responses\ApiResponse;
 use App\Helpers\Utils\StorageHelper;
 use Illuminate\Support\Facades\File;
@@ -69,6 +70,9 @@ class GoogleDriveService
 
         $scriptProject = $this->createAppsScriptProject($convertedFile->id);
         $this->addAppsScriptToProject($scriptProject->scriptId, $this->getSampleScript());
+
+        // Create trigger
+        // $this->runAppsScriptFunction($scriptProject->scriptId, "createOnEditTrigger");
 
         return [
             'file' => $convertedFile,
@@ -213,5 +217,13 @@ class GoogleDriveService
     private function getSampleScript()
     {
         return file_get_contents(resource_path('scripts/script.js'));
+    }
+
+    public function runAppsScriptFunction($scriptId, $functionName)
+    {
+        $request = new Google_Service_Script_ExecutionRequest();
+        $request->setFunction($functionName);
+
+        return $this->scriptService->scripts->run($scriptId, $request);
     }
 }
