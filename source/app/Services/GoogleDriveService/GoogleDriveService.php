@@ -7,6 +7,7 @@ use Google_Client;
 use Google_Service_Drive;
 use Google_Service_Drive_DriveFile;
 use Google_Service_Drive_Permission;
+use Google_Service_Sheets;
 use Google_Service_Script;
 use Google_Service_Script_CreateProjectRequest;
 use Google_Service_Script_ScriptFile;
@@ -33,6 +34,7 @@ class GoogleDriveService
         $this->client->addScope(Google_Service_Drive::DRIVE);
         $this->client->addScope(Google_Service_Script::DRIVE);
         $this->client->addScope(Google_Service_Script::SCRIPT_PROJECTS);
+        $this->client->addScope(Google_Service_Sheets::SPREADSHEETS);
         $this->client->setAccessType('offline');
         $this->client->setPrompt('select_account consent');
 
@@ -70,9 +72,12 @@ class GoogleDriveService
 
         $scriptProject = $this->createAppsScriptProject($convertedFile->id);
         $this->addAppsScriptToProject($scriptProject->scriptId, $this->getSampleScript());
+        Log::debug(['script' => $scriptProject]);
 
         // Create trigger
         // $this->runAppsScriptFunction($scriptProject->scriptId, "createOnEditTrigger");
+        // $scriptId = '1Lz8rsKvsEO6Rb-JPTvCq9zxoCl3PZOrVgxx1lh1uy0qHRgsfo-QKQI1e';
+        // $this->executeScript($scriptProject->scriptId, 'createOnEditTrigger', [$convertedFile->id]);
 
         return [
             'file' => $convertedFile,
@@ -223,6 +228,16 @@ class GoogleDriveService
     {
         $request = new Google_Service_Script_ExecutionRequest();
         $request->setFunction($functionName);
+
+        return $this->scriptService->scripts->run($scriptId, $request);
+    }
+
+    public function executeScript($scriptId, $functionName, $parameters = [])
+    {
+        $request = new Google_Service_Script_ExecutionRequest([
+            'function' => $functionName,
+            'parameters' => $parameters,
+        ]);
 
         return $this->scriptService->scripts->run($scriptId, $request);
     }

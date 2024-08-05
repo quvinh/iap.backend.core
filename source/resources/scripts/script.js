@@ -7,7 +7,7 @@ function createOnEditTrigger() {
 }
 
 function onEdit(e) {
-  var sheetName = "Sheet1"; // Tên sheet chỉ định
+  var sheetName = "Ton đầu kỳ 2024"; // Tên sheet chỉ định
   var sheet = e.source.getSheetByName(sheetName);
   if (sheet) {
     var range = e.range;
