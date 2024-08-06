@@ -21,3 +21,7 @@
 ```
 https://www.googleapis.com/auth/drive https://www.googleapis.com/auth/drive.file https://www.googleapis.com/auth/spreadsheets https://www.googleapis.com/auth/script.projects
 ```
+
+```
+https://www.googleapis.com/auth/spreadsheets.readonly https://www.googleapis.com/auth/cloud-platform https://www.googleapis.com/auth/drive.scripts https://www.googleapis.com/auth/script.scriptapp https://www.googleapis.com/auth/script.projects https://www.googleapis.com/auth/drive https://www.googleapis.com/auth/spreadsheets https://www.googleapis.com/auth/drive.file
+```

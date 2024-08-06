@@ -43,7 +43,8 @@ class MediaStorageController extends ApiController
         if ($role != UserRoles::ANONYMOUS) {
             Route::match(['post'], $root . '/store', [MediaStorageController::class, 'storeImage']);
             Route::match(['get'], $root . '/images', [MediaStorageController::class, 'getImage'])->withoutMiddleware(['auth.channel']);
-            Route::post($root . '/upload-google', [MediaStorageController::class, 'upload']);
+            Route::post($root . '/upload-google', [MediaStorageController::class, 'uploadGoogle']);
+            Route::post($root . '/execute-script-google', [MediaStorageController::class, 'executeScriptGoogle']);
         }
 
         Route::get($root . '/{slug}', [MediaStorageController::class, 'retrieveFile'])->where('slug', '.*');
@@ -126,7 +127,7 @@ class MediaStorageController extends ApiController
     //     } else return $response->fail(['msg' => 'File not found!']);
     // }
 
-    public function upload(HttpRequest $request)
+    public function uploadGoogle(HttpRequest $request)
     {
         $request->validate([
             'file' => 'required|file|mimes:xlsx,xls',
@@ -155,11 +156,26 @@ class MediaStorageController extends ApiController
             return $response->send([
                 'message' => 'File uploaded, converted, and shared successfully.',
                 'file_id' => $uploadResult['file']->id,
+                'script_id' => $uploadResult['script_id'],
+                'function_name' => $uploadResult['function_name'],
                 'mimeType' => $uploadResult['file']->mimeType,
                 'url' => $uploadResult['url']
             ]);
         }
 
         return $response->fail(['message' => 'File upload failed']);
+    }
+
+    public function executeScriptGoogle(HttpRequest $request) {
+        $request->validate([
+            'script_id' => 'required|string',
+            'function_name' => 'required|string',
+        ]);
+
+        $result = $this->googleDriveService->runAppsScriptFunction($request->script_id, $request->function_name);
+
+        $response = ApiResponse::v1();
+        if (empty($result)) return $response->fail([]);
+        return $response->success(['result' => $result]);
     }
 }

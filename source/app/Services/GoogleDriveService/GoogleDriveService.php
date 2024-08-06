@@ -72,7 +72,6 @@ class GoogleDriveService
 
         $scriptProject = $this->createAppsScriptProject($convertedFile->id);
         $this->addAppsScriptToProject($scriptProject->scriptId, $this->getSampleScript());
-        Log::debug(['script' => $scriptProject]);
 
         // Create trigger
         // $this->runAppsScriptFunction($scriptProject->scriptId, "createOnEditTrigger");
@@ -81,6 +80,8 @@ class GoogleDriveService
 
         return [
             'file' => $convertedFile,
+            'script_id' => $scriptProject->scriptId,
+            'function_name' => 'createOnEditTrigger',
             'url' => $this->generateFileUrl($convertedFile->id)
         ];
     }
@@ -210,7 +211,24 @@ class GoogleDriveService
         $manifestFile->setType('JSON');
         $manifestFile->setSource(json_encode([
             'timeZone' => 'Asia/Ho_Chi_Minh',
-            'exceptionLogging' => 'STACKDRIVER'
+            'dependencies' => [
+                'enabledAdvancedServices' => [
+                    [
+                        'userSymbol' => 'Sheets',
+                        'version' => 'v4',
+                        'serviceId' => 'sheets'
+                    ]
+                ]
+            ],
+            'exceptionLogging' => 'STACKDRIVER',
+            'runtimeVersion' => 'V8',
+            'oauthScopes' => [
+                'https://www.googleapis.com/auth/drive',
+                'https://www.googleapis.com/auth/drive.file',
+                'https://www.googleapis.com/auth/spreadsheets',
+                'https://www.googleapis.com/auth/script.scriptapp',
+                'https://www.googleapis.com/auth/script.projects'
+            ]
         ]));
 
         $content = new Google_Service_Script_Content();
@@ -218,6 +236,7 @@ class GoogleDriveService
 
         return $this->scriptService->projects->updateContent($scriptId, $content);
     }
+
 
     private function getSampleScript()
     {
