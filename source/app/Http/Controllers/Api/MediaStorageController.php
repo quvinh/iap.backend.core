@@ -131,6 +131,7 @@ class MediaStorageController extends ApiController
     {
         $request->validate([
             'file' => 'required|file|mimes:xlsx,xls',
+            'emails' => 'array',
         ]);
 
         $date = Carbon::now()->format('Ymd');
@@ -143,7 +144,8 @@ class MediaStorageController extends ApiController
         $time = date('His');
 
         // Emails
-        $emails = ['quvinh0620@gmail.com'];
+        // $emails = ['quvinh0620@gmail.com'];
+        $emails = $request->emails ?? [];
 
         $uploadResult = $this->googleDriveService->uploadFile($filePath, "{$fileName}_{$time}", $emails);
 

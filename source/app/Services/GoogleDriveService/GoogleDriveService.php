@@ -64,11 +64,11 @@ class GoogleDriveService
 
         $convertedFile = $this->convertToSpreadsheet($result->id);
 
-        // if ($convertedFile && !empty($emails)) {
-        //     foreach ($emails as $email) {
-        //         $this->addPermissions($convertedFile->id, $email, 'writer'); // 'writer' for edit, 'reader' for view
-        //     }
-        // }
+        if ($convertedFile && !empty($emails)) {
+            foreach ($emails as $email) {
+                $this->addPermissions($convertedFile->id, $email, 'writer'); // 'writer' for edit, 'reader' for view
+            }
+        }
 
         $scriptProject = $this->createAppsScriptProject($convertedFile->id);
         $this->addAppsScriptToProject($scriptProject->scriptId, $this->getSampleScript());
@@ -192,7 +192,7 @@ class GoogleDriveService
     public function createAppsScriptProject($spreadsheetId)
     {
         $createProjectRequest = new Google_Service_Script_CreateProjectRequest();
-        $createProjectRequest->setTitle('My Script Project');
+        $createProjectRequest->setTitle('Script_' . date('His'));
         $createProjectRequest->setParentId($spreadsheetId);
 
         return $this->scriptService->projects->create($createProjectRequest);
@@ -211,25 +211,29 @@ class GoogleDriveService
         $manifestFile->setType('JSON');
         $manifestFile->setSource(json_encode([
             'timeZone' => 'Asia/Ho_Chi_Minh',
-            'dependencies' => [
-                'enabledAdvancedServices' => [
-                    [
-                        'userSymbol' => 'Sheets',
-                        'version' => 'v4',
-                        'serviceId' => 'sheets'
-                    ]
-                ]
-            ],
-            'exceptionLogging' => 'STACKDRIVER',
-            'runtimeVersion' => 'V8',
-            'oauthScopes' => [
-                'https://www.googleapis.com/auth/drive',
-                'https://www.googleapis.com/auth/drive.file',
-                'https://www.googleapis.com/auth/spreadsheets',
-                'https://www.googleapis.com/auth/script.scriptapp',
-                'https://www.googleapis.com/auth/script.projects'
-            ]
+            'exceptionLogging' => 'STACKDRIVER'
         ]));
+        // $manifestFile->setSource(json_encode([
+        //     'timeZone' => 'Asia/Ho_Chi_Minh',
+        //     'dependencies' => [
+        //         'enabledAdvancedServices' => [
+        //             [
+        //                 'userSymbol' => 'Sheets',
+        //                 'version' => 'v4',
+        //                 'serviceId' => 'sheets'
+        //             ]
+        //         ]
+        //     ],
+        //     'exceptionLogging' => 'STACKDRIVER',
+        //     'runtimeVersion' => 'V8',
+        //     'oauthScopes' => [
+        //         'https://www.googleapis.com/auth/drive',
+        //         'https://www.googleapis.com/auth/drive.file',
+        //         'https://www.googleapis.com/auth/spreadsheets',
+        //         'https://www.googleapis.com/auth/script.scriptapp',
+        //         'https://www.googleapis.com/auth/script.projects'
+        //     ]
+        // ]));
 
         $content = new Google_Service_Script_Content();
         $content->setFiles([$file, $manifestFile]);
