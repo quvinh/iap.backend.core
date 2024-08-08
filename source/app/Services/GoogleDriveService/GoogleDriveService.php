@@ -81,7 +81,7 @@ class GoogleDriveService
         return [
             'file' => $convertedFile,
             'script_id' => $scriptProject->scriptId,
-            'function_name' => 'createOnEditTrigger',
+            'function_name' => 'onLoadSold',
             'url' => $this->generateFileUrl($convertedFile->id)
         ];
     }
