@@ -30,13 +30,13 @@ class ItemCodeController extends ApiController
 
     /**
      * Register default routes
-     * @param string|null $ItemCode
+     * @param string|null $role
      * @return void
      */
-    public static function registerRoutes(string $ItemCode = null): void
+    public static function registerRoutes(string $role = null): void
     {
         $root = 'item-codes';
-        if ($ItemCode == UserRoles::ADMINISTRATOR) {
+        if ($role == UserRoles::ADMINISTRATOR) {
             Route::post($root . '/search', [ItemCodeController::class, 'search']);
             Route::get($root . '/{id}', [ItemCodeController::class, 'getSingleObject']);
             Route::post($root, [ItemCodeController::class, 'create']);
@@ -46,6 +46,7 @@ class ItemCodeController extends ApiController
 
             Route::post($root . '/import', [ItemCodeController::class, 'import']);
         }
+        Route::get($root, [ItemCodeController::class, 'getAll']);
     }
 
     public function getService(): IService
@@ -123,6 +124,17 @@ class ItemCodeController extends ApiController
     public function import(ItemCodeImportRequest $request)
     {
         $result = $this->itemCodeService->import($request->all(), $this->getCurrentMetaInfo());
+        return $this->getResponseHandler()->send($result);
+    }
+
+    public function getAll(Request $request)
+    {
+        $request->validate([
+            'company_id' => 'required|exists:companies,id',
+            'year' => 'required',
+        ]);
+
+        $result = $this->itemCodeService->getAll($request->input());
         return $this->getResponseHandler()->send($result);
     }
 }

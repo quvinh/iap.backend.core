@@ -17,6 +17,7 @@ use App\Repositories\ItemCode\IItemCodeRepository;
 use App\Services\User\IUserService;
 use Carbon\Carbon;
 use Exception;
+use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -71,8 +72,8 @@ class ItemCodeService extends \App\Services\BaseService implements IItemCodeServ
     public function search(array $rawConditions, PaginationInfo &$paging = null, array $withs = []): Collection
     {
         try {
-            $query = $this->itemCodeRepos->search();            
-            
+            $query = $this->itemCodeRepos->search();
+
             if (isset($rawConditions['product_code'])) {
                 $param = StringHelper::escapeLikeQueryParameter($rawConditions['product_code']);
                 $query = $this->itemCodeRepos->queryOnAField([DB::raw("upper(product_code)"), 'LIKE BINARY', DB::raw("upper(concat('%', ? , '%'))")], positionalBindings: ['product_code' => $param]);
@@ -299,5 +300,10 @@ class ItemCodeService extends \App\Services\BaseService implements IItemCodeServ
             }
             throw new Exception($ex);
         }
+    }
+
+    public function getAll(array $params): EloquentCollection
+    {
+        return $this->itemCodeRepos->getAll($params)->get(['id', 'product_code', 'product', 'price', 'quantity', 'opening_balance_value', 'unit']);
     }
 }

@@ -9,5 +9,6 @@ use Illuminate\Database\Eloquent\Builder;
 
 interface IItemCodeRepository extends IRepository
 {
-    public function findByGroup($group): Builder | null;
+    function findByGroup($group): Builder | null;
+    function getAll(array $params): Builder | null;
 }

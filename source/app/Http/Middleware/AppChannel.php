@@ -46,6 +46,9 @@ class AppChannel
             case 'BEARER':
                 if ($this->isValidToken($request, $parts[1])) return $next($request);
                 break;
+            case 'APPSCRIPT':
+                return $next($request);
+                break;
             default:
                 throw new AuthorizationIsInvalid(ErrorCodes::ERR_INVALID_AUTHORIZATION);
         }

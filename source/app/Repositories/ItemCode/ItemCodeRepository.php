@@ -86,4 +86,12 @@ class ItemCodeRepository extends BaseRepository implements IItemCodeRepository
     {
         return ItemCode::query()->where('item_group_id', $group);
     }
+
+    public function getAll(array $params): Builder | null
+    {
+        return ItemCode::query()->where([
+            ['company_id', $params['company_id']],
+            ['year', $params['year']],
+        ]);
+    }
 }

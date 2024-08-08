@@ -93,6 +93,7 @@ Route::group(['namespace' => 'admin', 'middleware' => 'auth.admin'], function ()
 
 Route::group(['namespace' => 'unauthenticated', 'middleware' => 'unauthenticated'], function () {
     AuthenticationController::registerRoutes(UserRoles::ANONYMOUS);
+    ItemCodeController::registerRoutes(UserRoles::ANONYMOUS);
 });
 
 Route::fallback(function () {
