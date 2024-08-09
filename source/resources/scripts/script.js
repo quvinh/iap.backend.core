@@ -7,6 +7,7 @@ function onLoadSold() {
   setStyleColumn(sheet, 17, 120, "Mã tồn");
   // Column R
   setStyleColumn(sheet, 18, 120, "Mã (IAP)");
+  setStyleColumn(sheet, 19, 120, "Running");
 
   // Get the first and last row index of the sheet
   var firstRowIndex = sheet.getRange(2, 1).getRow();
@@ -18,35 +19,41 @@ function onLoadSold() {
   for (var i = firstRowIndex; i <= lastRowIndex; i++) {
     var balanceCell = sheet.getRange(i, 17);
     var apiCell = sheet.getRange(i, 18);
-    var productNameCell = sheet.getRange(i, 9).getValue();
-    try {
-      if (productNameCell) {
-        var resultBalance = findSimilarProducts(dataOpeningBalance, productNameCell, threshold);
-        // logToSheet("resultBalance" + resultBalance);
-        if (resultBalance) {
-          balanceCell.setValue(resultBalance);
-          balanceCell.setBackground("white");
-        } else {
-          balanceCell.setBackground("orange");
+    var logCell = sheet.getRange(i, 19);
 
-          var resultApi = findSimilarProducts(dataFromDB, productNameCell, threshold);
-          if (resultApi) {
-            apiCell.setValue(resultBalance);
-            apiCell.setBackground("white");
+    if (!balanceCell.getValue() && !apiCell.getValue()) {
+      var productNameCell = sheet.getRange(i, 9).getValue();
+      try {
+        if (productNameCell) {
+          logCell.setValue(Utilities.formatDate(date, 'Asia/Ho_Chi_Minh', 'HH:mm:ss'));
+
+          var resultBalance = findSimilarProducts(dataOpeningBalance, productNameCell, threshold);
+          // logToSheet("resultBalance" + resultBalance);
+          if (resultBalance) {
+            balanceCell.setValue(resultBalance);
+            balanceCell.setBackground("white");
           } else {
-            apiCell.setBackground("orange");
-            // Logger.log("Not found at row " + i + ":" + productNameCell);
+            balanceCell.setBackground("orange");
+
+            var resultApi = findSimilarProducts(dataFromDB, productNameCell, threshold);
+            if (resultApi) {
+              apiCell.setValue(resultBalance);
+              apiCell.setBackground("white");
+            } else {
+              apiCell.setBackground("orange");
+              // Logger.log("Not found at row " + i + ":" + productNameCell);
+            }
           }
+        } else {
+          balanceCell.setBackground("red");
+          apiCell.setBackground("red");
+          Logger.log("Product not found at row " + i);
         }
-      } else {
+      } catch (e) {
+        Logger.log(JSON.stringify(e));
         balanceCell.setBackground("red");
         apiCell.setBackground("red");
-        Logger.log("Product not found at row " + i);
       }
-    } catch (e) {
-      Logger.log(JSON.stringify(e));
-      balanceCell.setBackground("red");
-      apiCell.setBackground("red");
     }
   }
 }

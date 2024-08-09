@@ -16,6 +16,7 @@ use Google_Service_Script_ExecutionRequest;
 use App\Helpers\Responses\ApiResponse;
 use App\Helpers\Utils\StorageHelper;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
@@ -70,8 +71,8 @@ class GoogleDriveService
             }
         }
 
-        $scriptProject = $this->createAppsScriptProject($convertedFile->id);
-        $this->addAppsScriptToProject($scriptProject->scriptId, $this->getSampleScript());
+        // $scriptProject = $this->createAppsScriptProject($convertedFile->id);
+        // $this->addAppsScriptToProject($scriptProject->scriptId, $this->getSampleScript());
 
         // Create trigger
         // $this->runAppsScriptFunction($scriptProject->scriptId, "createOnEditTrigger");
@@ -80,8 +81,8 @@ class GoogleDriveService
 
         return [
             'file' => $convertedFile,
-            'script_id' => $scriptProject->scriptId,
-            'function_name' => 'onLoadSold',
+            // 'script_id' => $scriptProject->scriptId,
+            // 'function_name' => 'onLoadSold',
             'url' => $this->generateFileUrl($convertedFile->id)
         ];
     }
@@ -247,13 +248,13 @@ class GoogleDriveService
         return file_get_contents(resource_path('scripts/script.js'));
     }
 
-    public function runAppsScriptFunction($scriptId, $functionName)
-    {
-        $request = new Google_Service_Script_ExecutionRequest();
-        $request->setFunction($functionName);
+    // public function runAppsScriptFunction($scriptId, $functionName)
+    // {
+    //     $request = new Google_Service_Script_ExecutionRequest();
+    //     $request->setFunction($functionName);
 
-        return $this->scriptService->scripts->run($scriptId, $request);
-    }
+    //     return $this->scriptService->scripts->run($scriptId, $request);
+    // }
 
     public function executeScript($scriptId, $functionName, $parameters = [])
     {
@@ -263,5 +264,42 @@ class GoogleDriveService
         ]);
 
         return $this->scriptService->scripts->run($scriptId, $request);
+    }
+
+    public function runAppsScriptFunction(array $params): array
+    {
+        // id: AKfycbwoio8lsxDln6GgsuukHE46UsuOqORhTHZ8qXHjz40B93OXDEmOSEMqzuCmQjVCIiYB
+        // $url = "https://script.google.com/macros/s/AKfycbwoio8lsxDln6GgsuukHE46UsuOqORhTHZ8qXHjz40B93OXDEmOSEMqzuCmQjVCIiYB/exec";
+        $url = "https://script.google.com/macros/s/AKfycbwbYwf_V9V_6TlzEsy3jf4vqU0sZTtwAjY8_NK1gRE/dev";
+        $token = env('GOOGLE_DRIVE_ACCESS_TOKEN');
+        $function = $params['function'] ?? null;
+        $script_id = $params['script_id'] ?? null;
+
+        $response = Http::withHeaders([
+            'Authorization' => 'Bearer ' . $token
+        ])->get($url, [
+            'function' => $function,
+            'script_id' => $script_id,
+        ]);
+
+        try {
+            if ($response->status() == 200) {
+                $body = json_decode($response->body());
+                return (array)$body;
+            }
+        } catch (\Exception $ex) {
+            return [
+                'result' => $response->successful() ?? null,
+                'status' => $response->status() ?? null,
+                'body' => $response->body() ?? null,
+                'message' => ['error' => $ex->getMessage()],
+            ];
+        }
+
+        return [
+            'result' => $response->successful() ?? null,
+            'status' => $response->status() ?? null,
+            'body' => $response->body() ?? null,
+        ];
     }
 }

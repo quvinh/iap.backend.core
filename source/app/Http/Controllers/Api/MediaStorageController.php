@@ -158,10 +158,11 @@ class MediaStorageController extends ApiController
             return $response->send([
                 'message' => 'File uploaded, converted, and shared successfully.',
                 'file_id' => $uploadResult['file']->id,
-                'script_id' => $uploadResult['script_id'],
-                'function_name' => $uploadResult['function_name'],
+                // 'script_id' => $uploadResult['script_id'],
+                // 'function_name' => $uploadResult['function_name'],
                 'mimeType' => $uploadResult['file']->mimeType,
-                'url' => $uploadResult['url']
+                'url' => $uploadResult['url'],
+                'share' => $emails,
             ]);
         }
 
@@ -171,13 +172,13 @@ class MediaStorageController extends ApiController
     public function executeScriptGoogle(HttpRequest $request) {
         $request->validate([
             'script_id' => 'required|string',
-            'function_name' => 'required|string',
+            'function' => 'nullable|string',
         ]);
 
-        $result = $this->googleDriveService->runAppsScriptFunction($request->script_id, $request->function_name);
+        $result = $this->googleDriveService->runAppsScriptFunction($request->input());
 
         $response = ApiResponse::v1();
-        if (empty($result)) return $response->fail([]);
-        return $response->success(['result' => $result]);
+        if (empty($result) || $result['status'] != 200) return $response->withStatusCode($result['status'])->fail($result);
+        return $response->success($result);
     }
 }
