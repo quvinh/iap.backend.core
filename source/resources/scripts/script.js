@@ -1,6 +1,46 @@
-function onLoadSold() {
+function doGet(e) {
+  var functionName = e.parameter.function;
+  var scriptId = e.parameter.script_id;
+
+  if (!scriptId) return response(442, "Script Id not found");
+  if (!checkSpreadsheetExists(scriptId)) return response(404, "Script Id invalid");
+
+  if (functionName == 'functionTest') {
+    return functionOne();
+  } else if (functionName == 'onLoadSold') {
+    return onLoadSold(scriptId);
+  } else {
+    return response(442, "Function not found");
+  }
+}
+
+function functionTest() {
+  return ContentService.createTextOutput("Function Test Executed");
+}
+
+function response(status, message) {
+  return ContentService
+    .createTextOutput(JSON.stringify({ status: status || 200, message }))
+    .setMimeType(ContentService.MimeType.JSON);
+}
+
+function checkSpreadsheetExists(spreadsheetId) {
+  try {
+    SpreadsheetApp.openById(spreadsheetId);
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+
+/**
+ * On load sold
+ */
+function onLoadSold(spreadsheetId) {
   // Get the active spreadsheet and sheets
-  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  // var ss = SpreadsheetApp.getActiveSpreadsheet();
+  // var spreadsheetId = "1hTcVVGQrnJO2kyqe6MEbL0k2TcYIB22v-zsui10mgMg";
+  var ss = SpreadsheetApp.openById(spreadsheetId);
   var sheet = ss.getSheetByName("Banra3-2024");
 
   // Column Q
@@ -12,7 +52,7 @@ function onLoadSold() {
   // Get the first and last row index of the sheet
   var firstRowIndex = sheet.getRange(2, 1).getRow();
   var lastRowIndex = sheet.getLastRow();
-  var dataOpeningBalance = loadOpeningBalance();
+  var dataOpeningBalance = loadOpeningBalance(spreadsheetId);
   var dataFromDB = findCodesByApi(54, 2024);
   var threshold = 0.5; // 50% similarity threshold
 
@@ -25,23 +65,23 @@ function onLoadSold() {
       var productNameCell = sheet.getRange(i, 9).getValue();
       try {
         if (productNameCell) {
-          logCell.setValue(Utilities.formatDate(date, 'Asia/Ho_Chi_Minh', 'HH:mm:ss'));
+          Logger.log("Running at row " + i);
+          balanceCell.setBackground("white");
+          apiCell.setBackground("white");
+          logCell.setValue(Utilities.formatDate(new Date(), 'Asia/Ho_Chi_Minh', 'HH:mm:ss'));
+          logToSheet(spreadsheetId, "Row " + i);
 
           var resultBalance = findSimilarProducts(dataOpeningBalance, productNameCell, threshold);
-          // logToSheet("resultBalance" + resultBalance);
           if (resultBalance) {
             balanceCell.setValue(resultBalance);
-            balanceCell.setBackground("white");
           } else {
             balanceCell.setBackground("orange");
 
             var resultApi = findSimilarProducts(dataFromDB, productNameCell, threshold);
             if (resultApi) {
               apiCell.setValue(resultBalance);
-              apiCell.setBackground("white");
             } else {
               apiCell.setBackground("orange");
-              // Logger.log("Not found at row " + i + ":" + productNameCell);
             }
           }
         } else {
@@ -50,7 +90,7 @@ function onLoadSold() {
           Logger.log("Product not found at row " + i);
         }
       } catch (e) {
-        Logger.log(JSON.stringify(e));
+        Logger.log("Error at row " + i + ":" + e.message);
         balanceCell.setBackground("red");
         apiCell.setBackground("red");
       }
@@ -61,9 +101,10 @@ function onLoadSold() {
 /**
  * Load file Ton dau ky
  */
-function loadOpeningBalance() {
+function loadOpeningBalance(spreadsheetId) {
   // Get the active spreadsheet and sheets
-  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  // var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var ss = SpreadsheetApp.openById(spreadsheetId);
   var sheet = ss.getSheetByName("Ton đầu kỳ 2024");
 
   // Find the corresponding code in Sheet
@@ -154,11 +195,13 @@ function editDistance(s1, s2) {
 /**
  * LogSheet
  */
-function logToSheet(message) {
-  var ss = SpreadsheetApp.getActiveSpreadsheet();
+function logToSheet(spreadsheetId, message) {
+  // var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var ss = SpreadsheetApp.openById(spreadsheetId);
   var sheet = ss.getSheetByName("LogSheet");
   if (!sheet) {
     sheet = ss.insertSheet("LogSheet");
+    ss.moveActiveSheet(ss.getSheets().length);
   }
   sheet.appendRow([new Date(), message]);
 }
