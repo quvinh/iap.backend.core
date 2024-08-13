@@ -21,12 +21,15 @@ use App\Http\Requests\Invoice\InvoiceSearchPartnerRequest;
 use App\Http\Requests\Invoice\InvoiceSearchRequest;
 use App\Http\Requests\Invoice\InvoiceTctCreateRequest;
 use App\Http\Requests\Invoice\InvoiceUpdateRequest;
+use App\Imports\ImportedGoodsImport;
 use App\Services\IService;
 use App\Services\Invoice\IInvoiceService;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
 use Maatwebsite\Excel\Facades\Excel;
@@ -61,6 +64,7 @@ class InvoiceController extends ApiController
 
             Route::post($root . '/import', [InvoiceController::class, 'import'])->middleware('can:create,App\Models\Invoice');
             Route::post($root . '/import-pdf', [InvoiceController::class, 'importPDF'])->middleware('can:create,App\Models\Invoice');
+            Route::post($root . '/import-imported-goods', [InvoiceController::class, 'importImportedGoods'])->middleware('can:create,App\Models\Invoice');
             Route::post($root . '/restore-rows/{id}', [InvoiceController::class, 'restoreRows']);
             Route::post($root . '/partners', [InvoiceController::class, 'partners']);
             Route::post($root . '/info', [InvoiceController::class, 'info']);
@@ -193,7 +197,7 @@ class InvoiceController extends ApiController
         $payload = $request->input();
         $meta = $this->getCurrentMetaInfo();
         $requireToTranslate = false;
-        $withs = $payload['withs']?? [];
+        $withs = $payload['withs'] ?? [];
         # 2. get pagination if any
         $paging = $request->getPaginationInfo();
 
@@ -241,7 +245,7 @@ class InvoiceController extends ApiController
     {
         # Get payload
         $payload = $request->input();
-        $withs = $payload['withs']?? [];
+        $withs = $payload['withs'] ?? [];
         # Get pagination if any
         $paging = $request->getPaginationInfo();
         # Call business processes
@@ -314,10 +318,34 @@ class InvoiceController extends ApiController
         ]);
     }
 
-    public function createInvoiceTct(InvoiceTctCreateRequest $request) {
+    public function createInvoiceTct(InvoiceTctCreateRequest $request)
+    {
         $result = $this->invoiceService->createInvoiceTct($request->all());
         # Send response using the predefined format
         $response = ApiResponse::v1();
         return $response->send($result);
+    }
+
+    public function importImportedGoods(Request $request)
+    {
+        $request->validate([
+            'file' => ['required', 'mimes:xlsx'],
+            'company_id' => ['required', 'exists:companies,id'],
+            'year' => ['required'],
+        ]);
+
+        # Send response using the predefined format
+        $response = ApiResponse::v1();
+
+        DB::beginTransaction();
+        try {
+            Excel::import(new ImportedGoodsImport, $request->file('file'));
+            DB::commit();
+            return $response->send(true);
+        } catch (\Exception $ex) {
+            DB::rollBack();
+            Log::error($ex->getMessage());
+            return $response->fail($ex->getMessage());
+        }
     }
 }

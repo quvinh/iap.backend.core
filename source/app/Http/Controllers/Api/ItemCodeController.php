@@ -5,17 +5,21 @@ namespace App\Http\Controllers\Api;
 use App\DataResources\ItemCode\ItemCodeResource;
 use App\Helpers\Common\MetaInfo;
 use App\Helpers\Enums\UserRoles;
+use App\Helpers\Responses\ApiResponse;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\Traits\DefaultRestActions;
 use App\Http\Requests\ItemCode\ItemCodeCreateRequest;
 use App\Http\Requests\ItemCode\ItemCodeImportRequest;
 use App\Http\Requests\ItemCode\ItemCodeSearchRequest;
 use App\Http\Requests\ItemCode\ItemCodeUpdateRequest;
+use App\Imports\ImportedGoodsCodeImport;
 use App\Services\IService;
 use App\Services\ItemCode\IItemCodeService;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
+use Maatwebsite\Excel\Facades\Excel;
 
 class ItemCodeController extends ApiController
 {
@@ -45,6 +49,7 @@ class ItemCodeController extends ApiController
             Route::delete($root . '/force/{id}', [ItemCodeController::class, 'forceDelete']);
 
             Route::post($root . '/import', [ItemCodeController::class, 'import']);
+            Route::post($root . '/import-imported-goods-code', [ItemCodeController::class, 'importImportedGoodsCode']);
         }
         Route::get($root, [ItemCodeController::class, 'getAll']);
     }
@@ -136,5 +141,28 @@ class ItemCodeController extends ApiController
 
         $result = $this->itemCodeService->getAll($request->input());
         return $this->getResponseHandler()->send($result);
+    }
+
+    public function importImportedGoodsCode(Request $request)
+    {
+        $request->validate([
+            'file' => ['required', 'mimes:xlsx'],
+            'company_id' => ['required', 'exists:companies,id'],
+            'year' => ['required'],
+        ]);
+
+        # Send response using the predefined format
+        $response = ApiResponse::v1();
+
+        DB::beginTransaction();
+        try {
+            Excel::import(new ImportedGoodsCodeImport, $request->file('file'));
+            DB::commit();
+            return $response->send(true);
+        } catch (\Exception $ex) {
+            DB::rollBack();
+            Log::error($ex->getMessage());
+            return $response->fail($ex->getMessage());
+        }
     }
 }
