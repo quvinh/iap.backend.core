@@ -32,6 +32,7 @@ class ItemCode extends BaseModel
         'unit',
         'year',
         'status',
+        'is_imported_goods',
     ];
 
     public function setItemCode(float $quantity, float $price): void

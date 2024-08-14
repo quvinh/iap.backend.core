@@ -174,7 +174,7 @@ class InvoiceController extends ApiController
         }
         # Send response using the predefined format
         $response = ApiResponse::v1();
-        return $response->send();
+        return $response->send(true);
     }
 
     public function partners(InvoiceSearchPartnerRequest $request): Response
@@ -339,7 +339,7 @@ class InvoiceController extends ApiController
 
         DB::beginTransaction();
         try {
-            Excel::import(new ImportedGoodsImport, $request->file('file'));
+            Excel::import(new ImportedGoodsImport($request->company_id, $request->year), $request->file('file'));
             DB::commit();
             return $response->send(true);
         } catch (\Exception $ex) {

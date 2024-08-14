@@ -44,6 +44,11 @@ class InvoiceDetail extends BaseModel
         'main_entity',
         'visible',
         'note',
+        'icp_price',
+        'isf_price',
+        'import_tax',
+        'special_consumption_tax',
+        'customs_code',
     ];
 
     public function setInvoiceDetail(float $quantity, float $price, int $vat, bool $rounding = true): void

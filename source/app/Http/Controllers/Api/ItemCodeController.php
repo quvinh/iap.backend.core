@@ -18,6 +18,7 @@ use App\Services\ItemCode\IItemCodeService;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
 use Maatwebsite\Excel\Facades\Excel;
 
@@ -156,7 +157,7 @@ class ItemCodeController extends ApiController
 
         DB::beginTransaction();
         try {
-            Excel::import(new ImportedGoodsCodeImport, $request->file('file'));
+            Excel::import(new ImportedGoodsCodeImport($request->company_id, $request->year), $request->file('file'));
             DB::commit();
             return $response->send(true);
         } catch (\Exception $ex) {

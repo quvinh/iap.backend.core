@@ -4,6 +4,7 @@ namespace App\Helpers\Utils;
 
 use App\Exceptions\Request\InvalidDatetimeInputException;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Log;
 
 /**
  * @property string $date
@@ -65,6 +66,20 @@ class DateHelper
             return $result->format('m-d');
         } catch (\Exception $ex) {
             throw new InvalidDatetimeInputException("ERR_TIMESTAMP");
+        }
+    }
+
+    public static function convertDate($value): ?string
+    {
+        try {
+            if (is_numeric($value)) {
+                return Carbon::instance(\PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($value))->format('Y-m-d H:i:s');
+            }
+            if (str_contains($value, '-')) return Carbon::createFromFormat('d-m-Y', $value)->format('Y-m-d H:i:s');
+            return Carbon::createFromFormat('d/m/Y', $value)->format('Y-m-d H:i:s');
+        } catch (\Exception $ex) {
+            Log::error($ex->getMessage());
+            return null;
         }
     }
 }
