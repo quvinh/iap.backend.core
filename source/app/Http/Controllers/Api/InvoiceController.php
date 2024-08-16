@@ -22,11 +22,15 @@ use App\Http\Requests\Invoice\InvoiceSearchRequest;
 use App\Http\Requests\Invoice\InvoiceTctCreateRequest;
 use App\Http\Requests\Invoice\InvoiceUpdateRequest;
 use App\Imports\ImportedGoodsImport;
+use App\Jobs\ImportedGoodsExcelJob;
+use App\Models\JobHistory;
 use App\Services\IService;
 use App\Services\Invoice\IInvoiceService;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Log;
@@ -337,9 +341,25 @@ class InvoiceController extends ApiController
         # Send response using the predefined format
         $response = ApiResponse::v1();
 
+        $date = Carbon::now()->format('Ymd');
+        $storage = Storage::disk(StorageHelper::TMP_DISK_NAME);
+        $folder = "excel/queue/$date";
+
+        $file = $request->file('file');
+        $filePath = $storage->put($folder, $file);
+        
         DB::beginTransaction();
         try {
-            Excel::import(new ImportedGoodsImport($request->company_id, $request->year), $request->file('file'));
+            $user_id = auth()->user()->getAuthIdentifier();
+            $jobHistory = JobHistory::create([
+                'company_id' => $request->company_id,
+                'job_id' => null,
+                'note' => "Chờ xử lý",
+                'path' => null,
+                'status' => JobHistory::STATUS_PENDING,
+            ]);
+            ImportedGoodsExcelJob::dispatch($filePath, $request->company_id, $request->year, $user_id, $jobHistory->id);
+            // Artisan::call('queue:work', ['--queue' => 'excel', '--stop-when-empty' => true]);
             DB::commit();
             return $response->send(true);
         } catch (\Exception $ex) {

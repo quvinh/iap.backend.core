@@ -21,11 +21,12 @@ class ImportedGoodsImport implements ToCollection, WithHeadingRow, WithStartRow
     private int $year;
     private $cacheKey;
 
-    public function __construct(int $company_id, int $year)
+    public function __construct(int $company_id, int $year, int $user_id)
     {
         $this->company_id = $company_id;
         $this->year = $year;
-        $this->user_id = auth()->user()->getAuthIdentifier();
+        $this->user_id = $user_id;
+        // $this->user_id = auth()->user()->getAuthIdentifier();
         $this->cacheKey = "company_{$this->company_id}_year_{$this->year}_product_codes";
         $this->initializeCache();
     }
@@ -50,7 +51,8 @@ class ImportedGoodsImport implements ToCollection, WithHeadingRow, WithStartRow
         $this->finalizeImport();
 
         if ($this->imported == 0) {
-            throw new Exception('Không có bản ghi nào được thêm');
+            // throw new Exception('Không có bản ghi nào được thêm');
+            Log::info('Không có bản ghi nào được thêm');
         }
     }
 
@@ -82,7 +84,7 @@ class ImportedGoodsImport implements ToCollection, WithHeadingRow, WithStartRow
         $product_code = $this->findProductCodeBySimilarity($product, 50);
         
         $this->imported++;
-        Log::debug("{$this->imported}: {$product_code}");
+        Log::debug("{$this->imported}: {$product} 👉 {$product_code}");
     }
 
     protected function finalizeImport()
@@ -107,7 +109,7 @@ class ImportedGoodsImport implements ToCollection, WithHeadingRow, WithStartRow
             if ($percent >= $threshold && $percent > $maxSimilarity) {
                 $maxSimilarity = $percent;
                 $similarProductCode = $item['product_code'];
-                return $similarProductCode;
+                // return $similarProductCode;
             }
         }
 

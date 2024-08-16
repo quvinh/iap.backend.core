@@ -25,3 +25,27 @@ https://www.googleapis.com/auth/drive https://www.googleapis.com/auth/drive.file
 ```
 https://www.googleapis.com/auth/spreadsheets.readonly https://www.googleapis.com/auth/cloud-platform https://www.googleapis.com/auth/drive.scripts https://www.googleapis.com/auth/script.scriptapp https://www.googleapis.com/auth/script.projects https://www.googleapis.com/auth/drive https://www.googleapis.com/auth/spreadsheets https://www.googleapis.com/auth/drive.file
 ```
+
+
+## Create queue Jobs
+- .env
+```
+QUEUE_CONNECTION=database
+```
+
+- Run queue
+```
+php artisan queue:work --queue=excel --stop-when-empty
+```
+- Show job failed
+```
+php artisan queue:failed
+```
+- Retry all jobs
+```
+php artisan queue:retry --queue=excel
+```
+
+```
+Artisan::call('queue:work', ['--stop-when-empty' => true]);
+```

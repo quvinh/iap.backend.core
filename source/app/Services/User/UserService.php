@@ -329,7 +329,7 @@ class UserService extends \App\Services\BaseService implements IUserService
             $record->request_timestamp = $expire;
             if ($record->save()) {
                 Log::channel('forgot_password')->info("User:{$record->username} forgot password", ['name' => $record->name, 'email' => $record->email]);
-                ForgotPasswordJob::dispatch($record, $otp)->delay(now()->addMinute(1));
+                ForgotPasswordJob::dispatch($record, $otp)->onConnection('sync')->delay(now()->addMinute(1));
             } else {
                 throw new CannotUpdateDBException('Cannot update DB');
             }
