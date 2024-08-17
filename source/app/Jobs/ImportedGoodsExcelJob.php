@@ -34,7 +34,7 @@ class ImportedGoodsExcelJob implements ShouldQueue
     public function __construct($filePath, int $companyId, int $year, int $user_id, int $job_id)
     {
         $this->queue = 'excel'; # Queue command: `php artisan queue:listen --queue=excel` or `php artisan queue:work --queue=excel`
-        // $this->delay = now()->addSeconds(10); # Delay 10 seconds
+        $this->delay = now()->addSeconds(10); # Delay 10 seconds
 
         $this->filePath = $filePath;
         $this->companyId = $companyId;

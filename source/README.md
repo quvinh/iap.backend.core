@@ -45,7 +45,21 @@ php artisan queue:failed
 ```
 php artisan queue:retry --queue=excel
 ```
+- Clear all jobs failed
+```
+php artisan queue:flush
+```
 
 ```
 Artisan::call('queue:work', ['--stop-when-empty' => true]);
+```
+
+## WebServer
+```
+/usr/local/php80/bin/php80 artisan cache:clear
+```
+
+- Check log latest
+```
+tail laravel.log
 ```

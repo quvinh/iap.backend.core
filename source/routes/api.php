@@ -23,6 +23,7 @@ use App\Http\Controllers\Api\InvoiceMediaController;
 use App\Http\Controllers\Api\InvoiceTaskController;
 use App\Http\Controllers\Api\ItemCodeController;
 use App\Http\Controllers\Api\ItemGroupController;
+use App\Http\Controllers\Api\JobHistoryController;
 use App\Http\Controllers\Api\MediaStorageController;
 use App\Http\Controllers\Api\OpeningBalanceVatController;
 use App\Http\Controllers\Api\PdfTableKeyController;
@@ -79,6 +80,7 @@ function registerResourceRoutes(string $group = UserRoles::ADMINISTRATOR): void
     OpeningBalanceVatController::registerRoutes($group);
     TemplateController::registerRoutes($group);
     CompanyDocumentController::registerRoutes($group);
+    JobHistoryController::registerRoutes($group);
 
     CommandController::registerRoutes($group);
 }
