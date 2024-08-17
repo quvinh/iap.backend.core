@@ -21,6 +21,8 @@ class JobHistoryController extends Controller
         $root = 'job-histories';
         if ($role == UserRoles::ADMINISTRATOR) {
             Route::get($root, [JobHistoryController::class, 'index']);
+            Route::put($root . '/{id}', [JobHistoryController::class, 'update']);
+            Route::delete($root . '/{id}', [JobHistoryController::class, 'delete']);
         }
     }
 
@@ -37,5 +39,31 @@ class JobHistoryController extends Controller
         # Send response using the predefined format
         $response = ApiResponse::v1();
         return $response->send($result);
+    }
+
+    public function update(Request $request, int $id)
+    {
+        # Send response using the predefined format
+        $response = ApiResponse::v1();
+
+        $record = JobHistory::find($id);
+        if (empty($record)) return $response->withStatusCode(404)->fail("Record not found");
+
+        $record->update($request->input());
+
+        return $response->send($record);
+    }
+
+    public function delete(int $id)
+    {
+        # Send response using the predefined format
+        $response = ApiResponse::v1();
+
+        $record = JobHistory::find($id);
+        if (empty($record)) return $response->withStatusCode(404)->fail("Record not found");
+
+        $record->delete();
+
+        return $response->send(true);
     }
 }
