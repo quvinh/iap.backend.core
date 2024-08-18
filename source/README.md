@@ -62,5 +62,14 @@ Artisan::call('queue:work', ['--stop-when-empty' => true]);
 
 - Check log latest
 ```
-tail laravel.log
+tail -f laravel.log
+```
+
+- Cronjob (chạy 7h đến 19h)
+```
+* 7-19 * * * /usr/local/php80/bin/php80 /home/admin/domains/api.iap.vn/public_html/artisan queue:work --queue=excel --stop-when-empty
+```
+
+```
+crontab -u admin -l
 ```
