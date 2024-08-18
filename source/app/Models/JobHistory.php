@@ -18,6 +18,7 @@ class JobHistory extends Model
     protected $fillable = [
         'company_id',
         'job_id',
+        'file_name',
         'note',
         'path',
         'status',

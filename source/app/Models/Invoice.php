@@ -48,6 +48,13 @@ class Invoice extends BaseModel
         'json',
         'status',
         'locked',
+        
+        'is_imported_goods',
+        'icp_currency',
+        'icp_currency_price',
+        'isf_currency',
+        'isf_currency_price',
+        'isf_sum_fee',
     ];
 
     public function plusMoneyInvoice(float $total_money_no_vat, int $vat, float $discount = 0): void

@@ -42,7 +42,7 @@ class InvoiceImportRequest extends BaseRequest
             'invoice_details.*.partner_tax_code' => ['required', 'string', 'max:100'],
             'invoice_details.*.partner_address' => ['nullable'],
             'invoice_details.*.invoice_number' => ['required', 'integer'],
-            'invoice_details.*.invoice_number_from' => ['integer'],
+            'invoice_details.*.invoice_number_form' => ['integer'],
             'invoice_details.*.invoice_symbol' => ['required', 'string', 'max:20'],
             'invoice_details.*.product' => ['required', 'string'],
             'invoice_details.*.product_exchange' => ['nullable'],

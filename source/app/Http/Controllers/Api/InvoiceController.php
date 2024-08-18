@@ -36,6 +36,7 @@ use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\Rule;
 use Maatwebsite\Excel\Facades\Excel;
 
 class InvoiceController extends ApiController
@@ -336,6 +337,7 @@ class InvoiceController extends ApiController
             'file' => ['required', 'mimes:xlsx'],
             'company_id' => ['required', 'exists:companies,id'],
             'year' => ['required'],
+            'invoice_type' => ['required', Rule::in(['sold', 'purchase'])],
         ]);
 
         # Send response using the predefined format
@@ -346,6 +348,7 @@ class InvoiceController extends ApiController
         $folder = "excel/queue/$date";
 
         $file = $request->file('file');
+        $fileName = $file->getClientOriginalName();
         $filePath = $storage->put($folder, $file);
         
         DB::beginTransaction();
@@ -354,12 +357,20 @@ class InvoiceController extends ApiController
             $jobHistory = JobHistory::create([
                 'company_id' => $request->company_id,
                 'job_id' => null,
+                'file_name' => $fileName,
                 'note' => "Chờ xử lý",
                 'path' => null,
                 'status' => JobHistory::STATUS_PENDING,
             ]);
-            ImportedGoodsExcelJob::dispatch($filePath, $request->company_id, $request->year, $user_id, $jobHistory->id);
-            // Artisan::call('queue:work', ['--queue' => 'excel', '--stop-when-empty' => true]);
+            ImportedGoodsExcelJob::dispatch(
+                $this->invoiceService, 
+                $filePath, 
+                $request->input(), 
+                $user_id, 
+                $jobHistory->id,
+                $this->getCurrentMetaInfo()
+            );
+            
             DB::commit();
             return $response->send(true);
         } catch (\Exception $ex) {
