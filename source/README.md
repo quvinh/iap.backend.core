@@ -73,3 +73,7 @@ tail -f laravel.log
 ```
 crontab -u admin -l
 ```
+
+```
+tail -f /var/log/cron
+```
