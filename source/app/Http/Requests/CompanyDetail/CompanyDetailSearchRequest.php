@@ -22,6 +22,7 @@ class CompanyDetailSearchRequest extends DefaultSearchRequest
         'id',
         'year', 
         'company_id',
+        'status',
         'withs',
     ];
 

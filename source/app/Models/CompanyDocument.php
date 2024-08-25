@@ -16,6 +16,8 @@ class CompanyDocument extends BaseModel
         'year',
         'file',
         'is_contract',
+        'signature_date',
+        'expiry_date',
         'meta',
     ];
 }

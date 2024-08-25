@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Company extends BaseModel
@@ -28,8 +29,12 @@ class Company extends BaseModel
         'registered_date',
         'registration_file',
         'place_of_registration',
+        'business_object',
     ];
 
+    /**
+     * @return HasManyThrough
+     */
     public function types(): HasManyThrough
     {
         return $this->hasManyThrough(
@@ -42,6 +47,9 @@ class Company extends BaseModel
         );
     }
 
+    /**
+     * @return HasMany
+     */
     public function years(): HasMany
     {
         return $this->hasMany(CompanyDetail::class, 'company_id', 'id');
@@ -53,5 +61,25 @@ class Company extends BaseModel
     public function documents(): HasMany
     {
         return $this->hasMany(CompanyDocument::class, 'company_id', 'id');
+    }
+
+    public function contract()
+    {
+        return $this->documents()->where('is_contract', 1)->whereNotNull('signature_date')->orderByDesc('created_at');
+    }
+
+    /**
+     * @return HasManyThrough
+     */
+    public function users(): HasManyThrough
+    {
+        return $this->hasManyThrough(
+            User::class,
+            UserCompany::class,
+            'company_id',
+            'id',
+            'id',
+            'user_id'
+        );
     }
 }

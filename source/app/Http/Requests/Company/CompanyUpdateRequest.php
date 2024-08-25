@@ -2,9 +2,11 @@
 
 namespace App\Http\Requests\Company;
 
+use App\Helpers\Enums\BusinessObjectEnum;
 use App\Http\Requests\BaseRequest;
 use App\Rules\IsBase64Image;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class CompanyUpdateRequest extends BaseRequest
 {
@@ -43,7 +45,8 @@ class CompanyUpdateRequest extends BaseRequest
             'manager_role' => ['nullable', 'string'],
             'manager_phone' => ['nullable', 'string'],
             'email' => ['nullable', 'string'],
-            'logo_raw' => ['nullable', new IsBase64Image(['size' => config('upload.images.max_size')])]
+            'logo_raw' => ['nullable', new IsBase64Image(['size' => config('upload.images.max_size')])],
+            'business_object' => [Rule::in(BusinessObjectEnum::getValues())],
         ];
     }
 }

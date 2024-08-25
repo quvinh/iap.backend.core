@@ -6,6 +6,7 @@ use App\DataResources\BaseDataResource;
 use App\DataResources\CompanyDetail\CompanyDetailResource;
 use App\DataResources\CompanyDocument\CompanyDocumentResource;
 use App\DataResources\CompanyType\CompanyTypeResource;
+use App\DataResources\User\UserResource;
 use App\Models\Company;
 
 class CompanyResource extends BaseDataResource
@@ -13,6 +14,8 @@ class CompanyResource extends BaseDataResource
     protected $types;
     protected $years;
     protected $documents;
+    protected $contract;
+    protected $users;
     
     /**
      * @var array|string[]
@@ -34,6 +37,7 @@ class CompanyResource extends BaseDataResource
         'registered_date',
         'registration_file',
         'place_of_registration',
+        'business_object',
         'created_by'
     ];
 
@@ -64,6 +68,14 @@ class CompanyResource extends BaseDataResource
 
         if (in_array('documents', $this->fields)) {
             $this->documents = BaseDataResource::generateResources($obj->documents, CompanyDocumentResource::class);
+        }
+
+        if (in_array('contract', $this->fields)) {
+            $this->contract = new CompanyDocumentResource($obj->contract()->first());
+        }
+
+        if (in_array('users', $this->fields)) {
+            $this->users = BaseDataResource::generateResources($obj->users()->orderByDesc('id')->get(), UserResource::class);
         }
     }
 }

@@ -13,13 +13,17 @@ class CompanySearchRequest extends DefaultSearchRequest
      */
     protected array $relations = [
         'types',
-        'years'
+        'years',
+        'documents',
+        'contract',
+        'users',
     ];
 
     protected array $fields = [
         'withs',
         'status',
         'tax_code',
+        'business_object',
     ];
 
     /**

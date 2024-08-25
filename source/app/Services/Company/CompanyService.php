@@ -89,6 +89,11 @@ class CompanyService extends \App\Services\BaseService implements ICompanyServic
                 $query = $this->companyRepos->queryOnAField(['status', '=', $param], $query);
             }
 
+            if (isset($rawConditions['business_object'])) {
+                $param = $rawConditions['business_object'];
+                $query = $this->companyRepos->queryOnAField(['business_object', '=', $param], $query);
+            }
+
             if (isset($rawConditions['updated_date'])) {
                 $query = $this->companyRepos->queryOnDateRangeField($query, 'updated_at', $rawConditions['updated_date']);
             }

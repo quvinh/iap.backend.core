@@ -2,9 +2,11 @@
 
 namespace App\Http\Requests\Company;
 
+use App\Helpers\Enums\BusinessObjectEnum;
 use App\Http\Requests\BaseRequest;
 use App\Rules\IsBase64Image;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class CompanyCreateRequest extends BaseRequest
 {
@@ -47,6 +49,7 @@ class CompanyCreateRequest extends BaseRequest
             // 'year' => ['required', 'digits:4', 'integer', 'min:2000'],
             'description' => ['nullable'],
             'file_raw' => ['nullable', new IsBase64Image(['size' => config('upload.images.max_size')])],
+            'business_object' => [Rule::in(BusinessObjectEnum::getValues())],
         ];
     }
 }

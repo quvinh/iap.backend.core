@@ -106,6 +106,13 @@ class CompanyDetailService extends \App\Services\BaseService implements ICompany
                 $query = $this->companyDetailRepos->queryOnDateRangeField($query, 'created_at', $rawConditions['created_date']);
             }
 
+            if (isset($rawConditions['status'])) {
+                $status = $rawConditions['status'];
+                $query->whereHas('company', function ($q) use ($status) {
+                    $q->where('status', $status);
+                });
+            }
+
             # Query get companies authoritied
             $userId = auth()->user()->getAuthIdentifier();
             $userCompanies = $this->userService->findByCompanies($userId);
@@ -152,7 +159,7 @@ class CompanyDetailService extends \App\Services\BaseService implements ICompany
         try {
             #1 Create
             $record = $this->companyDetailRepos->create($param, $commandMetaInfo);
-            
+
             if (isset($param['contract_value'])) {
                 $meta = [
                     'contract_value' => $param['contract_value'],
@@ -196,7 +203,7 @@ class CompanyDetailService extends \App\Services\BaseService implements ICompany
                 'id' => $record->id
             ]);
             $record = $this->companyDetailRepos->update($param, $commandMetaInfo);
-            
+
             if (isset($param['contract_value'])) {
                 $meta = [
                     'contract_value' => $param['contract_value'],
