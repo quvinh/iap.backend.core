@@ -11,6 +11,8 @@ use App\Exceptions\DB\RecordIsNotFoundException as DBRecordIsNotFoundException;
 use function Spatie\SslCertificate\starts_with;
 use App\Helpers\Enums\TaskStatus;
 use App\Models\Invoice;
+use App\Models\InvoiceMedia;
+use Carbon\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
@@ -39,7 +41,7 @@ class InvoiceTaskRepository extends BaseRepository implements IInvoiceTaskReposi
             ['task_progress', '<>', TaskStatus::NOT_YET_STARTED]
         ])->orderBy('month_of_year')
             ->get()->toArray();
-        
+
         $cRecord = $record;
         $firstMonthOfTheYear = array_shift($cRecord);
         $initMeta = (object) array();
@@ -171,10 +173,12 @@ class InvoiceTaskRepository extends BaseRepository implements IInvoiceTaskReposi
     {
         # Get current year
         $year = date('Y');
-        $record = (new InvoiceTask())->query()->where([
-            ['month_of_year', 'like', "%$year"],
-            ['task_progress', '<>', TaskStatus::NOT_YET_STARTED]
-        ])->select(DB::raw('COUNT(id) as amount'),'month_of_year')
+        $record = InvoiceTask::query()->where('month_of_year', 'like', "%$year")->select(
+            DB::raw('COUNT(id) as total_tasks'),
+            DB::raw('SUM(CASE WHEN task_progress = "completed" THEN 1 ELSE 0 END) as completed_tasks'),
+            DB::raw('SUM(CASE WHEN task_progress = "in_progress" THEN 1 ELSE 0 END) as in_progress_tasks'),
+            'month_of_year'
+        )
             ->groupBy('month_of_year')
             ->get()->toArray();
         $result = array();
@@ -186,7 +190,9 @@ class InvoiceTaskRepository extends BaseRepository implements IInvoiceTaskReposi
             if (empty($arr)) {
                 $result[] = [
                     'month_of_year' => "$month/$year",
-                    'amount' => 0,
+                    'total_tasks' => '0',
+                    'completed_tasks' => '0',
+                    'in_progress_tasks' => '0',
                 ];
             } else {
                 $result[] = array_values($arr)[0];
@@ -206,5 +212,50 @@ class InvoiceTaskRepository extends BaseRepository implements IInvoiceTaskReposi
             ['type', '=', $invoice_type],
         ])->forceDelete();
         return true;
+    }
+
+    /**
+     * Get monthly invoice
+     */
+    public function monthlyInvoice(): array
+    {
+        $year = date('Y');
+        $record = Invoice::query()->select(
+            DB::raw('DATE_FORMAT(date, "%m/%Y") as month'),
+            DB::raw('SUM(CASE WHEN type = "purchase" THEN 1 ELSE 0 END) as total_purchase'),
+            DB::raw('SUM(CASE WHEN type = "sold" THEN 1 ELSE 0 END) as total_sold')
+        )
+            ->where('locked', 0)
+            ->whereYear('date', $year)
+            ->groupBy(DB::raw('MONTH(date)'))
+            ->orderBy(DB::raw('MONTH(date)'))
+            ->get()->toArray();
+
+        $result = array();
+        for ($i = 1; $i <= 12; $i++) {
+            $month = str_pad($i, 2, '0', STR_PAD_LEFT);
+            $arr = array_filter($record, function ($value) use ($month, $year) {
+                if (isset($value['month'])) {
+                    return $value['month'] == "$month/$year";
+                }
+                return false;
+            });
+            if (empty($arr)) {
+                $result[] = [
+                    'month' => "$month/$year",
+                    'total_purchase' => '0',
+                    'total_sold' => '0',
+                ];
+            } else {
+                $result[] = array_values($arr)[0];
+            }
+        }
+
+        return $result;
+    }
+
+    public function invoiceMediaNotCompleted(): int
+    {
+        return InvoiceMedia::query()->where('status', 0)->count();
     }
 }

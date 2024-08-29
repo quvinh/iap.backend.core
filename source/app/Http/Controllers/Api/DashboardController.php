@@ -45,6 +45,7 @@ class DashboardController extends Controller
             Route::get($root . '/amount-users', [DashboardController::class, 'amountUsers']);
             Route::get($root . '/monthly-invoice', [DashboardController::class, 'monthlyInvoice']);
             Route::get($root . '/monthly-task', [DashboardController::class, 'monthlyTask']);
+            Route::get($root . '/overview', [DashboardController::class, 'overview']);
         }
     }
 
@@ -100,5 +101,22 @@ class DashboardController extends Controller
         # Send response using the predefined format
         $response = ApiResponse::v1();
         return $response->send($record);
+    }
+
+    public function overview()
+    {
+        $result = [
+            'companies' => count($this->companyService->getAllCompanies()),
+            'task_not_process' => count($this->inoviceTaskService->getTaskNotProcess()),
+            'users' => count($this->userService->getAllUsers()),
+            'invoice_media_not_completed' => $this->inoviceTaskService->invoiceMediaNotCompleted(),
+
+            'month_invoice' => $this->inoviceTaskService->monthlyInvoice(),
+            'month_task' => $this->inoviceTaskService->monthlyTask(),
+        ];
+
+        # Send response using the predefined format
+        $response = ApiResponse::v1();
+        return $response->send($result);
     }
 }

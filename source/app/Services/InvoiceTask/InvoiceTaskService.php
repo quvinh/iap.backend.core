@@ -400,4 +400,14 @@ class InvoiceTaskService extends \App\Services\BaseService implements IInvoiceTa
             );
         }
     }
+
+    public function monthlyInvoice(): array
+    {
+        return $this->invoiceTaskRepos->monthlyInvoice();
+    }
+
+    public function invoiceMediaNotCompleted(): int
+    {
+        return $this->invoiceTaskRepos->invoiceMediaNotCompleted();
+    }
 }

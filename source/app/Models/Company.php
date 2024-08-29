@@ -68,6 +68,11 @@ class Company extends BaseModel
         return $this->documents()->where('is_contract', 1)->whereNotNull('signature_date')->orderByDesc('created_at');
     }
 
+    public function user_companies()
+    {
+        return $this->hasMany(UserCompany::class, 'company_id', 'id');
+    }
+
     /**
      * @return HasManyThrough
      */

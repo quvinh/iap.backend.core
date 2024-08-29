@@ -8,9 +8,11 @@ use Illuminate\Support\Collection;
 
 interface IInvoiceTaskService extends IService
 {
-    public function updateHandleFormula(array $params): mixed;
-    public function getMoneyOfMonths(array $params): mixed;
-    public function getTaskNotProcess(): Collection;
-    public function monthlyTask(): array;
-    public function forceDeleteInvoiceWithTask(array $params): mixed;
+    function updateHandleFormula(array $params): mixed;
+    function getMoneyOfMonths(array $params): mixed;
+    function getTaskNotProcess(): Collection;
+    function monthlyTask(): array;
+    function monthlyInvoice(): array;
+    function invoiceMediaNotCompleted(): int;
+    function forceDeleteInvoiceWithTask(array $params): mixed;
 }

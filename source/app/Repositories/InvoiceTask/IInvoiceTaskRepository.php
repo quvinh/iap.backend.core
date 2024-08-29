@@ -9,8 +9,10 @@ use Illuminate\Support\Collection;
 
 interface IInvoiceTaskRepository extends IRepository
 {
-    public function getMoneyOfMonths(int $company_id, int $year): array;
-    public function getTaskNotProcess(): Collection;
-    public function monthlyTask(): array;
-    public function forceDeleteInvoiceWithTask(int $task_id, string $invoice_type): bool;
+    function getMoneyOfMonths(int $company_id, int $year): array;
+    function getTaskNotProcess(): Collection;
+    function monthlyTask(): array;
+    function monthlyInvoice(): array;
+    function invoiceMediaNotCompleted(): int;
+    function forceDeleteInvoiceWithTask(int $task_id, string $invoice_type): bool;
 }
