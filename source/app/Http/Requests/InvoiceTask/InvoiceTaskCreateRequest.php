@@ -38,7 +38,14 @@ class InvoiceTaskCreateRequest extends BaseRequest
             'company_id' => [
                 'required',
                 'integer',
-                'exists:companies,id',
+                'exists:companies,id'
+            ],
+            'task_import' => ['nullable', 'string', Rule::in(TaskStatus::getValues())],
+            'task_progress' => ['nullable', 'string', Rule::in(TaskStatus::getValues())],
+            'month_of_year' => [
+                'required',
+                'string',
+                'max:7',
                 Rule::unique('invoice_tasks')->where(function ($query) use ($company_id, $month_of_year) {
                     return $query->where([
                         ['company_id', $company_id],
@@ -46,9 +53,13 @@ class InvoiceTaskCreateRequest extends BaseRequest
                     ]);
                 })
             ],
-            'task_import' => ['nullable', 'string', Rule::in(TaskStatus::getValues())],
-            'task_progress' => ['nullable', 'string', Rule::in(TaskStatus::getValues())],
-            'month_of_year' => ['required', 'string', 'max:7'],
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'month_of_year.unique' => 'Công việc tháng này đã tồn tại'
         ];
     }
 }
