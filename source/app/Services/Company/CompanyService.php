@@ -21,6 +21,7 @@ use Exception;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Throwable;
 
 class CompanyService extends \App\Services\BaseService implements ICompanyService
@@ -228,6 +229,11 @@ class CompanyService extends \App\Services\BaseService implements ICompanyServic
 
                 # Remove image from disk
                 if (isset($rem)) StorageHelper::removeFile(StorageHelper::TMP_DISK_NAME, $rem);
+            }
+
+            # User assignments
+            if (isset($param['user_assignments'])) {
+                $this->companyRepos->updateUserAssignments($record, $param['user_assignments']);
             }
 
             DB::commit();

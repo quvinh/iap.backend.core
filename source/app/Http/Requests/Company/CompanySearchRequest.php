@@ -17,6 +17,7 @@ class CompanySearchRequest extends DefaultSearchRequest
         'documents',
         'contract',
         'users',
+        'userAssignments',
     ];
 
     protected array $fields = [

@@ -12,4 +12,5 @@ interface ICompanyRepository extends IRepository
     function getAllCompanies(): Collection;
     function inventory(mixed $company_id, string $start, string $end): array;
     function addUserCompany(Company $record): bool;
+    function updateUserAssignments(Company $record, array $userIds);
 }

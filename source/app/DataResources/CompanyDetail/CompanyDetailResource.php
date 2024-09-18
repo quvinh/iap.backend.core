@@ -11,6 +11,11 @@ use App\Models\CompanyDetail;
 
 class CompanyDetailResource extends BaseDataResource
 {
+    protected $company;
+    protected $type;
+    protected $accounts;
+    protected $tax_free_vouchers;
+
     /**
      * @var array|string[]
      */
@@ -43,7 +48,7 @@ class CompanyDetailResource extends BaseDataResource
         if (in_array('company', $this->fields)) {
             // $this->company = BaseDataResource::generateResources($obj->company, CompanyResource::class);
             $this->withField('company');
-            $this->company = new CompanyResource($obj->company);
+            $this->company = new CompanyResource($obj->company, ['userAssignments']);
         }
 
         if (in_array('type', $this->fields)) {

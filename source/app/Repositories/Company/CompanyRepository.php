@@ -135,4 +135,14 @@ class CompanyRepository extends BaseRepository implements ICompanyRepository
         $userCompany->company_id = $record->id;
         return $userCompany->save();
     }
+
+    public function updateUserAssignments(Company $record, array $userIds)
+    {
+        $record->userAssignments()->delete();
+        foreach ($userIds as $userId) {
+            $record->userAssignments()->create([
+                'user_id' => $userId
+            ]);
+        }
+    }
 }

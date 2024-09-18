@@ -6,6 +6,7 @@ use App\DataResources\BaseDataResource;
 use App\DataResources\CompanyDetail\CompanyDetailResource;
 use App\DataResources\CompanyDocument\CompanyDocumentResource;
 use App\DataResources\CompanyType\CompanyTypeResource;
+use App\DataResources\User\UserAssignmentResource;
 use App\DataResources\User\UserResource;
 use App\Models\Company;
 
@@ -16,6 +17,7 @@ class CompanyResource extends BaseDataResource
     protected $documents;
     protected $contract;
     protected $users;
+    protected $userAssignments;
     
     /**
      * @var array|string[]
@@ -76,6 +78,10 @@ class CompanyResource extends BaseDataResource
 
         if (in_array('users', $this->fields)) {
             $this->users = BaseDataResource::generateResources($obj->users()->orderByDesc('id')->get(), UserResource::class);
+        }
+
+        if (in_array('userAssignments', $this->fields)) {
+            $this->userAssignments = BaseDataResource::generateResources($obj->userAssignments, UserAssignmentResource::class, ['user']);
         }
     }
 }
