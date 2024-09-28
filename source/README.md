@@ -77,3 +77,25 @@ crontab -u admin -l
 ```
 tail -f /var/log/cron
 ```
+
+- Cronjob as root
+```
+/etc/crontab
+```
+
+## Deploy
+- Composer install
+```
+/usr/local/php80/bin/php80 /usr/local/bin/composer install
+```
+
+```
+rm -rf public_html
+ln -s /home/admin/domains/api.iap.vn/iap.backend.core/source/public public_html
+ls -la
+chown -R admin:admin public_html
+
+chmod -R 755 /home/admin/domains/api.iap.vn/iap.backend.core/source/public
+chown -R admin:admin /home/admin/domains/api.iap.vn/iap.backend.core/source
+chmod -R ugo+rw /home/admin/domains/api.iap.vn/iap.backend.core/source/storage
+```
