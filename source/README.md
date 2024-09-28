@@ -84,6 +84,7 @@ tail -f /var/log/cron
 ```
 
 ## Deploy
+- Vào https://github.com/settings/tokens để set tokens
 - Composer install
 ```
 /usr/local/php80/bin/php80 /usr/local/bin/composer install
