@@ -83,6 +83,16 @@ tail -f /var/log/cron
 /etc/crontab
 ```
 
+- Kiểm tra số lượng kết nối
+```
+netstat -anp | grep :80 | wc -l
+```
+
+- Các IP kết nối
+```
+netstat -anp | grep :80 | awk '{print $5}' | cut -d: -f1 | sort | uniq -c | sort -nr | head
+```
+
 ## Deploy
 - Vào https://github.com/settings/tokens để set tokens
 - Composer install
