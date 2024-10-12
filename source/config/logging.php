@@ -129,6 +129,12 @@ return [
             'path' => storage_path('logs/invoice_task.log'),
             'level' => env('LOG_LEVEL', 'debug'),
         ],
+
+        'ips_access' => [
+            'driver' => 'single',
+            'path' => storage_path('logs/ips_access.log'),
+            'level' => env('LOG_LEVEL', 'debug'),
+        ],
     ],
 
 ];
