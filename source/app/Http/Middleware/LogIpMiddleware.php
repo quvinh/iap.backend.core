@@ -51,27 +51,27 @@ class LogIpMiddleware
         // Block UserAgents
         foreach ($this->blockedUserAgents as $blockedAgent) {
             if (stripos($agent, $blockedAgent) !== false) {
-                Log::channel('ips_access')->warning("🛑 Truy cập bị từ chối: {$ipAddress}", [
-                    'agent' => $agent,
-                    'full_url' => $request->fullUrl(),
-                ]);
+                // Log::channel('ips_access')->warning("🛑 Truy cập bị từ chối: {$ipAddress}", [
+                //     'agent' => $agent,
+                //     'full_url' => $request->fullUrl(),
+                // ]);
                 return response('Forbidden', 403);
             }
         }
 
         // Block IPs
         if (in_array($ipAddress, $this->blockedIps)) {
-            Log::channel('ips_access')->warning("🛑 Truy cập bị từ chối: {$ipAddress}", [
-                'agent' => $agent,
-                'full_url' => $request->fullUrl(),
-            ]);
+            // Log::channel('ips_access')->warning("🛑 Truy cập bị từ chối: {$ipAddress}", [
+            //     'agent' => $agent,
+            //     'full_url' => $request->fullUrl(),
+            // ]);
             return response('Forbidden', 403);
         }
 
-        Log::channel('ips_access')->info("👉 Truy cập từ IP: {$ipAddress}", [
-            'agent' => $agent,
-            'full_url' => $request->fullUrl(),
-        ]);
+        // Log::channel('ips_access')->info("👉 Truy cập từ IP: {$ipAddress}", [
+        //     'agent' => $agent,
+        //     'full_url' => $request->fullUrl(),
+        // ]);
         return $next($request);
     }
 }
