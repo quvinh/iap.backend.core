@@ -8,6 +8,8 @@ use App\Models\Permission;
 
 class PermissionResource extends BaseDataResource
 {
+    protected $permission_groups;
+    
     /**
      * @var array|string[]
      */

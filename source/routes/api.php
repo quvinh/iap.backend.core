@@ -28,6 +28,8 @@ use App\Http\Controllers\Api\MediaStorageController;
 use App\Http\Controllers\Api\OpeningBalanceVatController;
 use App\Http\Controllers\Api\PdfTableKeyController;
 use App\Http\Controllers\Api\PermissionController;
+use App\Http\Controllers\Api\PostCategoryController;
+use App\Http\Controllers\Api\PostController;
 use App\Http\Controllers\Api\RoleController;
 use App\Http\Controllers\Api\TaxFreeVoucherController;
 use App\Http\Controllers\Api\TaxFreeVoucherRecordController;
@@ -81,6 +83,8 @@ function registerResourceRoutes(string $group = UserRoles::ADMINISTRATOR): void
     TemplateController::registerRoutes($group);
     CompanyDocumentController::registerRoutes($group);
     JobHistoryController::registerRoutes($group);
+    PostController::registerRoutes($group);
+    PostCategoryController::registerRoutes($group);
 
     CommandController::registerRoutes($group);
 }
@@ -96,6 +100,8 @@ Route::group(['namespace' => 'admin', 'middleware' => 'auth.admin'], function ()
 Route::group(['namespace' => 'unauthenticated', 'middleware' => 'unauthenticated'], function () {
     AuthenticationController::registerRoutes(UserRoles::ANONYMOUS);
     ItemCodeController::registerRoutes(UserRoles::ANONYMOUS);
+    PostController::registerRoutes(UserRoles::ANONYMOUS);
+    PostCategoryController::registerRoutes(UserRoles::ANONYMOUS);
 });
 
 Route::fallback(function () {

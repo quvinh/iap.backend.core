@@ -46,6 +46,14 @@ use App\Repositories\PdfTableKey\IPdfTableKeyRepository;
 use App\Repositories\PdfTableKey\PdfTableKeyRepository;
 use App\Repositories\Permission\IPermissionRepository;
 use App\Repositories\Permission\PermissionRepository;
+use App\Repositories\Post\IPostRepository;
+use App\Repositories\Post\PostRepository;
+use App\Repositories\PostCategory\IPostCategoryRepository;
+use App\Repositories\PostCategory\PostCategoryRepository;
+use App\Repositories\PostCategoryLang\IPostCategoryLangRepository;
+use App\Repositories\PostCategoryLang\PostCategoryLangRepository;
+use App\Repositories\PostLang\IPostLangRepository;
+use App\Repositories\PostLang\PostLangRepository;
 use App\Repositories\Role\IRoleRepository;
 use App\Repositories\Role\RoleRepository;
 use App\Repositories\TaxFreeVoucher\ITaxFreeVoucherRepository;
@@ -92,5 +100,9 @@ class RepositoryRegistration
         $app->singleton(IOpeningBalanceVatRepository::class, OpeningBalanceVatRepository::class);
         $app->singleton(ITemplateRepository::class, TemplateRepository::class);
         $app->singleton(ICompanyDocumentRepository::class, CompanyDocumentRepository::class);
+        $app->singleton(IPostRepository::class, PostRepository::class);
+        $app->singleton(IPostLangRepository::class, PostLangRepository::class);
+        $app->singleton(IPostCategoryRepository::class, PostCategoryRepository::class);
+        $app->singleton(IPostCategoryLangRepository::class, PostCategoryLangRepository::class);
     }
 }

@@ -48,6 +48,10 @@ use App\Services\PdfTableKey\IPdfTableKeyService;
 use App\Services\PdfTableKey\PdfTableKeyService;
 use App\Services\Permission\IPermissionService;
 use App\Services\Permission\PermissionService;
+use App\Services\Post\IPostService;
+use App\Services\Post\PostService;
+use App\Services\PostCategory\IPostCategoryService;
+use App\Services\PostCategory\PostCategoryService;
 use App\Services\Role\IRoleService;
 use App\Services\Role\RoleService;
 use App\Services\TaxFreeVoucher\ITaxFreeVoucherService;
@@ -95,5 +99,7 @@ class ServiceRegistration
         $app->singleton(IOpeningBalanceVatService::class, OpeningBalanceVatService::class);
         $app->singleton(ITemplateService::class, TemplateService::class);
         $app->singleton(ICompanyDocumentService::class, CompanyDocumentService::class);
+        $app->singleton(IPostService::class, PostService::class);
+        $app->singleton(IPostCategoryService::class, PostCategoryService::class);
     }
 }
