@@ -110,3 +110,11 @@ chmod -R 755 /home/admin/domains/api.iap.vn/iap.backend.core/source/public
 chown -R admin:admin /home/admin/domains/api.iap.vn/iap.backend.core/source
 chmod -R ugo+rw /home/admin/domains/api.iap.vn/iap.backend.core/source/storage
 ```
+
+## Imunify Antivirus
+- Docs https://docs.imunify360.com/imunifyav/cli/#malware
+```
+imunify-antivirus malware on-demand start --path /home/admin/domains/
+imunify-antivirus malware on-demand list
+imunify-antivirus malware malicious list
+```
