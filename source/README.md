@@ -111,6 +111,10 @@ chown -R admin:admin /home/admin/domains/api.iap.vn/iap.backend.core/source
 chmod -R ugo+rw /home/admin/domains/api.iap.vn/iap.backend.core/source/storage
 ```
 
+```
+unlink public_html
+```
+
 ## Imunify Antivirus
 - Docs https://docs.imunify360.com/imunifyav/cli/#malware
 ```
