@@ -107,7 +107,7 @@ ls -la
 chown -R admin:admin public_html
 
 chmod -R 755 /home/admin/domains/api.iap.vn/iap.backend.core/source/public
-chown -R admin:admin /home/admin/domains/api.iap.vn/iap.backend.core/source
+chown -R $USER:$USER /home/admin/domains/api.iap.vn/iap.backend.core/source
 chmod -R ugo+rw /home/admin/domains/api.iap.vn/iap.backend.core/source/storage
 ```
 
