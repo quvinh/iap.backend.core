@@ -642,6 +642,7 @@ class InvoiceService extends \App\Services\BaseService implements IInvoiceServic
     public function info(array $params): array
     {
         try {
+            Log::debug($params);
             return $this->invoiceRepos->info($params);
         } catch (\Exception $e) {
             Log::error($e->getMessage());
