@@ -7,6 +7,7 @@ use App\DataResources\Company\CompanyResource;
 use App\DataResources\CompanyDetail\CompanyDetailAriseAccountResource;
 use App\DataResources\CompanyType\CompanyTypeResource;
 use App\DataResources\FirstAriseAccount\FirstAriseAccountResource;
+use App\DataResources\Formula\FormulaResource;
 use App\Models\CompanyDetail;
 
 class CompanyDetailResource extends BaseDataResource
@@ -15,6 +16,7 @@ class CompanyDetailResource extends BaseDataResource
     protected $type;
     protected $accounts;
     protected $tax_free_vouchers;
+    protected $formulars;
 
     /**
      * @var array|string[]
@@ -62,6 +64,10 @@ class CompanyDetailResource extends BaseDataResource
 
         if (in_array('tax_free_vouchers', $this->fields)) {
             $this->tax_free_vouchers = BaseDataResource::generateResources($obj->tax_free_vouchers, CompanyDetailTaxFreeVoucherResource::class);
+        }
+
+        if (in_array('formulars', $this->fields)) {
+            $this->formulars = BaseDataResource::generateResources($obj->formulars, FormulaResource::class);
         }
     }
 }

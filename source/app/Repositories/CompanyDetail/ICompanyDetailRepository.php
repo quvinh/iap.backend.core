@@ -18,4 +18,5 @@ interface ICompanyDetailRepository extends IRepository
     public function getSingleVoucherPropertyObject(mixed $idCom, mixed $idTax): Builder;
     public function createTaxFreeVoucher(array $param): Model;
     public function deleteTaxFreeVoucher(mixed $idCom, array $ids): bool;
+    public function clone(array $param): mixed;
 }

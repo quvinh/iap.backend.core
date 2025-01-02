@@ -48,8 +48,9 @@ class CompanyDetailController extends ApiController
             Route::post($root . '/arise-account', [CompanyDetailController::class, 'createAriseAccount']);
             Route::put($root . '/arise-account/{id}', [CompanyDetailController::class, 'updateAriseAccount']);
             Route::delete($root . '/arise-account/{id}', [CompanyDetailController::class, 'deleteAriseAccount']);
-
+            
             Route::put($root . '/properties/{id}', [CompanyDetailController::class, 'updateProperties']);
+            Route::post($root . '/clone', [CompanyDetailController::class, 'clone']);
         }
     }
 
@@ -145,6 +146,20 @@ class CompanyDetailController extends ApiController
     public function updateProperties(mixed $id, CompanyDetailPropertyUpdateRequest $request): Response
     {
         $result = $this->companyDetailService->updateProperties($id, $request->all());
+        return $this->getResponseHandler()->send($result);
+    }
+
+    /**
+     * Clone company detail
+     */
+    public function clone(Request $request): Response
+    {
+        $request->validate([
+            'company_detail_id' => ['required', 'exists:company_details,id'],
+            'new_year' => ['required', 'numeric'],
+        ]);
+
+        $result = $this->companyDetailService->clone($request->input());
         return $this->getResponseHandler()->send($result);
     }
 }

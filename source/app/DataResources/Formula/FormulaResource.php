@@ -13,6 +13,13 @@ use App\Models\Formula;
 
 class FormulaResource extends BaseDataResource
 {
+    protected $company_detail;
+    protected $company_type;
+    protected $category_purchases;
+    protected $category_solds;
+    protected $commodities;
+    protected $materials;
+
     /**
      * @var array|string[]
      */

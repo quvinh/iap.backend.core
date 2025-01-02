@@ -54,6 +54,30 @@ class CompanyDetail extends Model
     }
 
     /**
+     * @return HasMany
+     */
+    public function formulars(): HasMany
+    {
+        return $this->hasMany(Formula::class, 'company_detail_id', 'id');
+    }
+
+    /**
+     * @return HasMany
+     */
+    public function openingBalanceVats(): HasMany
+    {
+        return $this->hasMany(OpeningBalanceVat::class, 'company_detail_id', 'id');
+    }
+
+    /**
+     * @return HasMany
+     */
+    public function taxFreeVoucherRecords(): HasMany
+    {
+        return $this->hasMany(TaxFreeVoucherRecord::class, 'company_detail_id', 'id');
+    }
+
+    /**
      * Meta info
      */
     public function setMetaInfo(CommonMetaInfo $meta = null, bool $isCreate = true): void

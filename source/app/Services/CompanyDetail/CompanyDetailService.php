@@ -387,4 +387,23 @@ class CompanyDetailService extends \App\Services\BaseService implements ICompany
             );
         }
     }
+
+    /**
+     * Clone
+     */
+    public function clone(array $param): mixed
+    {
+        DB::beginTransaction();
+        try {
+            $result = $this->companyDetailRepos->clone($param);
+            DB::commit();
+            return $result;
+        } catch (\Exception $e) {
+            DB::rollBack();
+            throw new ActionFailException(
+                message: $e->getMessage(),
+                previous: $e
+            );
+        }
+    }
 }

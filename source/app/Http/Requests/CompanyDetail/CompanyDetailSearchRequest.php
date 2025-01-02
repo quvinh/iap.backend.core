@@ -15,7 +15,8 @@ class CompanyDetailSearchRequest extends DefaultSearchRequest
         'company',
         'type',
         'accounts',
-        'tax_free_vouchers'
+        'tax_free_vouchers',
+        'formulars',
     ];
 
     protected array $fields = [

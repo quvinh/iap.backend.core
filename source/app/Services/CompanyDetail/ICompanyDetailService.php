@@ -13,4 +13,5 @@ interface ICompanyDetailService extends IService
     public function updateAriseAccount(mixed $id, array $param): Model;
     // public function deleteAriseAccount(mixed $id): bool;
     public function updateProperties(mixed $id, array $param, MetaInfo $commandMetaInfo = null): CompanyDetail;
+    public function clone(array $param): mixed;
 }
