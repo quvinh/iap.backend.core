@@ -201,7 +201,7 @@ class CompanyDetailRepository extends BaseRepository implements ICompanyDetailRe
             $clonedCompanyDetailTaxFreeVoucher = $companyDetailTaxFreeVoucher->replicate();
             $clonedCompanyDetailTaxFreeVoucher->company_detail_id = $cloneCompanyDetail->id;
             $companyDetailTaxFreeVoucherData = $clonedCompanyDetailTaxFreeVoucher->toArray();
-            unset($accountData['id']); // Đảm bảo id tự tăng
+            unset($companyDetailTaxFreeVoucherData['id']); // Đảm bảo id tự tăng
             $cloneCompanyDetailTaxFreeVouchers[] = $companyDetailTaxFreeVoucherData;
         }
         CompanyDetailTaxFreeVoucher::insert($cloneCompanyDetailTaxFreeVouchers);
@@ -212,7 +212,7 @@ class CompanyDetailRepository extends BaseRepository implements ICompanyDetailRe
             $clonedOpeningBalanceVat = $openingBalanceVat->replicate();
             $clonedOpeningBalanceVat->company_detail_id = $cloneCompanyDetail->id;
             $openingBalanceVatData = $clonedOpeningBalanceVat->toArray();
-            unset($accountData['id']); // Đảm bảo id tự tăng
+            unset($openingBalanceVatData['id']); // Đảm bảo id tự tăng
             $cloneOpeningBalanceVats[] = $openingBalanceVatData;
         }
         OpeningBalanceVat::insert($cloneOpeningBalanceVats);
