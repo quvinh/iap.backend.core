@@ -255,9 +255,9 @@ class CompanyDetailRepository extends BaseRepository implements ICompanyDetailRe
             $formularData['created_at'] = now();
             $formularData['updated_at'] = now();
             $formularData['created_by'] = $createdBy;
-            $cloneFormulars[] = $formularData;
+            $cloneFormulas[] = $formularData;
         }
-        Formula::insert($cloneFormulars);
+        Formula::insert($cloneFormulas);
 
         // Lấy các ID mới của formulars vừa chèn
         $newFormulars = Formula::where('company_detail_id', $cloneCompanyDetail->id)
