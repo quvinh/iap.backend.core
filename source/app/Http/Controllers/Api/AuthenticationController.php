@@ -9,6 +9,7 @@ use App\Exceptions\DB\RecordIsNotFoundException;
 use App\Helpers\Enums\ErrorCodes;
 use App\Helpers\Enums\UserRoles;
 use App\Helpers\Responses\ApiResponse;
+use App\Helpers\Responses\HttpStatuses;
 use App\Helpers\Utils\RequestHelper;
 use App\Http\Controllers\Traits\ResponseHandlerTrait;
 use App\Http\Requests\Auth\ForgotPasswordRequest;
@@ -198,21 +199,31 @@ class AuthenticationController extends ApiController
      */
     public function login(LoginRequest $request): Response
     {
+        # Send response using the predefined format
+        $response = $this->getResponseHandler();
+
         # 1. get payload
         $request->validate();
         $payload = $request->input();
         $claims = RequestHelper::getClaims();
         $meta = RequestHelper::getMetaInfo();
         $hook = RequestHelper::findHanshakeHook($claims->getByClaimName('cnidh')->getValue());
-        if (is_null($hook)) return response('Login failed', 404); //throw new AuthorizationIsInvalid();
+        if (is_null($hook)) {
+          // return response('Login failed', 404); //throw new AuthorizationIsInvalid();
+          return $response->withStatusCode(HttpStatuses::HTTP_FORBIDDEN)->fail(['status' => 'Login failed']);
+        } 
         $identifier = $meta->identifier;
         $currentConnectionHash = Hash::make($hook['value'] . $identifier);
         $handshake = $this->authService->handshake($currentConnectionHash, $meta);
 
-        if (is_null($handshake)) return response('Login failed', 404); //throw new AuthorizationIsInvalid();
+        if (is_null($handshake)) {
+            // return response('Login failed', 404); //throw new AuthorizationIsInvalid();
+            return $response->withStatusCode(HttpStatuses::HTTP_FORBIDDEN)->fail(['status' => 'Login failed']);
+        }
         # 2. login
         if (!$token = auth()->claims($handshake->getJWTCustomClaims())->attempt($payload)) {
-            return response('Login failed', 404);
+            return $response->withStatusCode(HttpStatuses::HTTP_FORBIDDEN)->fail(['status' => 'Login failed']);
+            // return response('Login failed', 404);
             // throw new AuthorizationIsInvalid(ErrorCodes::ERR_INVALID_CREDENTIALS);
         }
 
