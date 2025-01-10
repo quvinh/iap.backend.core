@@ -68,10 +68,10 @@ class LogIpMiddleware
             return response('Forbidden', 403);
         }
 
-        // Log::channel('ips_access')->info("👉 Truy cập từ IP: {$ipAddress}", [
-        //     'agent' => $agent,
-        //     'full_url' => $request->fullUrl(),
-        // ]);
+        Log::channel('ips_access')->info("👉 Truy cập từ IP: {$ipAddress}", [
+            'agent' => $agent,
+            'full_url' => $request->fullUrl(),
+        ]);
         return $next($request);
     }
 }
