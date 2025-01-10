@@ -210,7 +210,7 @@ class AuthenticationController extends ApiController
         $hook = RequestHelper::findHanshakeHook($claims->getByClaimName('cnidh')->getValue());
         if (is_null($hook)) {
           // return response('Login failed', 404); //throw new AuthorizationIsInvalid();
-          return $response->withStatusCode(HttpStatuses::HTTP_FORBIDDEN)->fail(['status' => 'Login failed']);
+          return $response->withStatusCode(HttpStatuses::HTTP_FORBIDDEN)->fail(['status' => 'Thông tin đăng nhập không đúng']);
         } 
         $identifier = $meta->identifier;
         $currentConnectionHash = Hash::make($hook['value'] . $identifier);
@@ -218,11 +218,11 @@ class AuthenticationController extends ApiController
 
         if (is_null($handshake)) {
             // return response('Login failed', 404); //throw new AuthorizationIsInvalid();
-            return $response->withStatusCode(HttpStatuses::HTTP_FORBIDDEN)->fail(['status' => 'Login failed']);
+            return $response->withStatusCode(HttpStatuses::HTTP_FORBIDDEN)->fail(['status' => 'Thông tin đăng nhập không đúng']);
         }
         # 2. login
         if (!$token = auth()->claims($handshake->getJWTCustomClaims())->attempt($payload)) {
-            return $response->withStatusCode(HttpStatuses::HTTP_FORBIDDEN)->fail(['status' => 'Login failed']);
+            return $response->withStatusCode(HttpStatuses::HTTP_FORBIDDEN)->fail(['status' => 'Thông tin đăng nhập không đúng']);
             // return response('Login failed', 404);
             // throw new AuthorizationIsInvalid(ErrorCodes::ERR_INVALID_CREDENTIALS);
         }
