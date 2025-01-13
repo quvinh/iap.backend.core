@@ -122,6 +122,13 @@ class CompanyDetailService extends \App\Services\BaseService implements ICompany
                 });
             }
 
+            if (isset($rawConditions['business_object'])) {
+                $business_object = $rawConditions['business_object'];
+                $query->whereHas('company', function ($q) use ($business_object) {
+                    $q->where('business_object', $business_object);
+                });
+            }
+
             # Query get companies authoritied
             $userId = auth()->user()->getAuthIdentifier();
             $userCompanies = $this->userService->findByCompanies($userId);

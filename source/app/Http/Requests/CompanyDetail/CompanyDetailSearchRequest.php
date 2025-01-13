@@ -25,6 +25,7 @@ class CompanyDetailSearchRequest extends DefaultSearchRequest
         'company_id',
         'status',
         'assignees',
+        'business_object',
         'withs',
     ];
 
