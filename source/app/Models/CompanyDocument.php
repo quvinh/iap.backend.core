@@ -10,6 +10,9 @@ class CompanyDocument extends BaseModel
 {
     use HasFactory, SoftDeletes;
 
+    const DRIVE_LOCAL = 'local';
+    const DRIVE_GOOGLE = 'drive';
+
     protected $fillable = [
         'company_id',
         'name',
@@ -19,5 +22,6 @@ class CompanyDocument extends BaseModel
         'signature_date',
         'expiry_date',
         'meta',
+        'drive',
     ];
 }

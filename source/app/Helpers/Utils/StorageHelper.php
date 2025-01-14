@@ -166,7 +166,7 @@ class StorageHelper
         try {
             $disk = Storage::disk($diskName);
             $newFilePath = $targetFolder ? implode('/', [$targetFolder, $filePath]) : $filePath;
-            if (!$disk->exists($newFilePath)) throw new \Exception('invalid file path');
+            if (!$disk->exists($filePath)) throw new \Exception('invalid file path');
             return $newFilePath;
         } catch (\Exception $ex) {
             Log::error($ex->getMessage());
