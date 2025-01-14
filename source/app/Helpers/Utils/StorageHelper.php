@@ -20,7 +20,7 @@ class StorageHelper
      * @param string|null $targetFolder
      * @return false|string
      */
-    public static function moveFile(string $filePath, string $fromDiskName, string $toDiskName, string $targetFolder = null): bool|string
+    public static function moveFile(string $filePath, string $fromDiskName, string $toDiskName, string $targetFolder = null, bool $forceDelete = true): bool|string
     {
         try {
             $originDisk = Storage::disk($fromDiskName);
@@ -28,7 +28,9 @@ class StorageHelper
             if (!$originDisk->exists($filePath)) throw new \Exception('invalid file path');
             $newFilePath = $targetFolder ? implode('/', [$targetFolder, $filePath]) : $targetFolder; // TODO: change file name!
             $destinationDisk->writeStream($newFilePath, $originDisk->readStream($filePath));
-            $originDisk->delete($filePath);
+            if ($forceDelete) {
+                $originDisk->delete($filePath);
+            }
             return $newFilePath;
         } catch (\Exception $ex) {
             Log::error($ex->getMessage());
