@@ -26,7 +26,7 @@ class StorageHelper
             $originDisk = Storage::disk($fromDiskName);
             $destinationDisk = Storage::disk($toDiskName);
             if (!$originDisk->exists($filePath)) throw new \Exception('invalid file path');
-            $newFilePath = $targetFolder ? implode('/', [$targetFolder, $filePath]) : $targetFolder; // TODO: change file name!
+            $newFilePath = $targetFolder ? implode('/', [$targetFolder, $filePath]) : $filePath; // TODO: change file name!
             $destinationDisk->writeStream($newFilePath, $originDisk->readStream($filePath));
             if ($forceDelete) {
                 $originDisk->delete($filePath);
@@ -150,6 +150,26 @@ class StorageHelper
             }
             return $folder . '/' . $fileName;
         } catch (\Exception $e) {
+            return false;
+        }
+    }
+
+    /**
+     * Test retrieve file from disk
+     * @param string $diskName
+     * @param string $filePath
+     * @param string|null $targetFolder
+     * @return false|string
+     */
+    public static function testRetrieveFile(string $diskName, string $filePath, string $targetFolder = null): bool|string
+    {
+        try {
+            $disk = Storage::disk($diskName);
+            $newFilePath = $targetFolder ? implode('/', [$targetFolder, $filePath]) : $filePath;
+            if (!$disk->exists($newFilePath)) throw new \Exception('invalid file path');
+            return $newFilePath;
+        } catch (\Exception $ex) {
+            Log::error($ex->getMessage());
             return false;
         }
     }

@@ -38,6 +38,7 @@ class SyncDocuments extends Command
         if (count($records) > 0) {
             foreach ($records as $record) {
                 if (isset($record->file)) {
+                    // $this->testRetrieveFile($record->file);
                     $this->transferToGDrive($record->file);
                 }
             }
@@ -58,5 +59,10 @@ class SyncDocuments extends Command
         } else {
             $this->info("⛔ $path");
         }
+    }
+
+    private function testRetrieveFile(string $path) {
+        $result = StorageHelper::testRetrieveFile(StorageHelper::CLOUD_DISK_NAME, $path);
+        return $result;
     }
 }
