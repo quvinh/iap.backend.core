@@ -20,6 +20,7 @@ class CompanyDocumentResource extends BaseDataResource
         'meta',
         'signature_date',
         'expiry_date',
+        'drive',
         'created_at',
         'created_by',
     ];
