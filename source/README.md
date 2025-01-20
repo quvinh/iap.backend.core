@@ -58,6 +58,7 @@ Artisan::call('queue:work', ['--stop-when-empty' => true]);
 ```
 /usr/local/php80/bin/php80 artisan cache:clear
 /usr/local/php80/bin/php80 artisan queue:work --queue=excel --stop-when-empty
+/usr/local/php80/bin/php80 artisan sync:documents 2025
 ```
 
 - Check log latest
