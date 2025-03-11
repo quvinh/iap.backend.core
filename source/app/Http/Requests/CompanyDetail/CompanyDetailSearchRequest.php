@@ -23,6 +23,7 @@ class CompanyDetailSearchRequest extends DefaultSearchRequest
         'id',
         'year', 
         'company_id',
+        'company_type_id',
         'status',
         'assignees',
         'business_object',
