@@ -99,6 +99,11 @@ class CompanyDetailService extends \App\Services\BaseService implements ICompany
                 $query = $this->companyDetailRepos->queryOnAField(['company_id', '=', $param], $query);
             }
 
+            if (isset($rawConditions['company_type_id'])) {
+                $param = $rawConditions['company_type_id'];
+                $query = $this->companyDetailRepos->queryOnAField(['company_type_id', '=', $param], $query);
+            }
+
             if (isset($rawConditions['updated_date'])) {
                 $query = $this->companyDetailRepos->queryOnDateRangeField($query, 'updated_at', $rawConditions['updated_date']);
             }
