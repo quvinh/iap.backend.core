@@ -2,6 +2,8 @@
 
 namespace App\Repositories;
 
+use App\Repositories\BusinessPartner\BusinessPartnerRepository;
+use App\Repositories\BusinessPartner\IBusinessPartnerRepository;
 use App\Repositories\Company\CompanyRepository;
 use App\Repositories\Company\ICompanyRepository;
 use App\Repositories\CompanyDetail\CompanyDetailRepository;
@@ -104,5 +106,6 @@ class RepositoryRegistration
         $app->singleton(IPostLangRepository::class, PostLangRepository::class);
         $app->singleton(IPostCategoryRepository::class, PostCategoryRepository::class);
         $app->singleton(IPostCategoryLangRepository::class, PostCategoryLangRepository::class);
+        $app->singleton(IBusinessPartnerRepository::class, BusinessPartnerRepository::class);
     }
 }
