@@ -85,9 +85,9 @@ class InvoiceDetailController extends ApiController
     {
         switch ($actionName) {
             case 'search':
-                // $vRequest = InvoiceDetailSearchRequest::createFrom($request);
-                // $vRequest->validate();
-                // return $vRequest;
+                $vRequest = InvoiceDetailSearchRequest::createFrom($request);
+                $vRequest->validate();
+                return $vRequest;
             case 'create':
                 // $vRequest = InvoiceDetailCreateRequest::createFrom($request);
                 // $vRequest->validate();

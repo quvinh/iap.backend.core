@@ -48,7 +48,7 @@ class Invoice extends BaseModel
         'json',
         'status',
         'locked',
-        
+
         'is_imported_goods',
         'icp_currency',
         'icp_currency_price',
@@ -86,7 +86,7 @@ class Invoice extends BaseModel
     {
         return $this->hasMany(InvoiceDetail::class, 'invoice_id', 'id');
     }
-    
+
     /**
      * @return HasOne
      */
@@ -101,5 +101,14 @@ class Invoice extends BaseModel
     public function invoice_media(): HasOne
     {
         return $this->hasOne(InvoiceMedia::class, 'invoice_id', 'id');
+    }
+
+    /**
+     * @return HasOne
+     */
+    public function business_partner(): HasOne
+    {
+        return $this->hasOne(BusinessPartner::class, 'tax_code', 'partner_tax_code')
+            ->where('business_partners.company_id', $this->company_id);
     }
 }

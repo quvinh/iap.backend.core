@@ -3,11 +3,16 @@
 namespace App\DataResources\InvoiceDetail;
 
 use App\DataResources\BaseDataResource;
+use App\DataResources\Invoice\InvoiceBasicResource;
 use App\Models\InvoiceDetail;
 use App\DataResources\ItemCode\ItemCodeResource;
 
 class InvoiceDetailResource extends BaseDataResource
 {
+    protected $item_code;
+    protected $item_code_path;
+    protected $invoice;
+
     /**
      * @var array|string[]
      */
@@ -61,6 +66,11 @@ class InvoiceDetailResource extends BaseDataResource
                 $this->withField('item_code_path');
                 $this->item_code_path = "{$this->item_code->id}|{$this->item_code->product_code}$product";
             }
+        }
+
+        if (in_array('invoice', $this->fields)) {
+            $this->withField('invoice');
+            $this->invoice = new InvoiceBasicResource($obj->invoice, ['business_partner']);
         }
     }
 }

@@ -1,38 +1,48 @@
 <?php
 
-namespace App\Http\Requests\Invoice;
+namespace App\Http\Requests\InvoiceDetail;
 
 use App\Http\Requests\DefaultSearchRequest;
 use Illuminate\Foundation\Http\FormRequest;
 
-class InvoiceSearchRequest extends DefaultSearchRequest
+class InvoiceDetailSearchRequest extends DefaultSearchRequest
 {
     /**
      * Available relations to retrieve
      * @var string[]
      */
     protected array $relations = [
-        'invoice_details',
-        'company',
-        'invoice_media',
-        'business_parter',
+        'invoice',
+        'item_code',
     ];
 
     protected array $fields = [
-        'withs',
         'id',
-        'company_id',
-        'invoice_task_id',
-        'partner_tax_code',
-        'type',
-        'invoice_number',
-        'invoice_symbol',
-        'status',
-        'date',
-        'year',
-        'verification_code_status',
-        'locked',
-        'sort_p2',
+        'invoice_id',
+        'formula_id',
+        'formula_path_id',
+        'formula_commodity_id',
+        'formula_material_id',
+        'item_code_id',
+        'formula_group_name',
+        'product',
+        'product_exchange',
+        'unit',
+        'quantity',
+        'price',
+        'vat',
+        'vat_money',
+        'total_money',
+        'warehouse',
+        'main_entity',
+        'visible',
+        'note',
+        'icp_price',
+        'isf_price',
+        'import_tax',
+        'special_consumption_tax',
+        'customs_code',
+        'withs'
     ];
 
     /**

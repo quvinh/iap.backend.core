@@ -3,12 +3,17 @@
 namespace App\DataResources\Invoice;
 
 use App\DataResources\BaseDataResource;
+use App\DataResources\BusinessPartner\BusinessPartnerResource;
 use App\DataResources\Company\CompanyResource;
 use App\DataResources\InvoiceDetail\InvoiceDetailResource;
 use App\Models\Invoice;
 
 class InvoiceBasicResource extends BaseDataResource
 {
+    protected $invoice_details;
+    protected $company;
+    protected $business_partner;
+
     /**
      * @var array|string[]
      */
@@ -60,6 +65,11 @@ class InvoiceBasicResource extends BaseDataResource
 
         if (in_array('company', $this->fields)) {
             $this->company = BaseDataResource::generateResources($obj->company()->get(), CompanyResource::class);
+        }
+
+        if (in_array('business_partner', $this->fields)) {
+            $this->withField('business_partner');
+            $this->business_partner = new BusinessPartnerResource($obj->business_partner);
         }
     }
 }

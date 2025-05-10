@@ -79,4 +79,12 @@ class InvoiceDetail extends BaseModel
     {
         return $this->hasOne(ItemCode::class, 'id', 'item_code_id');
     }
+
+    /**
+     * @return HasOne
+     */
+    public function invoice(): HasOne
+    {
+        return $this->hasOne(Invoice::class, 'id', 'invoice_id');
+    }
 }
