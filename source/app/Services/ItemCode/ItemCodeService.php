@@ -119,11 +119,6 @@ class ItemCodeService extends \App\Services\BaseService implements IItemCodeServ
                 $query = $this->itemCodeRepos->queryOnAField(['price', '<=', $param], $query);
             }
 
-            if (isset($rawConditions['years'])) {
-                $param = $rawConditions['years'];
-                $query->whereIn('year', $param);
-            }
-
             if (isset($rawConditions['updated_date'])) {
                 $query = $this->itemCodeRepos->queryOnDateRangeField($query, 'updated_at', $rawConditions['updated_date']);
             }
