@@ -68,9 +68,31 @@ class InvoiceDetailService extends \App\Services\BaseService implements IInvoice
     {
         try {
             $query = $this->invoiceDetailRepos->search();
-            if (isset($rawConditions['name'])) {
-                $param = StringHelper::escapeLikeQueryParameter($rawConditions['name']);
-                $query = $this->invoiceDetailRepos->queryOnAField([DB::raw("upper(name)"), 'LIKE BINARY', DB::raw("upper(concat('%', ? , '%'))")], positionalBindings: ['name' => $param]);
+            if (isset($rawConditions['product'])) {
+                $param = StringHelper::escapeLikeQueryParameter($rawConditions['product']);
+                $query = $this->invoiceDetailRepos->queryOnAField([DB::raw("upper(product)"), 'LIKE BINARY', DB::raw("upper(concat('%', ? , '%'))")], positionalBindings: ['product' => $param]);
+            }
+
+            if (isset($rawConditions['type'])) {
+                $type = $rawConditions['type'];
+                $query->whereHas('invoice', function ($q) use ($type) {
+                    $q->where('type', $type);
+                });
+            }
+
+            if (isset($rawConditions['company_id'])) {
+                $company_id = $rawConditions['company_id'];
+                $query->whereHas('invoice', function ($q) use ($company_id) {
+                    $q->where('company_id', $company_id);
+                });
+            }
+
+            if (isset($rawConditions['start_date']) && isset($rawConditions['end_date'])) {
+                $start_date = $rawConditions['start_date'];
+                $end_date = $rawConditions['end_date'];
+                $query->whereHas('invoice', function ($q) use ($start_date, $end_date) {
+                    $q->whereDate('date', '>=', $start_date)->whereDate('date', '<=', $end_date);
+                });
             }
 
             if (isset($rawConditions['updated_date'])) {

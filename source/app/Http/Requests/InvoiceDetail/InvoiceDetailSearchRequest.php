@@ -42,7 +42,13 @@ class InvoiceDetailSearchRequest extends DefaultSearchRequest
         'import_tax',
         'special_consumption_tax',
         'customs_code',
-        'withs'
+        'withs',
+
+        'type',
+        'start_date',
+        'end_date',
+        'company_id',
+        'product_name',
     ];
 
     /**
