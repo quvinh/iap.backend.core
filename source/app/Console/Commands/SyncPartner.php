@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use App\Models\Invoice;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\DB;
 
 class SyncPartner extends Command
 {
@@ -56,7 +57,7 @@ class SyncPartner extends Command
                 ];
             }
 
-            // DB::table('business_partners')->insert($data);
+            DB::table('business_partners')->insertOrIgnore($data);
 
             $firstId = $rows->first()->id;
             $lastId  = $rows->last()->id;
