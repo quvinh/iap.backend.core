@@ -95,6 +95,16 @@ class InvoiceDetailService extends \App\Services\BaseService implements IInvoice
                 });
             }
 
+            if (isset($rawConditions['price_from'])) {
+                $param = $rawConditions['price_from'];
+                $query = $this->invoiceDetailRepos->queryOnAField(['price', '>=', $param], $query);
+            }
+
+            if (isset($rawConditions['price_to'])) {
+                $param = $rawConditions['price_to'];
+                $query = $this->invoiceDetailRepos->queryOnAField(['price', '<=', $param], $query);
+            }
+
             if (isset($rawConditions['updated_date'])) {
                 $query = $this->invoiceDetailRepos->queryOnDateRangeField($query, 'updated_at', $rawConditions['updated_date']);
             }

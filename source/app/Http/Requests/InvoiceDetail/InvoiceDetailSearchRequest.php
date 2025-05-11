@@ -49,6 +49,8 @@ class InvoiceDetailSearchRequest extends DefaultSearchRequest
         'end_date',
         'company_id',
         'product_name',
+        'price_from',
+        'price_to',
     ];
 
     /**
