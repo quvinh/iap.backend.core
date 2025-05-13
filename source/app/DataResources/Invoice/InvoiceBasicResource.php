@@ -10,7 +10,6 @@ use App\Models\Invoice;
 
 class InvoiceBasicResource extends BaseDataResource
 {
-    protected $invoice_details;
     protected $company;
     protected $business_partner;
 
