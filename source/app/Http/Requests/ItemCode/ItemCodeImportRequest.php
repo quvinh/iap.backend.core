@@ -39,8 +39,8 @@ class ItemCodeImportRequest extends BaseRequest
             // 'import.*.product_exchange' => ['string'],
             'import.*.unit' => ['required', 'string'],
             'import.*.quantity' => ['numeric', 'min:1'],
-            'import.*.price' => ['required', 'numeric', 'min:1'],
-            'import.*.opening_balance_value' => ['numeric', 'min:1'],
+            'import.*.price' => ['required', 'numeric', 'min:0'],
+            'import.*.opening_balance_value' => ['numeric', 'min:0'],
         ];
     }
 }
