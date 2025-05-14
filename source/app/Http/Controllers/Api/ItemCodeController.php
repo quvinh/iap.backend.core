@@ -6,6 +6,7 @@ use App\DataResources\ItemCode\ItemCodeResource;
 use App\Helpers\Common\MetaInfo;
 use App\Helpers\Enums\UserRoles;
 use App\Helpers\Responses\ApiResponse;
+use App\Helpers\Utils\StorageHelper;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\Traits\DefaultRestActions;
 use App\Http\Requests\ItemCode\ItemCodeCreateRequest;
@@ -13,13 +14,18 @@ use App\Http\Requests\ItemCode\ItemCodeImportRequest;
 use App\Http\Requests\ItemCode\ItemCodeSearchRequest;
 use App\Http\Requests\ItemCode\ItemCodeUpdateRequest;
 use App\Imports\ImportedGoodsCodeImport;
+use App\Jobs\ItemCodeExcelJob;
+use App\Models\ItemCode;
+use App\Models\JobHistory;
 use App\Services\IService;
 use App\Services\ItemCode\IItemCodeService;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Storage;
 use Maatwebsite\Excel\Facades\Excel;
 
 class ItemCodeController extends ApiController
@@ -49,7 +55,8 @@ class ItemCodeController extends ApiController
             Route::delete($root . '/{id}', [ItemCodeController::class, 'delete']);
             Route::delete($root . '/force/{id}', [ItemCodeController::class, 'forceDelete']);
 
-            Route::post($root . '/import', [ItemCodeController::class, 'import']);
+            // Route::post($root . '/import', [ItemCodeController::class, 'import']);
+            Route::post($root . '/import', [ItemCodeController::class, 'importItemCode']);
             Route::post($root . '/import-imported-goods-code', [ItemCodeController::class, 'importImportedGoodsCode']);
         }
         Route::get($root, [ItemCodeController::class, 'getAll']);
@@ -158,6 +165,53 @@ class ItemCodeController extends ApiController
         DB::beginTransaction();
         try {
             Excel::import(new ImportedGoodsCodeImport($request->company_id, $request->year), $request->file('file'));
+            DB::commit();
+            return $response->send(true);
+        } catch (\Exception $ex) {
+            DB::rollBack();
+            Log::error($ex->getMessage());
+            return $response->fail($ex->getMessage());
+        }
+    }
+
+    public function importItemCode(Request $request)
+    {
+        $request->validate([
+            'file' => ['required', 'mimes:xlsx'],
+            'company_id' => ['required', 'exists:companies,id'],
+            'year' => ['required'],
+        ]);
+
+        # Send response using the predefined format
+        $response = ApiResponse::v1();
+
+        $date = Carbon::now()->format('Ymd');
+        $storage = Storage::disk(StorageHelper::TMP_DISK_NAME);
+        $folder = "excel/queue/$date";
+
+        $file = $request->file('file');
+        $fileName = $file->getClientOriginalName();
+        $filePath = $storage->put($folder, $file);
+
+        DB::beginTransaction();
+        try {
+            $user_id = auth()->user()->getAuthIdentifier();
+            $jobHistory = JobHistory::create([
+                'company_id' => $request->company_id,
+                'job_id' => null,
+                'file_name' => $fileName,
+                'note' => "Chờ xử lý",
+                'path' => null,
+                'status' => JobHistory::STATUS_PENDING,
+            ]);
+            ItemCodeExcelJob::dispatch(
+                $filePath,
+                $request->input(),
+                $user_id,
+                $jobHistory->id,
+                $this->getCurrentMetaInfo()
+            );
+
             DB::commit();
             return $response->send(true);
         } catch (\Exception $ex) {

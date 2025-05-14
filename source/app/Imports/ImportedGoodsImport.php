@@ -71,7 +71,7 @@ class ImportedGoodsImport implements ToCollection, WithHeadingRow, WithStartRow
             $note = '🛑 Không có bản ghi nào được thêm';
             Log::info($note);
         } else {
-            $note = 'Hoàn thành';
+            $note = '✅ Hoàn thành';
             Log::info('👌 Imported successfully');
         }
         JobHistory::find($this->job_id)->update([
