@@ -58,6 +58,8 @@ class ItemCodeController extends ApiController
             // Route::post($root . '/import', [ItemCodeController::class, 'import']);
             Route::post($root . '/import', [ItemCodeController::class, 'importItemCode']);
             Route::post($root . '/import-imported-goods-code', [ItemCodeController::class, 'importImportedGoodsCode']);
+
+            // Route::post($root . '/auto-fill', [ItemCodeController::class, 'autoFill']);
         }
         Route::get($root, [ItemCodeController::class, 'getAll']);
     }
