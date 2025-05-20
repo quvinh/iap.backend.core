@@ -12,6 +12,7 @@ use App\Exceptions\DB\RecordIsNotFoundException;
 use App\Helpers\Common\MetaInfo;
 use App\Helpers\Utils\StorageHelper;
 use App\Helpers\Utils\StringHelper;
+use App\Models\InvoiceDetail;
 use App\Models\ItemCode;
 use App\Repositories\ItemCode\IItemCodeRepository;
 use App\Services\User\IUserService;
@@ -305,5 +306,42 @@ class ItemCodeService extends \App\Services\BaseService implements IItemCodeServ
     public function getAll(array $params): EloquentCollection
     {
         return $this->itemCodeRepos->getAll($params)->get(['id', 'product_code', 'product', 'price', 'quantity', 'opening_balance_value', 'unit']);
+    }
+
+    public function autoFill(array $params): mixed
+    {
+        $page = 1;
+        $query = InvoiceDetail::query()->select(['id', 'invoice_id', 'product']);
+
+        if (isset($params['type'])) {
+            $type = $params['type'];
+            $query->whereHas('invoice', function ($q) use ($type) {
+                $q->where('type', $type);
+            });
+        }
+
+        if (isset($params['company_id'])) {
+            $company_id = $params['company_id'];
+            $query->whereHas('invoice', function ($q) use ($company_id) {
+                $q->where('company_id', $company_id);
+            });
+        }
+
+        if (isset($params['start_date']) && isset($params['end_date'])) {
+            $start_date = $params['start_date'];
+            $end_date = $params['end_date'];
+            $query->whereHas('invoice', function ($q) use ($start_date, $end_date) {
+                $q->whereDate('date', '>=', $start_date)->whereDate('date', '<=', $end_date);
+            });
+        }
+
+        # Pagination
+        $query->paginate(10, ['*'], 'page', $page);
+
+        $invoiceDetails = $query->get();
+
+        
+
+        return $invoiceDetails;
     }
 }
