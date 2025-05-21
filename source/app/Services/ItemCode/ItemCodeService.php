@@ -22,6 +22,7 @@ use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Throwable;
 
@@ -310,8 +311,23 @@ class ItemCodeService extends \App\Services\BaseService implements IItemCodeServ
 
     public function autoFill(array $params): mixed
     {
+        $sortType = 'desc';
         $page = 1;
+        $per_page = 50;
+        $company_id = null;
+        $year = $params['year'] ?? date('Y');
         $query = InvoiceDetail::query()->select(['id', 'invoice_id', 'product']);
+
+        if (isset($params['pagination'])) {
+            $pagination = $params['pagination'];
+            $page = $pagination['page'];
+            $per_page = $pagination['per_page'];
+        }
+
+        if (isset($params['sort'])) {
+            $sort = $params['sort'];
+            $sortType = $sort['type'] ?? 'desc';
+        }
 
         if (isset($params['type'])) {
             $type = $params['type'];
@@ -336,12 +352,50 @@ class ItemCodeService extends \App\Services\BaseService implements IItemCodeServ
         }
 
         # Pagination
-        $query->paginate(10, ['*'], 'page', $page);
+        $query->orderBy('id', $sortType)->paginate($per_page, ['*'], 'page', $page);
 
         $invoiceDetails = $query->get();
 
-        
+        $results = [];
+        $threshold = $params['percent_similar'] ?? 55; // Ngưỡng tương đồng
+        $difference_ratio = $params['difference_ratio'] ?? 10;
 
-        return $invoiceDetails;
+        foreach ($invoiceDetails as $item) {
+            $product = $item->product;
+            $bestMatch = null;
+            $highestPercent = 0;
+
+            // Lặp qua item_codes bằng chunk với Eloquent
+            ItemCode::query()->select('id', 'item_group_id', 'product', 'product_code')
+                ->whereNotNull('product')
+                ->where('company_id', $company_id)
+                ->where('year', $year)
+                ->chunk(100, function ($rows) use ($product, $threshold, &$bestMatch, &$highestPercent) {
+                    foreach ($rows as $row) {
+                        $normalizedProduct = StringHelper::normalizeVietnameseString($product);
+                        $normalizedRowProduct = StringHelper::normalizeVietnameseString($row->product);
+                        similar_text($normalizedProduct, $normalizedRowProduct, $percent);
+                        if ($percent >= $threshold && $percent > $highestPercent) {
+                            $highestPercent = $percent;
+                            $bestMatch = [
+                                'id' => $row->id,
+                                'product_code' => $row->product_code,
+                                'product' => $row->product,
+                                'percent' => round($percent, 2),
+                            ];
+                        }
+                    }
+                });
+
+            // Lưu kết quả
+            $results[] = [
+                'id' => $item->id,
+                'invoice_id' => $item->invoice_id,
+                'product' => $item->product,
+                'item_code' => $bestMatch
+            ];
+        }
+
+        return $results;
     }
 }

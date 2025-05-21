@@ -1,9 +1,11 @@
 <?php
+
 namespace App\Helpers\Utils;
 
 use App\Helpers\Common\Constants;
 
-class StringHelper{
+class StringHelper
+{
     const GMP = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
     /**
@@ -27,7 +29,7 @@ class StringHelper{
      */
     public static function normalize($str): string
     {
-        $str = ($str == null)? "" : $str;
+        $str = ($str == null) ? "" : $str;
         $str = trim($str);
         while (strpos($str, '  ')) $str = str_replace('  ', ' ', $str);
         return $str;
@@ -46,9 +48,9 @@ class StringHelper{
         $str = mb_strtolower($str);
         $items = mb_str_split($str);
         if (!is_array($items)) return "";
-        for($i = 0; $i < count($items); $i++) {
+        for ($i = 0; $i < count($items); $i++) {
             $key = $items[$i];
-            $items[$i] =  (array_key_exists($key, $vocabulary))? $vocabulary[$key] : strtoupper($key);
+            $items[$i] =  (array_key_exists($key, $vocabulary)) ? $vocabulary[$key] : strtoupper($key);
         }
 
         return implode("", $items);
@@ -66,34 +68,44 @@ class StringHelper{
         $items = mb_str_split($str);
         $vowels = Constants::getVowels();
         $consonants = Constants::getConsonants();
-        for($i = 0; $i < count($items); $i++) {
+        for ($i = 0; $i < count($items); $i++) {
             $key = $items[$i];
-            if (in_array($key, $vowels)) { $ret = $ret.$key; continue; }
-            if($key == 'Y'){
+            if (in_array($key, $vowels)) {
+                $ret = $ret . $key;
+                continue;
+            }
+            if ($key == 'Y') {
                 // Nếu trước Y không có ký tự nào
-                if(!isset($items[$i - 1]) || $items[$i-1] == " "){
+                if (!isset($items[$i - 1]) || $items[$i - 1] == " ") {
                     // Nếu sau Y không có ký tự nào thì Y là Nguyên Âm
-                    if(!isset($items[$i+1])){
-                        $ret = $ret.$key; continue;
+                    if (!isset($items[$i + 1])) {
+                        $ret = $ret . $key;
+                        continue;
                     }
                     // Nếu sau Y có ký tự
-                    if(isset($items[$i+1])){
+                    if (isset($items[$i + 1])) {
                         // Nếu ký tự đó là khoảng trống thì Y là Nguyên Âm
-                        if($items[$i+1] == " "){
-                            $ret = $ret.$key; continue;
+                        if ($items[$i + 1] == " ") {
+                            $ret = $ret . $key;
+                            continue;
                         }
                         // Nếu ký tự đó là phụ âm thì Y là Nguyên Âm
-                        if(in_array($items[$i+1], $consonants)) { $ret = $ret.$key; continue; }
+                        if (in_array($items[$i + 1], $consonants)) {
+                            $ret = $ret . $key;
+                            continue;
+                        }
                     }
-                }else{
+                } else {
                     // Nếu trước Y là phụ âm
-                    if(in_array($items[$i - 1],$consonants)){
+                    if (in_array($items[$i - 1], $consonants)) {
                         // Nếu sau Y là khoảng trống hoặc không còn ký tự nào thì Y là Nguyên Âm
-                        if(!isset($items[$i+1]) || $items[$i+1] == " "){
-                            $ret = $ret.$key; continue;
-                        }else if(in_array($items[$i + 1],$consonants)){ // Nếu sau Y là phụ âm thì Y là nguyên âm
-                            $ret = $ret.$key; continue;
-                        }else{
+                        if (!isset($items[$i + 1]) || $items[$i + 1] == " ") {
+                            $ret = $ret . $key;
+                            continue;
+                        } else if (in_array($items[$i + 1], $consonants)) { // Nếu sau Y là phụ âm thì Y là nguyên âm
+                            $ret = $ret . $key;
+                            continue;
+                        } else {
                             continue;
                         }
                     }
@@ -116,36 +128,45 @@ class StringHelper{
         $vowels = Constants::getVowels();
         $consonants = Constants::getConsonants();
         $previousIsVowel = false;
-        for($i = 0; $i < count($items); $i++) {
+        for ($i = 0; $i < count($items); $i++) {
             $key = $items[$i];
-            if (in_array($key, $consonants))  { $ret = $ret.$key; $previousIsVowel = false; continue; }
-            if($key == "Y"){
+            if (in_array($key, $consonants)) {
+                $ret = $ret . $key;
+                $previousIsVowel = false;
+                continue;
+            }
+            if ($key == "Y") {
                 // Nếu trước Y không có ký tự nào
-                if(!isset($items[$i - 1]) || $items[$i-1] == " "){
+                if (!isset($items[$i - 1]) || $items[$i - 1] == " ") {
                     // Nếu sau Y không có ký tự nào thì Y là không là Phụ Âm
-                    if(!isset($items[$i+1])){
+                    if (!isset($items[$i + 1])) {
                         continue;
                     }
                     // Nếu sau Y có ký tự
-                    if(isset($items[$i+1])){
+                    if (isset($items[$i + 1])) {
                         // Nếu ký tự đó là khoảng trống thì Y là không là Phụ Âm
-                        if($items[$i+1] == " "){
+                        if ($items[$i + 1] == " ") {
                             continue;
                         }
                         // Nếu ký tự đó là nguyên âm thì Y là Phụ Âm
-                        if(in_array($items[$i+1], $vowels)) { $ret = $ret.$key; continue; }
-                    }
-                }else{
-                    // Nếu trước Y là nguyên âm
-                    if(in_array($items[$i - 1],$vowels)){
-                        $ret = $ret.$key; continue;
-                    }else{ // Nếu trước Y là phụ âm
-                        // Nếu sau Y là khoảng trống hoặc không còn ký tự nào thì Y không là Phụ Âm
-                        if(!isset($items[$i+1]) || $items[$i+1] == " "){
+                        if (in_array($items[$i + 1], $vowels)) {
+                            $ret = $ret . $key;
                             continue;
-                        }else if(in_array($items[$i + 1],$vowels)){ // Nếu sau Y là nguyên âm thì Y là Phụ âm
-                            $ret = $ret.$key; continue;
-                        }else{
+                        }
+                    }
+                } else {
+                    // Nếu trước Y là nguyên âm
+                    if (in_array($items[$i - 1], $vowels)) {
+                        $ret = $ret . $key;
+                        continue;
+                    } else { // Nếu trước Y là phụ âm
+                        // Nếu sau Y là khoảng trống hoặc không còn ký tự nào thì Y không là Phụ Âm
+                        if (!isset($items[$i + 1]) || $items[$i + 1] == " ") {
+                            continue;
+                        } else if (in_array($items[$i + 1], $vowels)) { // Nếu sau Y là nguyên âm thì Y là Phụ âm
+                            $ret = $ret . $key;
+                            continue;
+                        } else {
                             continue;
                         }
                     }
@@ -160,13 +181,14 @@ class StringHelper{
      * @param $str
      * @return array<int>
      */
-    public  static function toPythagoreNumbers($str): array{
+    public  static function toPythagoreNumbers($str): array
+    {
         $str = self::toASCIIUperCases($str);
         $pythagore = Constants::getPYTHAGORE();
         $items = mb_str_split($str);
-        for($i = 0; $i < count($items); $i++) {
+        for ($i = 0; $i < count($items); $i++) {
             $key = $items[$i];
-            $items[$i] =  (array_key_exists($key, $pythagore))? $pythagore[$key] : 0;
+            $items[$i] =  (array_key_exists($key, $pythagore)) ? $pythagore[$key] : 0;
         }
         return $items;
     }
@@ -182,7 +204,7 @@ class StringHelper{
         $ret = "";
         foreach ($items as $item)
             if (strlen($item) > 0) {
-                $list =  mb_str_split($item);//preg_split('', $item, -1, PREG_SPLIT_NO_EMPTY);
+                $list =  mb_str_split($item); //preg_split('', $item, -1, PREG_SPLIT_NO_EMPTY);
                 $ret .= $list[0];
             }
         return $ret;
@@ -196,7 +218,7 @@ class StringHelper{
      */
     public  static function randAlphanumericString(int $len, string $root = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890'): string
     {
-        $len = ($len && $len > 0)? $len : 0;
+        $len = ($len && $len > 0) ? $len : 0;
         if ($len == 0) return "";
         $arr = str_split($root); // get all the characters into an array
         shuffle($arr); // randomize the array
@@ -219,5 +241,17 @@ class StringHelper{
             return "";
         }
     }
+
+    public static function normalizeVietnameseString($str)
+    {
+        $str = preg_replace('/[áàảãạăắằẳẵặâấầẩẫậ]/u', 'a', $str);
+        $str = preg_replace('/[éèẻẽẹêếềểễệ]/u', 'e', $str);
+        $str = preg_replace('/[íìỉĩị]/u', 'i', $str);
+        $str = preg_replace('/[óòỏõọôốồổỗộơớờởỡợ]/u', 'o', $str);
+        $str = preg_replace('/[úùủũụưứừửữự]/u', 'u', $str);
+        $str = preg_replace('/[ýỳỷỹỵ]/u', 'y', $str);
+        $str = preg_replace('/[đ]/u', 'd', $str);
+        $str = preg_replace('/[^a-zA-Z0-9\s]/u', '', $str); // Loại bỏ ký tự đặc biệt nếu cần
+        return strtolower(trim($str));
+    }
 }
-?>
