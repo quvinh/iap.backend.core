@@ -352,6 +352,16 @@ class ItemCodeService extends \App\Services\BaseService implements IItemCodeServ
             });
         }
 
+        if (isset($params['price_from'])) {
+            $price_from = $params['price_from'];
+            $query->where('price', '>=', $price_from);
+        }
+
+        if (isset($params['price_to'])) {
+            $price_to = $params['price_to'];
+            $query->where('price', '<=', $price_to);
+        }
+
         # Pagination
         $query->orderBy('id', $sortType)->paginate($per_page, ['*'], 'page', $page);
 
