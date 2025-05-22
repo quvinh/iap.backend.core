@@ -10,6 +10,7 @@ use App\Exceptions\DB\CannotSaveToDBException;
 use App\Exceptions\DB\CannotUpdateDBException;
 use App\Exceptions\DB\RecordIsNotFoundException;
 use App\Helpers\Common\MetaInfo;
+use App\Helpers\Enums\ItemCodeMetaSlugEnum;
 use App\Helpers\Utils\StorageHelper;
 use App\Helpers\Utils\StringHelper;
 use App\Models\InvoiceDetail;
@@ -316,7 +317,7 @@ class ItemCodeService extends \App\Services\BaseService implements IItemCodeServ
         $per_page = 50;
         $company_id = null;
         $year = $params['year'] ?? date('Y');
-        $query = InvoiceDetail::query()->select(['id', 'invoice_id', 'product']);
+        $query = InvoiceDetail::query()->select(['id', 'invoice_id', 'product', 'item_code_id', 'price']);
 
         if (isset($params['pagination'])) {
             $pagination = $params['pagination'];
@@ -364,38 +365,122 @@ class ItemCodeService extends \App\Services\BaseService implements IItemCodeServ
             $product = $item->product;
             $bestMatch = null;
             $highestPercent = 0;
+            $note = 'Tạo mới';
+            $slug = ItemCodeMetaSlugEnum::NEED_TO_CREATE;
 
-            // Lặp qua item_codes bằng chunk với Eloquent
-            ItemCode::query()->select('id', 'item_group_id', 'product', 'product_code')
-                ->whereNotNull('product')
-                ->where('company_id', $company_id)
-                ->where('year', $year)
-                ->chunk(100, function ($rows) use ($product, $threshold, &$bestMatch, &$highestPercent) {
-                    foreach ($rows as $row) {
-                        $normalizedProduct = StringHelper::normalizeVietnameseString($product);
-                        $normalizedRowProduct = StringHelper::normalizeVietnameseString($row->product);
-                        similar_text($normalizedProduct, $normalizedRowProduct, $percent);
-                        if ($percent >= $threshold && $percent > $highestPercent) {
-                            $highestPercent = $percent;
-                            $bestMatch = [
-                                'id' => $row->id,
-                                'product_code' => $row->product_code,
-                                'product' => $row->product,
-                                'percent' => round($percent, 2),
-                            ];
+            if (empty($item->item_code_id)) {
+                // Lặp qua item_codes bằng chunk với Eloquent
+                ItemCode::query()->select('id', 'item_group_id', 'product', 'product_code', 'price', 'unit', 'quantity')
+                    ->whereNotNull('product')
+                    ->where('company_id', $company_id)
+                    ->where('year', $year)
+                    ->chunk(100, function ($rows) use ($product, $threshold, $item, $difference_ratio, &$bestMatch, &$highestPercent) {
+                        foreach ($rows as $row) {
+                            $normalizedProduct = StringHelper::normalizeVietnameseString($product);
+                            $normalizedRowProduct = StringHelper::normalizeVietnameseString($row->product);
+                            similar_text($normalizedProduct, $normalizedRowProduct, $percent);
+
+                            // Kiểm tra giá nếu có, và chỉ so sánh khi $row->price > 0
+                            $isPriceMatch = true;
+                            if ($item->price && $row->price > 0) {
+                                $minPrice = $item->price * (1 - $difference_ratio / 100);
+                                $maxPrice = $item->price * (1 + $difference_ratio / 100);
+                                $isPriceMatch = $row->price >= $minPrice && $row->price <= $maxPrice;
+                            }
+
+                            // Cập nhật bestMatch nếu thỏa mãn cả độ tương đồng và giá
+                            if ($percent >= $threshold && $percent > $highestPercent && $isPriceMatch) {
+                                $highestPercent = $percent;
+                                $bestMatch = [
+                                    'id' => $row->id,
+                                    'product_code' => $row->product_code,
+                                    'product' => $row->product,
+                                    'price' => $row->price,
+                                    'unit' => $row->unit,
+                                    'quantity' => $row->quantity,
+                                    'percent' => round($percent, 2),
+                                ];
+                            }
                         }
-                    }
-                });
+                    });
+
+                // Update slug
+                if (!empty($bestMatch)) {
+                    $note = 'Lọc tự động';
+                    $slug = ItemCodeMetaSlugEnum::AUTO_FILL;
+                }
+            } else {
+                $note = 'Đã lưu';
+                $slug = ItemCodeMetaSlugEnum::SAVED;
+            }
+
 
             // Lưu kết quả
             $results[] = [
                 'id' => $item->id,
                 'invoice_id' => $item->invoice_id,
                 'product' => $item->product,
-                'item_code' => $bestMatch
+                'item_code' => $bestMatch,
+                'meta' => [
+                    'note' => $note,
+                    'slug' => $slug,
+                ],
             ];
         }
 
         return $results;
+    }
+
+    public function saveAutoFill(array $params): mixed
+    {
+        DB::beginTransaction();
+        try {
+            $rows = $params['items'];
+            $year = $params['year'];
+            foreach ($rows as $row) {
+                $slug = $row['meta']['slug'];
+                $invoiceDetail = InvoiceDetail::find($row['id']);
+                if (!empty($invoiceDetail)) {
+                    switch ($slug) {
+                        case ItemCodeMetaSlugEnum::AUTO_FILL:
+                            $codeId = $row['item_code']['id'] ?? null;
+                            if (!empty($codeId)) {
+                                $invoiceDetail->item_code_id = $codeId;
+                                $invoiceDetail->save();
+                            }
+                            break;
+                        case ItemCodeMetaSlugEnum::NEED_TO_CREATE:
+                            $companyId = $invoiceDetail->invoice->company_id;
+                            $itemCode = ItemCode::create([
+                                'company_id' => $companyId,
+                                'product_code' => $invoiceDetail->product,
+                                'product' => $invoiceDetail->product,
+                                'price' => $invoiceDetail->price,
+                                'unit' => $invoiceDetail->unit,
+                                'year' => $year,
+                            ]);
+                            if (empty($itemCode)) throw new Exception("Lỗi khi tạo mới mã: {$invoiceDetail->product}");
+                            $invoiceDetail->item_code_id = $itemCode->id;
+                            $invoiceDetail->save();
+                            break;
+                        case ItemCodeMetaSlugEnum::SAVED:
+                            # code...
+                            break;
+                        default:
+                            # code...
+                            break;
+                    }
+                }
+            }
+
+            DB::commit();
+            return true;
+        } catch (\Exception $e) {
+            DB::rollBack();
+            throw new CannotUpdateDBException(
+                message: 'update: ' . $e->getMessage(),
+                previous: $e
+            );
+        }
     }
 }

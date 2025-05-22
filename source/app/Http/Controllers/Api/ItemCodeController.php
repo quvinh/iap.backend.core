@@ -60,6 +60,7 @@ class ItemCodeController extends ApiController
             Route::post($root . '/import-imported-goods-code', [ItemCodeController::class, 'importImportedGoodsCode']);
 
             Route::post($root . '/auto-fill', [ItemCodeController::class, 'autoFill']);
+            Route::post($root . '/save-auto-fill', [ItemCodeController::class, 'saveAutoFill']);
         }
         Route::get($root, [ItemCodeController::class, 'getAll']);
     }
@@ -229,6 +230,16 @@ class ItemCodeController extends ApiController
         $response = ApiResponse::v1();
 
         $result = $this->itemCodeService->autoFill($request->input());
+
+        return $response->send($result);
+    }
+
+    public function saveAutoFill(Request $request)
+    {
+        # Send response using the predefined format
+        $response = ApiResponse::v1();
+
+        $result = $this->itemCodeService->saveAutoFill($request->input());
 
         return $response->send($result);
     }
