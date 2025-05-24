@@ -3,9 +3,11 @@
 namespace App\Http\Controllers\Api;
 
 use App\DataResources\ItemCode\ItemCodeResource;
+use App\Exports\DTechItemCodeExport;
 use App\Helpers\Common\MetaInfo;
 use App\Helpers\Enums\UserRoles;
 use App\Helpers\Responses\ApiResponse;
+use App\Helpers\Responses\HttpStatuses;
 use App\Helpers\Utils\StorageHelper;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\Traits\DefaultRestActions;
@@ -23,6 +25,7 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
@@ -61,6 +64,7 @@ class ItemCodeController extends ApiController
 
             Route::post($root . '/auto-fill', [ItemCodeController::class, 'autoFill']);
             Route::post($root . '/save-auto-fill', [ItemCodeController::class, 'saveAutoFill']);
+            Route::post($root . '/data-export', [ItemCodeController::class, 'dataExport']);
         }
         Route::get($root, [ItemCodeController::class, 'getAll']);
     }
@@ -242,5 +246,49 @@ class ItemCodeController extends ApiController
         $result = $this->itemCodeService->saveAutoFill($request->input());
 
         return $response->send($result);
+    }
+
+    /**
+     * Export excel
+     */
+    public function dataExport(Request $request)
+    {
+        $request->validate([
+            'key' => ['string', 'required'],
+        ]);
+
+        # Send response using the predefined format
+        $response = $this->getResponseHandler();
+        
+        $timestamp = date('YmdHi');
+        
+        switch ($request->key) {
+            case 'dtech-item-code':
+                $file = "ExportMaHangHoa_DTech_$timestamp.xlsx";
+                $filePath = "dtech/$file";
+                $result = Excel::store(new DTechItemCodeExport(collect([])), $filePath, StorageHelper::EXCEL_DISK_NAME);
+                break;
+            
+            default:
+                return $response->withStatusCode(HttpStatuses::HTTP_BAD_REQUEST)->fail(['status' => 'Key invalid!']);
+        }
+
+        if (empty($result)) return $response->fail(['status' => $result]);
+
+        # Generate file base64
+        $fileContent = Storage::disk(StorageHelper::EXCEL_DISK_NAME)->get($filePath);
+        $fileType = File::mimeType(storage_path("app/export/$filePath"));
+        $base64 = base64_encode($fileContent);
+        $fileBase64Uri = "data:$fileType;base64,$base64";
+
+        # Delete if needed
+        Storage::disk(StorageHelper::EXCEL_DISK_NAME)->delete($filePath);
+
+        # Return
+        return $response->send([
+            'file' => $file,
+            'type' => $fileType,
+            'data' => $fileBase64Uri,
+        ]);
     }
 }

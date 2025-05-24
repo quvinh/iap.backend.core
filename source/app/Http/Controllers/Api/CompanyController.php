@@ -187,7 +187,7 @@ class CompanyController extends ApiController
             $request->start,
             $request->end
         ), $filePath, StorageHelper::EXCEL_DISK_NAME);
-        if (empty($result)) $response->fail(['status' => $result]);
+        if (empty($result)) return $response->fail(['status' => $result]);
 
         # Generate file base64
         $fileContent = Storage::disk(StorageHelper::EXCEL_DISK_NAME)->get($filePath);
