@@ -8,6 +8,7 @@ use App\DataResources\Invoice\InvoiceResource;
 use App\Exports\InvoiceDetailsExport;
 use App\Exports\InvoicesExport;
 use App\Helpers\Common\MetaInfo;
+use App\Helpers\Enums\InvoiceTypes;
 use App\Helpers\Enums\UserRoles;
 use App\Helpers\Responses\ApiResponse;
 use App\Helpers\Utils\StorageHelper;
@@ -78,6 +79,7 @@ class InvoiceController extends ApiController
             Route::post($root . '/invoices-export', [InvoiceController::class, 'invoicesExport']);
             Route::post($root . '/invoice-details-export', [InvoiceController::class, 'invoiceDetailsExport']);
             Route::post($root . '/tct', [InvoiceController::class, 'createInvoiceTct'])->middleware('can:search,App\Models\Invoice');
+            Route::post($root . '/save-tct', [InvoiceController::class, 'saveInvoiceTct'])->middleware('can:search,App\Models\Invoice');
         }
     }
 
@@ -331,6 +333,20 @@ class InvoiceController extends ApiController
         return $response->send($result);
     }
 
+    public function saveInvoiceTct(Request $request)
+    {
+        $request->validate([
+            'company_id' => ['required', 'integer', 'exists:companies,id'],
+            'type' => ['required', 'string', 'max:10', Rule::in(InvoiceTypes::getValues())],
+            'records' => ['required', 'array'],
+        ]);
+
+        $result = $this->invoiceService->saveInvoiceTct($request->all());
+        # Send response using the predefined format
+        $response = ApiResponse::v1();
+        return $response->send($result);
+    }
+
     public function importImportedGoods(Request $request)
     {
         $request->validate([
@@ -350,7 +366,7 @@ class InvoiceController extends ApiController
         $file = $request->file('file');
         $fileName = $file->getClientOriginalName();
         $filePath = $storage->put($folder, $file);
-        
+
         DB::beginTransaction();
         try {
             $user_id = auth()->user()->getAuthIdentifier();
@@ -363,14 +379,14 @@ class InvoiceController extends ApiController
                 'status' => JobHistory::STATUS_PENDING,
             ]);
             ImportedGoodsExcelJob::dispatch(
-                $this->invoiceService, 
-                $filePath, 
-                $request->input(), 
-                $user_id, 
+                $this->invoiceService,
+                $filePath,
+                $request->input(),
+                $user_id,
                 $jobHistory->id,
                 $this->getCurrentMetaInfo()
             );
-            
+
             DB::commit();
             return $response->send(true);
         } catch (\Exception $ex) {

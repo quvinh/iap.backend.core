@@ -12,6 +12,7 @@ use App\Repositories\BaseRepository;
 use App\Exceptions\DB\RecordIsNotFoundException as DBRecordIsNotFoundException;
 use App\Helpers\Enums\InvoiceCompleteStatusEnum;
 use App\Helpers\Enums\InvoiceTypes;
+use App\Models\BusinessPartner;
 use App\Models\Company;
 use App\Models\InvoiceDetail;
 use App\Models\InvoiceTask;
@@ -143,7 +144,7 @@ class InvoiceRepository extends BaseRepository implements IInvoiceRepository
     /**
      * Find invoice previous/next
      */
-    public function findNextInvoice(array $params): Invoice | Collection | null 
+    public function findNextInvoice(array $params): Invoice | Collection | null
     {
         $record = Invoice::find($params['invoice_id'] ?? 0);
         if (empty($record)) throw new \Exception("Invoice not found!");
@@ -201,7 +202,7 @@ class InvoiceRepository extends BaseRepository implements IInvoiceRepository
             $task->month_of_year = $task_month;
             $task->save();
         }
-        
+
         # Checked invoice from front end
         # Create invoice-tct
         $invoice = new Invoice();
@@ -245,5 +246,39 @@ class InvoiceRepository extends BaseRepository implements IInvoiceRepository
 
         # Return
         return $invoice;
+    }
+
+    /**
+     * Save invoice from TCT
+     */
+    public function saveInvoiceTct(array $param): mixed
+    {
+        $company_id = $param['company_id'];
+        $type = $param['type'];
+        $year = $param['year'];
+
+        foreach ($param['records'] as $record) {
+            # Check invoice
+            $invoice = Invoice::query()
+                ->whereYear('date', '=', $year)
+                ->where([
+                    ['company_id', '=', $company_id],
+                    ['type', '=', $type],
+                    ['partner_tax_code', '=', $record['partner_tax_code']],
+                    ['invoice_number', '=', $record['invoice_number']],
+                    ['invoice_symbol', '=', $record['invoice_symbol']],
+                ])->first();
+            if (empty($invoice)) {
+                $partner = BusinessPartner::where('tax_code', $record['partner_tax_code'])->first();
+                if (empty($partner)) BusinessPartner::create([
+                    'company_id' => $company_id,
+                    'tax_code' => $record['partner_tax_code'],
+                    'name' => $record['partner_name'] ?? $record['partner_tax_code'],
+                ]);
+
+                self::createInvoiceTct($record);
+            }
+        }
+        return true;
     }
 }

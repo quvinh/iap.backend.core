@@ -9,10 +9,11 @@ use Illuminate\Database\Eloquent\Collection;
 
 interface IInvoiceRepository extends IRepository
 {
-    public function deleteInvoiceDetails(mixed $idInvoice, array $ids): bool;
-    public function findPartnersByCompanyId(mixed $company_id, mixed $year): mixed;
-    public function info(array $params): array;
-    public function findNextInvoice(array $params): Invoice | Collection | null;
-    public function reportSold(array $params): Collection | Invoice | array | null;
-    public function createInvoiceTct(array $param): Invoice;
+    function deleteInvoiceDetails(mixed $idInvoice, array $ids): bool;
+    function findPartnersByCompanyId(mixed $company_id, mixed $year): mixed;
+    function info(array $params): array;
+    function findNextInvoice(array $params): Invoice | Collection | null;
+    function reportSold(array $params): Collection | Invoice | array | null;
+    function createInvoiceTct(array $param): Invoice;
+    function saveInvoiceTct(array $param): mixed;
 }

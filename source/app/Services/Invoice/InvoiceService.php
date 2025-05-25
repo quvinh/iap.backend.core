@@ -673,4 +673,23 @@ class InvoiceService extends \App\Services\BaseService implements IInvoiceServic
     {
         return $this->invoiceRepos->createInvoiceTct($param);
     }
+
+    /**
+     * Save invoice from TCT
+     */
+    public function saveInvoiceTct(array $param): mixed
+    {
+        DB::beginTransaction();
+        try {
+            $result = $this->invoiceRepos->saveInvoiceTct($param);
+            DB::commit();
+            return $result;
+        } catch (\Exception $ex) {
+            DB::rollBack();
+            throw new Exception(
+                message: $ex->getMessage(),
+                previous: $ex
+            );
+        }
+    }
 }
