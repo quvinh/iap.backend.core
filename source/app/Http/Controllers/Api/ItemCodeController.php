@@ -266,7 +266,7 @@ class ItemCodeController extends ApiController
             case 'dtech-item-code':
                 $file = "ExportMaHangHoa_DTech_$timestamp.xlsx";
                 $filePath = "dtech/$file";
-                $result = Excel::store(new DTechItemCodeExport(collect([])), $filePath, StorageHelper::EXCEL_DISK_NAME);
+                $result = Excel::store(new DTechItemCodeExport($request->input()), $filePath, StorageHelper::EXCEL_DISK_NAME);
                 break;
             
             default:
