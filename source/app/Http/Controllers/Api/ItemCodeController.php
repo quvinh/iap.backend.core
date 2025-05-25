@@ -3,6 +3,9 @@
 namespace App\Http\Controllers\Api;
 
 use App\DataResources\ItemCode\ItemCodeResource;
+use App\Exports\DTechBusinessPartnerExport;
+use App\Exports\DTechInvoicePurchaseExport;
+use App\Exports\DTechInvoiceSoldExport;
 use App\Exports\DTechItemCodeExport;
 use App\Helpers\Common\MetaInfo;
 use App\Helpers\Enums\UserRoles;
@@ -259,16 +262,30 @@ class ItemCodeController extends ApiController
 
         # Send response using the predefined format
         $response = $this->getResponseHandler();
-        
+
         $timestamp = date('YmdHi');
-        
+
         switch ($request->key) {
             case 'dtech-item-code':
                 $file = "ExportMaHangHoa_DTech_$timestamp.xlsx";
                 $filePath = "dtech/$file";
                 $result = Excel::store(new DTechItemCodeExport($request->input()), $filePath, StorageHelper::EXCEL_DISK_NAME);
                 break;
-            
+            case 'dtech-business-partner':
+                $file = "ExportKhachHang_DTech_$timestamp.xlsx";
+                $filePath = "dtech/$file";
+                $result = Excel::store(new DTechBusinessPartnerExport($request->input()), $filePath, StorageHelper::EXCEL_DISK_NAME);
+                break;
+            case 'dtech-purchase':
+                $file = "ExportMuaVao_DTech_$timestamp.xlsx";
+                $filePath = "dtech/$file";
+                $result = Excel::store(new DTechInvoicePurchaseExport($request->input()), $filePath, StorageHelper::EXCEL_DISK_NAME);
+                break;
+            case 'dtech-sold':
+                $file = "ExportBanRa_DTech_$timestamp.xlsx";
+                $filePath = "dtech/$file";
+                $result = Excel::store(new DTechInvoiceSoldExport($request->input()), $filePath, StorageHelper::EXCEL_DISK_NAME);
+                break;
             default:
                 return $response->withStatusCode(HttpStatuses::HTTP_BAD_REQUEST)->fail(['status' => 'Key invalid!']);
         }

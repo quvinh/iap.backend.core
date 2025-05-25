@@ -3,6 +3,8 @@
 namespace App\Exports;
 
 use App\Helpers\Enums\CellColors;
+use App\Helpers\Utils\StringHelper;
+use App\Models\BusinessPartner;
 use App\Models\Company;
 use App\Models\InvoiceDetail;
 use App\Models\ItemCode;
@@ -19,7 +21,7 @@ use Maatwebsite\Excel\Sheet;
 use PhpOffice\PhpSpreadsheet\Style\Border;
 use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
 
-final class DTechItemCodeExport implements WithEvents
+final class DTechBusinessPartnerExport implements WithEvents
 {
     private int $rowIndex;
     private array $params;
@@ -67,9 +69,9 @@ final class DTechItemCodeExport implements WithEvents
      */
     function setWidthColumns(Sheet $sheet): void
     {
-        $columns = ['B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U'];
+        $columns = ['B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'];
 
-        $sheet->getColumnDimension('A')->setWidth(7);
+        $sheet->getColumnDimension('A')->setWidth(27);
         foreach ($columns as $column) {
             $sheet->getColumnDimension($column)->setAutoSize(true);
         }
@@ -92,34 +94,23 @@ final class DTechItemCodeExport implements WithEvents
             }
         }
 
-        $sheet->setCellValue("A$rowIndex", "Mã hàng hóa{$title}");
+        $sheet->setCellValue("A$rowIndex", "Khách hàng/Nhà cung cấp{$title}");
         $rowIndex = $this->increaseIndex();
 
-        $sheet->setCellValue("A$rowIndex", "STT");
-        $sheet->setCellValue("B$rowIndex", "Mã");
-        $sheet->setCellValue("C$rowIndex", "Tên");
-        $sheet->setCellValue("D$rowIndex", "ĐVT Chính");
-        $sheet->setCellValue("E$rowIndex", "Tính chất");
-        $sheet->setCellValue("F$rowIndex", "Ngành nghề");
-        $sheet->setCellValue("G$rowIndex", "Giảm trừ thuế");
-        $sheet->setCellValue("H$rowIndex", "Là Sản phẩm");
-        $sheet->setCellValue("I$rowIndex", "Đơn giá bán");
-        $sheet->setCellValue("J$rowIndex", "Nhóm TK");
-        $sheet->setCellValue("K$rowIndex", "Mã vạch");
-        $sheet->setCellValue("L$rowIndex", "SL tồn");
-        $sheet->setCellValue("M$rowIndex", "Đơn giá vốn");
-        $sheet->setCellValue("N$rowIndex", "Đơn vị phụ 1");
-        $sheet->setCellValue("O$rowIndex", "Tỷ lệ quy đổi 1");
-        $sheet->setCellValue("P$rowIndex", "Đơn vị phụ 2");
-        $sheet->setCellValue("Q$rowIndex", "Tỷ lệ quy đổi 2");
-        $sheet->setCellValue("R$rowIndex", "Đơn vị phụ 3");
-        $sheet->setCellValue("S$rowIndex", "Tỷ lệ quy đổi 3");
-        $sheet->setCellValue("T$rowIndex", "Đơn vị phụ 4");
-        $sheet->setCellValue("U$rowIndex", "Tỷ lệ quy đổi 4");
+        $sheet->setCellValue("A$rowIndex", "Mã");
+        $sheet->setCellValue("B$rowIndex", "Tên đối tượng công nợ");
+        $sheet->setCellValue("C$rowIndex", "Mã số thuế");
+        $sheet->setCellValue("D$rowIndex", "Địa chỉ");
+        $sheet->setCellValue("E$rowIndex", "Email");
+        $sheet->setCellValue("F$rowIndex", "Điện thoại");
+        $sheet->setCellValue("G$rowIndex", "Fax");
+        $sheet->setCellValue("H$rowIndex", "Là nhân viên");
+        $sheet->setCellValue("I$rowIndex", "CMND/CCCD");
+        $sheet->setCellValue("J$rowIndex", "Ghi chú");
 
-        $sheet->getStyle("A$rowIndex:U$rowIndex")->getFont()->setBold(true);
-        $this->setBackgroundColor($sheet, "A$rowIndex:U$rowIndex", CellColors::YELLOW);
-        $this->setBorders($sheet, "A$rowIndex:U$rowIndex");
+        $sheet->getStyle("A$rowIndex:J$rowIndex")->getFont()->setBold(true);
+        $this->setBackgroundColor($sheet, "A$rowIndex:J$rowIndex", CellColors::YELLOW);
+        $this->setBorders($sheet, "A$rowIndex:J$rowIndex");
     }
 
     /**
@@ -129,7 +120,7 @@ final class DTechItemCodeExport implements WithEvents
     function content(Sheet $sheet): void
     {
         $sortType = 'desc';
-        $query = ItemCode::query()->select(['id', 'product_code', 'product', 'price']);
+        $query = BusinessPartner::query();
         $params = $this->params;
         
         if (isset($params['sort'])) {
@@ -142,48 +133,23 @@ final class DTechItemCodeExport implements WithEvents
             $query->where('company_id', '=', $company_id);
         }
 
-        if (isset($params['year'])) {
-            $year = $params['year'];
-            $query->where('year', '=', $year);
-        }
-
-        if (isset($params['price_from'])) {
-            $price_from = $params['price_from'];
-            $query->where('price', '>=', $price_from);
-        }
-
-        if (isset($params['price_to'])) {
-            $price_to = $params['price_to'];
-            $query->where('price', '<=', $price_to);
-        }
-
         $records = $query->orderBy('id', $sortType)->get();
 
         foreach ($records as $index => $record) {
             $rowIndex = $this->increaseIndex();
-            $this->setBorders($sheet, "A$rowIndex:U$rowIndex");
+            $validTaxCode = StringHelper::isValidTaxCode($record['tax_code']) ? $record['tax_code'] : "";
+            $this->setBorders($sheet, "A$rowIndex:J$rowIndex");
             // $sheet->getStyle("E$rowIndex:I$rowIndex")->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1);
-            $sheet->setCellValue("A$rowIndex", $index + 1);
-            $sheet->setCellValue("B$rowIndex", $record['product_code']);
-            $sheet->setCellValue("C$rowIndex", $record['product']);
-            $sheet->setCellValue("D$rowIndex", "Hàng hóa");
-            $sheet->setCellValue("E$rowIndex", "Hoạt động bán buôn, bán lẻ các loại hàng hóa (trừ giá trị hàng hóa đại lý bán đúng giá hưởng hoa hồng)");
-            $sheet->setCellValue("F$rowIndex", "");
+            $sheet->setCellValue("A$rowIndex", $record['tax_code']);
+            $sheet->setCellValue("B$rowIndex", $record['name']);
+            $sheet->setCellValue("C$rowIndex", $validTaxCode);
+            $sheet->setCellValue("D$rowIndex", $record['address']);
+            $sheet->setCellValue("E$rowIndex", $record['email']);
+            $sheet->setCellValue("F$rowIndex", $record['phone']);
             $sheet->setCellValue("G$rowIndex", "");
             $sheet->setCellValue("H$rowIndex", "");
-            $sheet->setCellValue("I$rowIndex", "1523");
+            $sheet->setCellValue("I$rowIndex", "");
             $sheet->setCellValue("J$rowIndex", "");
-            $sheet->setCellValue("K$rowIndex", "");
-            $sheet->setCellValue("L$rowIndex", "");
-            $sheet->setCellValue("M$rowIndex", "");
-            $sheet->setCellValue("N$rowIndex", "");
-            $sheet->setCellValue("O$rowIndex", "");
-            $sheet->setCellValue("P$rowIndex", "");
-            $sheet->setCellValue("Q$rowIndex", "");
-            $sheet->setCellValue("R$rowIndex", "");
-            $sheet->setCellValue("S$rowIndex", "");
-            $sheet->setCellValue("T$rowIndex", "");
-            $sheet->setCellValue("U$rowIndex", "");
         }
     }
 }

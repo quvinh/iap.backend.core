@@ -254,4 +254,20 @@ class StringHelper
         $str = preg_replace('/[^a-zA-Z0-9\s]/u', '', $str); // Loại bỏ ký tự đặc biệt nếu cần
         return strtolower(trim($str));
     }
+
+    /**
+     * Kiểm tra xem chuỗi có phải là mã số thuế hợp lệ hay không.
+     *
+     * @param string $taxCode
+     * @return bool
+     */
+    public static function isValidTaxCode($taxCode)
+    {
+        // Biểu thức chính quy kiểm tra mã số thuế
+        // - 10 hoặc 12 chữ số
+        // - Hoặc 10 chữ số + dấu gạch ngang + 3 chữ số
+        $pattern = '/^(\d{10}|\d{12}|\d{10}-\d{3})$/';
+
+        return preg_match($pattern, $taxCode) === 1;
+    }
 }
