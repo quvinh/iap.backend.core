@@ -685,6 +685,8 @@ class InvoiceService extends \App\Services\BaseService implements IInvoiceServic
             DB::commit();
             return $result;
         } catch (\Exception $ex) {
+            Log::error('🐛🐛🐛');
+            Log::error($ex->getMessage());
             DB::rollBack();
             throw new Exception(
                 message: $ex->getMessage(),
