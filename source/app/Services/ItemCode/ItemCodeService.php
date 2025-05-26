@@ -448,37 +448,39 @@ class ItemCodeService extends \App\Services\BaseService implements IItemCodeServ
             $rows = $params['items'];
             $year = $params['year'];
             foreach ($rows as $row) {
-                $slug = $row['meta']['slug'];
-                $invoiceDetail = InvoiceDetail::find($row['id']);
-                if (!empty($invoiceDetail)) {
-                    switch ($slug) {
-                        case ItemCodeMetaSlugEnum::AUTO_FILL:
-                            $codeId = $row['item_code']['id'] ?? null;
-                            if (!empty($codeId)) {
-                                $invoiceDetail->item_code_id = $codeId;
+                if (isset($row['meta'])) {
+                    $slug = $row['meta']['slug'];
+                    $invoiceDetail = InvoiceDetail::find($row['id']);
+                    if (!empty($invoiceDetail)) {
+                        switch ($slug) {
+                            case ItemCodeMetaSlugEnum::AUTO_FILL:
+                                $codeId = $row['item_code']['id'] ?? null;
+                                if (!empty($codeId)) {
+                                    $invoiceDetail->item_code_id = $codeId;
+                                    $invoiceDetail->save();
+                                }
+                                break;
+                            case ItemCodeMetaSlugEnum::NEED_TO_CREATE:
+                                $companyId = $invoiceDetail->invoice->company_id;
+                                $itemCode = ItemCode::create([
+                                    'company_id' => $companyId,
+                                    'product_code' => $invoiceDetail->product,
+                                    'product' => $invoiceDetail->product,
+                                    'price' => $invoiceDetail->price,
+                                    'unit' => $invoiceDetail->unit,
+                                    'year' => $year,
+                                ]);
+                                if (empty($itemCode)) throw new Exception("Lỗi khi tạo mới mã: {$invoiceDetail->product}");
+                                $invoiceDetail->item_code_id = $itemCode->id;
                                 $invoiceDetail->save();
-                            }
-                            break;
-                        case ItemCodeMetaSlugEnum::NEED_TO_CREATE:
-                            $companyId = $invoiceDetail->invoice->company_id;
-                            $itemCode = ItemCode::create([
-                                'company_id' => $companyId,
-                                'product_code' => $invoiceDetail->product,
-                                'product' => $invoiceDetail->product,
-                                'price' => $invoiceDetail->price,
-                                'unit' => $invoiceDetail->unit,
-                                'year' => $year,
-                            ]);
-                            if (empty($itemCode)) throw new Exception("Lỗi khi tạo mới mã: {$invoiceDetail->product}");
-                            $invoiceDetail->item_code_id = $itemCode->id;
-                            $invoiceDetail->save();
-                            break;
-                        case ItemCodeMetaSlugEnum::SAVED:
-                            # code...
-                            break;
-                        default:
-                            # code...
-                            break;
+                                break;
+                            case ItemCodeMetaSlugEnum::SAVED:
+                                # code...
+                                break;
+                            default:
+                                # code...
+                                break;
+                        }
                     }
                 }
             }
