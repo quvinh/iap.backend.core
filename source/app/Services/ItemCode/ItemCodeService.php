@@ -312,7 +312,7 @@ class ItemCodeService extends \App\Services\BaseService implements IItemCodeServ
 
     public function autoFill(array $params): mixed
     {
-        $sortType = 'desc';
+        $sortType = 'asc';
         $page = 1;
         $per_page = 50;
         $company_id = null;
@@ -327,7 +327,7 @@ class ItemCodeService extends \App\Services\BaseService implements IItemCodeServ
 
         if (isset($params['sort'])) {
             $sort = $params['sort'];
-            $sortType = $sort['type'] ?? 'desc';
+            $sortType = $sort['type'] ?? 'asc';
         }
 
         if (isset($params['type'])) {
@@ -363,7 +363,7 @@ class ItemCodeService extends \App\Services\BaseService implements IItemCodeServ
         }
 
         # Pagination
-        $query->orderBy('id', $sortType)->paginate($per_page, ['*'], 'page', $page);
+        $query->orderBy('product', $sortType)->paginate($per_page, ['*'], 'page', $page);
 
         $invoiceDetails = $query->get();
 
