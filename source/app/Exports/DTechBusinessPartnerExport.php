@@ -119,13 +119,13 @@ final class DTechBusinessPartnerExport implements WithEvents
      */
     function content(Sheet $sheet): void
     {
-        $sortType = 'desc';
+        $sortType = 'asc';
         $query = BusinessPartner::query();
         $params = $this->params;
         
         if (isset($params['sort'])) {
             $sort = $params['sort'];
-            $sortType = $sort['type'] ?? 'desc';
+            $sortType = $sort['type'] ?? 'asc';
         }
 
         if (isset($params['company_id'])) {
@@ -133,7 +133,7 @@ final class DTechBusinessPartnerExport implements WithEvents
             $query->where('company_id', '=', $company_id);
         }
 
-        $records = $query->orderBy('id', $sortType)->get();
+        $records = $query->orderBy('name', $sortType)->get();
 
         foreach ($records as $index => $record) {
             $rowIndex = $this->increaseIndex();

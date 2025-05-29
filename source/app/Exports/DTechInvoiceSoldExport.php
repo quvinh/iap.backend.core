@@ -187,7 +187,7 @@ final class DTechInvoiceSoldExport implements WithEvents
      */
     function content(Sheet $sheet): void
     {
-        $sortType = 'desc';
+        $sortType = 'asc';
         $params = $this->params;
         $query = InvoiceDetail::query()->select(['id', 'invoice_id', 'product', 'unit', 'item_code_id', 'price', 'quantity', 'vat']);
 
@@ -197,7 +197,7 @@ final class DTechInvoiceSoldExport implements WithEvents
 
         if (isset($params['sort'])) {
             $sort = $params['sort'];
-            $sortType = $sort['type'] ?? 'desc';
+            $sortType = $sort['type'] ?? 'asc';
         }
 
         if (isset($params['company_id'])) {
@@ -225,15 +225,25 @@ final class DTechInvoiceSoldExport implements WithEvents
             $query->where('price', '<=', $price_to);
         }
 
-        $records = $query->orderBy('id', $sortType)->get();
+        $records = $query->orderBy('product', $sortType)->get();
 
         foreach ($records as $index => $record) {
             $invoice = $record->invoice;
             $itemCode = $record->item_code;
             $rowIndex = $this->increaseIndex();
             $dateValue = $invoice->date;
+            $productCode = "";
+            if (isset($itemCode->product_code)) {
+                if (empty($itemCode->item_group)) {
+                    $productCode = $itemCode->product_code;
+                } else {
+                    $productCode = $itemCode->item_group->code ?? "";
+                }
+            }
+
             $carbonDate = Carbon::parse($dateValue);
             $excelDate = \PhpOffice\PhpSpreadsheet\Shared\Date::PHPToExcel($carbonDate);
+
             $this->setBorders($sheet, "A$rowIndex:AL$rowIndex");
             $sheet->getStyle("A$rowIndex")->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_DATE_YYYYMMDD);
             $sheet->getStyle("E$rowIndex")->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_DATE_YYYYMMDD);
@@ -260,7 +270,7 @@ final class DTechInvoiceSoldExport implements WithEvents
             $sheet->setCellValue("S$rowIndex", "TM/CK");
             $sheet->setCellValue("T$rowIndex", "");
             $sheet->setCellValue("U$rowIndex", "Bán hàng hóa, thành phẩm");
-            $sheet->setCellValue("V$rowIndex", $itemCode->product_code ?? "");
+            $sheet->setCellValue("V$rowIndex", $productCode);
             $sheet->setCellValue("W$rowIndex", $record->product);
             $sheet->setCellValue("X$rowIndex", trim($record->unit) == "/" ? "" : $record->unit);
             $sheet->setCellValue("Y$rowIndex", isset($itemCode->quantity) ? $itemCode->quantity : "");

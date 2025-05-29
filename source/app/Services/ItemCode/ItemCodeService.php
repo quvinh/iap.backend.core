@@ -330,6 +330,11 @@ class ItemCodeService extends \App\Services\BaseService implements IItemCodeServ
             $sortType = $sort['type'] ?? 'asc';
         }
 
+        if (isset($params['product'])) {
+            $product = $params['product'];
+            $query->whereRaw('upper(product) LIKE BINARY upper(concat(?, ?, ?))', ['%', $product, '%']);
+        }
+
         if (isset($params['type'])) {
             $type = $params['type'];
             $query->whereHas('invoice', function ($q) use ($type) {
@@ -375,7 +380,7 @@ class ItemCodeService extends \App\Services\BaseService implements IItemCodeServ
             $product = $item->product;
             $bestMatch = null;
             $highestPercent = 0;
-            $note = 'Tạo mới';
+            $note = 'TẠO MỚI';
             $slug = ItemCodeMetaSlugEnum::NEED_TO_CREATE;
 
             if (empty($item->item_code_id)) {
@@ -416,11 +421,11 @@ class ItemCodeService extends \App\Services\BaseService implements IItemCodeServ
 
                 // Update slug
                 if (!empty($bestMatch)) {
-                    $note = 'Lọc tự động';
+                    $note = 'LỌC TỰ ĐỘNG';
                     $slug = ItemCodeMetaSlugEnum::AUTO_FILL;
                 }
             } else {
-                $note = 'Đã lưu';
+                $note = 'ĐÃ LƯU';
                 $slug = ItemCodeMetaSlugEnum::SAVED;
             }
 

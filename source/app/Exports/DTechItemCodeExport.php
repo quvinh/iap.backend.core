@@ -128,13 +128,13 @@ final class DTechItemCodeExport implements WithEvents
      */
     function content(Sheet $sheet): void
     {
-        $sortType = 'desc';
+        $sortType = 'asc';
         $query = ItemCode::query()->select(['id', 'product_code', 'product', 'price']);
         $params = $this->params;
         
         if (isset($params['sort'])) {
             $sort = $params['sort'];
-            $sortType = $sort['type'] ?? 'desc';
+            $sortType = $sort['type'] ?? 'asc';
         }
 
         if (isset($params['company_id'])) {
@@ -157,7 +157,7 @@ final class DTechItemCodeExport implements WithEvents
             $query->where('price', '<=', $price_to);
         }
 
-        $records = $query->orderBy('id', $sortType)->get();
+        $records = $query->orderBy('product_code', $sortType)->get();
 
         foreach ($records as $index => $record) {
             $rowIndex = $this->increaseIndex();
