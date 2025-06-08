@@ -79,7 +79,9 @@ class InvoiceController extends ApiController
             Route::post($root . '/invoices-export', [InvoiceController::class, 'invoicesExport']);
             Route::post($root . '/invoice-details-export', [InvoiceController::class, 'invoiceDetailsExport']);
             Route::post($root . '/tct', [InvoiceController::class, 'createInvoiceTct'])->middleware('can:search,App\Models\Invoice');
+            Route::post($root . '/list-tct', [InvoiceController::class, 'createInvoicesTct'])->middleware('can:search,App\Models\Invoice');
             Route::post($root . '/save-tct', [InvoiceController::class, 'saveInvoiceTct'])->middleware('can:search,App\Models\Invoice');
+            Route::post($root . '/invoice-exists', [InvoiceController::class, 'checkInvoiceExist']);
         }
     }
 
@@ -333,6 +335,18 @@ class InvoiceController extends ApiController
         return $response->send($result);
     }
 
+    public function createInvoicesTct(Request $request)
+    {
+        $request->validate([
+            'records' => ['required', 'array'],
+        ]);
+
+        $result = $this->invoiceService->createInvoicesTct($request->input());
+        # Send response using the predefined format
+        $response = ApiResponse::v1();
+        return $response->send($result);
+    }
+
     public function saveInvoiceTct(Request $request)
     {
         $request->validate([
@@ -394,5 +408,33 @@ class InvoiceController extends ApiController
             Log::error($ex->getMessage());
             return $response->fail($ex->getMessage());
         }
+    }
+
+    public function checkInvoiceExist(Request $request): mixed
+    {
+        $request->validate([
+            'records' => ['required', 'array'],
+            'records.*.id' => ['required'],
+            'records.*.nmmst' => ['required'],
+            'records.*.nbmst' => ['required'],
+            'records.*.shdon' => ['required'],
+            'records.*.khhdon' => ['required'],
+            'company_id' => ['required', 'exists:companies,id'],
+            'invoice_type' => ['required', Rule::in(['sold', 'purchase'])],
+            'year' => ['required'],
+        ], [
+            'records.required' => 'Bạn phải gửi mảng records.',
+            'records.array' => 'Dữ liệu records phải là một mảng.',
+            'records.*.id.required' => 'Chưa có trường id tại mỗi bản ghi.',
+            'records.*.nmmst.required' => 'Chưa có trường nmmst tại mỗi bản ghi.',
+            'records.*.nbmst.required' => 'Chưa có trường nbmst tại mỗi bản ghi.',
+            'records.*.shdon.required' => 'Chưa có trường shdon tại mỗi bản ghi.',
+            'records.*.khhdon.required' => 'Chưa có trường khhdon tại mỗi bản ghi.',
+        ]);
+
+        $result = $this->invoiceService->checkInvoiceExist($request->input());
+        # Send response using the predefined format
+        $response = ApiResponse::v1();
+        return $response->send($result);
     }
 }

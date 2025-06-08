@@ -15,5 +15,7 @@ interface IInvoiceRepository extends IRepository
     function findNextInvoice(array $params): Invoice | Collection | null;
     function reportSold(array $params): Collection | Invoice | array | null;
     function createInvoiceTct(array $param): Invoice;
+    function createInvoicesTct(array $param): mixed;
     function saveInvoiceTct(array $param): mixed;
+    function checkInvoiceExist(array $param): mixed;
 }

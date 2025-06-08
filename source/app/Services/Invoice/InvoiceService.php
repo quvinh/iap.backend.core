@@ -675,6 +675,14 @@ class InvoiceService extends \App\Services\BaseService implements IInvoiceServic
     }
 
     /**
+     * Create invoices from TCT
+     */
+    public function createInvoicesTct(array $param): mixed
+    {
+        return $this->invoiceRepos->createInvoicesTct($param);
+    }
+
+    /**
      * Save invoice from TCT
      */
     public function saveInvoiceTct(array $param): mixed
@@ -693,5 +701,14 @@ class InvoiceService extends \App\Services\BaseService implements IInvoiceServic
                 previous: $ex
             );
         }
+    }
+
+    /**
+     * Check invoice from TCT
+     */
+    public function checkInvoiceExist(array $param): mixed
+    {
+        $result = $this->invoiceRepos->checkInvoiceExist($param);
+        return $result;
     }
 }

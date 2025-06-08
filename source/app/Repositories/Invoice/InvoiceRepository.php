@@ -19,6 +19,7 @@ use App\Models\InvoiceTask;
 use App\Models\UserCompany;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Facades\Log;
 
 use function Spatie\SslCertificate\starts_with;
 
@@ -249,6 +250,29 @@ class InvoiceRepository extends BaseRepository implements IInvoiceRepository
     }
 
     /**
+     * Create invoices from TCT
+     */
+    public function createInvoicesTct(array $param): mixed
+    {
+        foreach ($param['records'] as $record) {
+            $partner_tax_code = $record['partner_tax_code'];
+            $invoice_number = (int) ($record['invoice_number'] ?? 0);
+            $invoice_symbol = $record['invoice_symbol'];
+            $item = Invoice::where([
+                ['company_id', '=', $record['company_id']],
+                ['partner_tax_code', '=', $partner_tax_code],
+                ['invoice_number', '=', $invoice_number],
+                ['invoice_symbol', '=', $invoice_symbol],
+            ])->whereYear('date', '=', Carbon::parse($record['date'])->format('Y'))->first();
+
+            if (empty($item)) {
+                self::createInvoiceTct($record);
+            }
+        }
+        return true;
+    }
+
+    /**
      * Save invoice from TCT
      */
     public function saveInvoiceTct(array $param): mixed
@@ -280,5 +304,34 @@ class InvoiceRepository extends BaseRepository implements IInvoiceRepository
             }
         }
         return true;
+    }
+
+    public function checkInvoiceExist(array $param): mixed
+    {
+        $companyId = $param['company_id'];
+        $invoiceType = $param['invoice_type'];
+        $year = $param['year'];
+        $records = $param['records'];
+        $result = [];
+
+        foreach ($records as $record) {
+            $partner_tax_code = $invoiceType == InvoiceTypes::SOLD ? $record['nmmst'] : $record['nbmst'];
+            $invoice_number = (int) ($record['shdon'] ?? 0);
+            $invoice_symbol = $record['khhdon'];
+            $item = Invoice::where([
+                ['company_id', '=', $companyId],
+                ['partner_tax_code', '=', $partner_tax_code],
+                ['invoice_number', '=', $invoice_number],
+                ['invoice_symbol', '=', $invoice_symbol],
+            ])->whereYear('date', '=', $year)->first();
+
+            if (!empty($item)) {
+                $result[] = array_merge($item->toArray(), [
+                    'invoice_tct_id' => $record['id'],
+                ]);
+            }
+        }
+
+        return $result;
     }
 }
