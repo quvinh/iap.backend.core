@@ -27,6 +27,7 @@ class ItemCodeResource extends BaseDataResource
         'status',
         'created_by',
         'created_at',
+        'deleted_at',
     ];
 
     /**

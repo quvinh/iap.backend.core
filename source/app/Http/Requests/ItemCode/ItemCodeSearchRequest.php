@@ -26,7 +26,8 @@ class ItemCodeSearchRequest extends DefaultSearchRequest
         'price_from',
         'price_to',
         'status',
-        'withs'
+        'only_active',
+        'withs',
     ];
 
     /**

@@ -20,6 +20,7 @@ use App\Http\Requests\ItemCode\ItemCodeSearchRequest;
 use App\Http\Requests\ItemCode\ItemCodeUpdateRequest;
 use App\Imports\ImportedGoodsCodeImport;
 use App\Jobs\ItemCodeExcelJob;
+use App\Models\InvoiceDetail;
 use App\Models\ItemCode;
 use App\Models\JobHistory;
 use App\Services\IService;
@@ -60,6 +61,9 @@ class ItemCodeController extends ApiController
             Route::put($root . '/{id}', [ItemCodeController::class, 'update']);
             Route::delete($root . '/{id}', [ItemCodeController::class, 'delete']);
             Route::delete($root . '/force/{id}', [ItemCodeController::class, 'forceDelete']);
+            Route::delete($root . '/bulk/destroy', [ItemCodeController::class, 'bulkDestroy']);
+            Route::post($root . '/bulk/restore', [ItemCodeController::class, 'bulkRestore']);
+            Route::delete($root . '/bulk/force-delete', [ItemCodeController::class, 'bulkForceDelete']);
 
             // Route::post($root . '/import', [ItemCodeController::class, 'import']);
             Route::post($root . '/import', [ItemCodeController::class, 'importItemCode']);
@@ -307,5 +311,62 @@ class ItemCodeController extends ApiController
             'type' => $fileType,
             'data' => $fileBase64Uri,
         ]);
+    }
+
+    public function bulkDestroy(Request $request)
+    {
+        Log::debug($request->input());
+        $request->validate([
+            'ids'   => ['required', 'array'],
+            'ids.*' => ['integer', 'exists:item_codes,id']
+        ]);
+
+        # Send response using the predefined format
+        $response = ApiResponse::v1();
+
+        $result = ItemCode::whereIn('id', $request->ids)->delete();
+
+        return $response->send($result);
+    }
+
+    public function bulkRestore(Request $request)
+    {
+        $request->validate([
+            'ids'   => ['required', 'array'],
+            'ids.*' => ['integer', 'exists:item_codes,id']
+        ]);
+
+        # Send response using the predefined format
+        $response = ApiResponse::v1();
+
+        $result = ItemCode::onlyTrashed()->whereIn('id', $request->ids)->restore();
+
+        return $response->send($result);
+    }
+
+    public function bulkForceDelete(Request $request)
+    {
+        $request->validate([
+            'ids'   => ['required', 'array'],
+            'ids.*' => ['integer', 'exists:item_codes,id']
+        ]);
+
+        # Send response using the predefined format
+        $response = ApiResponse::v1();
+
+        DB::beginTransaction();
+        try {
+            $records = ItemCode::onlyTrashed()->whereIn('id', $request->ids)->get();
+            foreach ($records as $record) {
+                InvoiceDetail::where('item_code_id', $record->id)->update(['item_code_id' => null]);
+                $record->forceDelete();
+            }
+            DB::commit();
+            return $response->send(true);
+        } catch (\Exception $ex) {
+            Log::error($ex->getMessage());
+            DB::rollBack();
+            return $response->fail(['message' => $ex->getMessage()]);
+        }
     }
 }

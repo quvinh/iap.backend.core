@@ -75,7 +75,7 @@ class ItemCodeService extends \App\Services\BaseService implements IItemCodeServ
     public function search(array $rawConditions, PaginationInfo &$paging = null, array $withs = []): Collection
     {
         try {
-            $query = $this->itemCodeRepos->search();
+            $query = $this->itemCodeRepos->search(onlyActive: $rawConditions['only_active'] ?? true);
 
             if (isset($rawConditions['product_code'])) {
                 $param = StringHelper::escapeLikeQueryParameter($rawConditions['product_code']);

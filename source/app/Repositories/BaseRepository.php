@@ -71,6 +71,8 @@ abstract class BaseRepository implements IRepository
         if ($onlyActive && is_array($classUses)) {
             if (in_array('Illuminate\Database\Eloquent\SoftDeletes', $classUses))
                 $query = $query->where('deleted_at', null);
+        } elseif (!$onlyActive) {
+            $query->onlyTrashed();
         }
 
         return $query;
@@ -89,7 +91,7 @@ abstract class BaseRepository implements IRepository
         $model_class = $this->getRepositoryModelClass();
         $query = (new $model_class())->query();
         $query = $query->where($idColumnName, $id);
-        
+
         if ($trashed) $query = $query->withTrashed();
         if (isset($withs)) $query = $query->with($withs);
         return $query;
