@@ -80,6 +80,14 @@ class InvoiceDetailService extends \App\Services\BaseService implements IInvoice
                 });
             }
 
+            if (isset($rawConditions['product_code'])) {
+                $query->whereHas('item_code', fn($q) => $q->whereRaw('LOWER(product_code) LIKE ?', ['%' . mb_strtolower($rawConditions['product_code']) . '%']));
+            }
+
+            if (isset($rawConditions['product_name_from_item_code'])) {
+                $query->whereHas('item_code', fn($q) => $q->whereRaw('LOWER(product) LIKE ?', ['%' . mb_strtolower($rawConditions['product_name_from_item_code']) . '%']));
+            }
+
             if (isset($rawConditions['company_id'])) {
                 $company_id = $rawConditions['company_id'];
                 $query->whereHas('invoice', function ($q) use ($company_id) {
