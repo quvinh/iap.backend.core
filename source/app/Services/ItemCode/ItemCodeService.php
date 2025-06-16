@@ -389,7 +389,7 @@ class ItemCodeService extends \App\Services\BaseService implements IItemCodeServ
             $note = 'TẠO MỚI';
             $slug = ItemCodeMetaSlugEnum::NEED_TO_CREATE;
 
-            if (empty($item->item_code_id)) {
+            if (empty($item->item_code->id)) {
                 // Lặp qua item_codes bằng chunk với Eloquent
                 ItemCode::query()->select('id', 'item_group_id', 'product', 'product_code', 'price', 'unit', 'quantity')
                     ->whereNotNull('product')
