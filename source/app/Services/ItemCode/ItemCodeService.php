@@ -122,6 +122,12 @@ class ItemCodeService extends \App\Services\BaseService implements IItemCodeServ
                 $query = $this->itemCodeRepos->queryOnAField(['price', '<=', $param], $query);
             }
 
+            if (isset($rawConditions['search'])) {
+                $search = $rawConditions['search'];
+                $query->where('product_code', 'like', '%' . $search . '%')
+                    ->orWhere('product', 'like', '%' . $search . '%');
+            }
+
             if (isset($rawConditions['updated_date'])) {
                 $query = $this->itemCodeRepos->queryOnDateRangeField($query, 'updated_at', $rawConditions['updated_date']);
             }

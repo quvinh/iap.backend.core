@@ -73,6 +73,11 @@ class InvoiceDetailService extends \App\Services\BaseService implements IInvoice
                 $query = $this->invoiceDetailRepos->queryOnAField([DB::raw("upper(product)"), 'LIKE BINARY', DB::raw("upper(concat('%', ? , '%'))")], positionalBindings: ['product' => $param]);
             }
 
+            if (isset($rawConditions['unit'])) {
+                $param = StringHelper::escapeLikeQueryParameter($rawConditions['unit']);
+                $query = $this->invoiceDetailRepos->queryOnAField([DB::raw("upper(unit)"), 'LIKE BINARY', DB::raw("upper(concat('%', ? , '%'))")], positionalBindings: ['unit' => $param]);
+            }
+
             if (isset($rawConditions['type'])) {
                 $type = $rawConditions['type'];
                 $query->whereHas('invoice', function ($q) use ($type) {
@@ -86,6 +91,10 @@ class InvoiceDetailService extends \App\Services\BaseService implements IInvoice
 
             if (isset($rawConditions['product_name_from_item_code'])) {
                 $query->whereHas('item_code', fn($q) => $q->whereRaw('LOWER(product) LIKE ?', ['%' . mb_strtolower($rawConditions['product_name_from_item_code']) . '%']));
+            }
+
+            if (isset($rawConditions['unit_from_item_code'])) {
+                $query->whereHas('item_code', fn($q) => $q->whereRaw('LOWER(unit) LIKE ?', ['%' . mb_strtolower($rawConditions['unit_from_item_code']) . '%']));
             }
 
             if (isset($rawConditions['company_id'])) {

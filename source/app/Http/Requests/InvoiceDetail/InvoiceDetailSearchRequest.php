@@ -53,6 +53,7 @@ class InvoiceDetailSearchRequest extends DefaultSearchRequest
         'price_to',
         'product_code',
         'product_name_from_item_code',
+        'unit_from_item_code',
     ];
 
     /**

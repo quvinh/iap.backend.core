@@ -12,9 +12,11 @@ use App\Http\Requests\Invoice\InvoiceUpdateProgressFormulaRequest;
 use App\Http\Requests\InvoiceDetail\InvoiceDetailCreateRequest;
 use App\Http\Requests\InvoiceDetail\InvoiceDetailSearchRequest;
 use App\Http\Requests\InvoiceDetail\InvoiceDetailUpdateRequest;
+use App\Models\InvoiceDetail;
 use App\Services\IService;
 use App\Services\InvoiceDetail\IInvoiceDetailService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
 
 class InvoiceDetailController extends ApiController
@@ -43,6 +45,7 @@ class InvoiceDetailController extends ApiController
             Route::put($root . '/{id}', [InvoiceDetailController::class, 'update']);
             Route::put($root, [InvoiceDetailController::class, 'updateProgressByFormula']);
             Route::delete($root . '/{id}', [InvoiceDetailController::class, 'delete']);
+            Route::post($root . '/update-item-code', [InvoiceDetailController::class, 'updateItemCode']);
         }
     }
 
@@ -110,6 +113,21 @@ class InvoiceDetailController extends ApiController
         $result = $this->invoiceDetailService->updateProgressByFormula($request->all());
         # Send response using the predefined format
         $response = ApiResponse::v1();
+        return $response->send($result);
+    }
+
+    public function updateItemCode(Request $request)
+    {
+        Log::debug($request->input());
+        $request->validate([
+            'invoice_detail_ids' => ['required', 'array'],
+            'item_code_id' => ['required', 'exists:item_codes,id'],
+        ]);
+
+        # Send response using the predefined format
+        $response = ApiResponse::v1();
+
+        $result = InvoiceDetail::whereIn('id', $request->invoice_detail_ids)->update(['item_code_id' => $request->item_code_id]);
         return $response->send($result);
     }
 }
