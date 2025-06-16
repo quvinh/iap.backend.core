@@ -118,7 +118,6 @@ class InvoiceDetailController extends ApiController
 
     public function updateItemCode(Request $request)
     {
-        Log::debug($request->input());
         $request->validate([
             'invoice_detail_ids' => ['required', 'array'],
             'item_code_id' => ['required', 'exists:item_codes,id'],
