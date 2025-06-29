@@ -69,6 +69,7 @@ class InvoiceController extends ApiController
             Route::delete($root . '/{id}', [InvoiceController::class, 'delete'])->middleware('can:delete,App\Models\Invoice');
 
             Route::post($root . '/import', [InvoiceController::class, 'import'])->middleware('can:create,App\Models\Invoice');
+            Route::post($root . '/import-tct', [InvoiceController::class, 'importTct'])->middleware('can:create,App\Models\Invoice');
             Route::post($root . '/import-pdf', [InvoiceController::class, 'importPDF'])->middleware('can:create,App\Models\Invoice');
             Route::post($root . '/import-imported-goods', [InvoiceController::class, 'importImportedGoods'])->middleware('can:create,App\Models\Invoice');
             Route::post($root . '/restore-rows/{id}', [InvoiceController::class, 'restoreRows']);
@@ -163,6 +164,53 @@ class InvoiceController extends ApiController
         # Send response using the predefined format
         $response = ApiResponse::v1();
         return $response->send($result);
+    }
+
+    public function importTct(Request $request)
+    {
+        $request->validate([
+            'file' => ['required', 'mimes:xlsx,xls'],
+            'company_id' => ['required', 'exists:companies,id'],
+            'year' => ['required'],
+        ]);
+
+        # Send response using the predefined format
+        $response = ApiResponse::v1();
+
+        $date = Carbon::now()->format('Ymd');
+        $storage = Storage::disk(StorageHelper::TMP_DISK_NAME);
+        $folder = "excel/queue/$date";
+
+        $file = $request->file('file');
+        $fileName = $file->getClientOriginalName();
+        $filePath = $storage->put($folder, $file);
+
+        DB::beginTransaction();
+        try {
+            $user_id = auth()->user()->getAuthIdentifier();
+            $jobHistory = JobHistory::create([
+                'company_id' => $request->company_id,
+                'job_id' => null,
+                'file_name' => $fileName,
+                'note' => "Chờ xử lý",
+                'path' => null,
+                'status' => JobHistory::STATUS_PENDING,
+            ]);
+            ItemCodeExcelJob::dispatch(
+                $filePath,
+                $request->input(),
+                $user_id,
+                $jobHistory->id,
+                $this->getCurrentMetaInfo()
+            );
+
+            DB::commit();
+            return $response->send(true);
+        } catch (\Exception $ex) {
+            DB::rollBack();
+            Log::error($ex->getMessage());
+            return $response->fail($ex->getMessage());
+        }
     }
 
     public function restoreRows(mixed $id): Response
